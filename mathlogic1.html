@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מבחן אבחון אינטראקטיבי: חיתוך פרבולה-ישר</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Assistant', sans-serif;
+            background-color: #f3f4f6; /* bg-gray-100 */
+            color: #1f2937; /* text-gray-800 */
+        }
+        .container-test { /* Renamed to avoid conflict with platform's .container if any */
+            max-width: 700px; /* Keeping original width for test layout */
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .question-section {
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            border: 1px solid #e5e7eb; /* border-gray-200 */
+            border-radius: 0.5rem;
+            background-color: #f9fafb; /* bg-gray-50 */
+        }
+        .problem-statement {
+            font-size: 1.25rem; /* text-xl */
+            font-weight: 600;
+            color: #1e3a8a; /* text-blue-800 */
+            margin-bottom: 1rem;
+        }
+        .question-text {
+            font-size: 1.1rem; /* text-lg (approx) */
+            color: #374151; /* text-gray-700 */
+            margin-bottom: 0.75rem;
+        }
+        label.option-label { /* Added class for specific styling */
+            display: block;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            background-color: #fff;
+            border: 1px solid #d1d5db; /* border-gray-300 */
+            border-radius: 0.375rem; /* rounded-md */
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        label.option-label:hover {
+            background-color: #f0f9ff; /* blue-50 for hover */
+            border-color: #7dd3fc; /* light blue border for hover */
+        }
+        input[type="radio"] {
+            margin-left: 0.5rem; /* For RTL, space between radio and text */
+            accent-color: #2563eb; /* blue-600 */
+        }
+        button.submit-button { /* Added class for specific styling */
+            padding: 0.75rem 1.5rem;
+            background-color: #2563eb; /* bg-blue-600 */
+            color: white;
+            border: none;
+            border-radius: 0.375rem; /* rounded-md */
+            font-weight: 500; /* medium */
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 1rem;
+        }
+        button.submit-button:hover {
+            background-color: #1d4ed8; /* bg-blue-700 */
+        }
+        .feedback-section {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            background-color: #eff6ff; /* bg-blue-50 */
+            color: #1e3a8a; /* text-blue-800 */
+            border: 1px solid #bfdbfe; /* border-blue-200 */
+        }
+        .hidden {
+            display: none;
+        }
+        .formula-box { /* Platform's formula box style */
+            background-color: #E5E7EB; 
+            padding: 0.5em 0.75em; /* Adjusted padding slightly for inline feel */
+            border-radius: 0.375rem; 
+            display: inline-block; 
+            font-size: 1.05em; /* Slightly smaller for inline context */
+            line-height: 1.5; 
+            margin: 0 0.25em; /* Small margin for inline */
+        }
+        .katex-display > .katex { /* Center display math */
+             text-align: center;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+<div class="container-test">
+<h1 class="text-2xl font-bold text-center text-blue-700 mb-6">מבחן אבחון: חיתוך פרבולה וישר</h1>
+
+<div id="mainProblemSection" class="question-section">
+    <p class="problem-statement">בעיה ראשית:</p>
+    <p class="question-text">מצא את נקודות החיתוך של הפרבולה <span class="formula-box" dir="ltr">\(y = x^2 - 4x + 3\)</span> והישר <span class="formula-box" dir="ltr">\(y = x - 1\)</span>.</p>
+    <p class="text-sm text-gray-500 mb-3">אנא פתור זאת במחברתך תחילה, ולאחר מכן בחר את תשובתך הסופית (או תשובותיך) למטה.</p>
+    
+    <div id="mainProblemOptions">
+        <label class="option-label"><input type="radio" name="mainAnswer" value="A"> א) <span dir="ltr">\((1,0)\)</span> וגם <span dir="ltr">\((4,3)\)</span></label>
+        <label class="option-label"><input type="radio" name="mainAnswer" value="B"> ב) <span dir="ltr">\((1,0)\)</span> בלבד</label>
+        <label class="option-label"><input type="radio" name="mainAnswer" value="C"> ג) <span dir="ltr">\((-1,-2)\)</span> וגם <span dir="ltr">\((-4,-5)\)</span></label>
+        <label class="option-label"><input type="radio" name="mainAnswer" value="D"> ד) <span dir="ltr">\((1,2)\)</span> וגם <span dir="ltr">\((4,5)\)</span></label>
+    </div>
+    <button class="submit-button" onclick="checkMainAnswer()">הגש תשובה</button>
+</div>
+
+<div id="diagnosticQ1Section" class="question-section hidden">
+    <p class="problem-statement">בוא נפרק את זה. שלב 1: בניית המשוואה</p>
+    <p class="question-text">כדי למצוא את נקודות החיתוך של <span class="formula-box" dir="ltr">\(y = x^2 - 4x + 3\)</span> ו- <span class="formula-box" dir="ltr">\(y = x - 1\)</span>, מהו הצעד האלגברי הראשון הנכון?</p>
+    <div id="diagnosticQ1Options">
+        <label class="option-label"><input type="radio" name="diagQ1Answer" value="A"> א) להשוות <span class="formula-box" dir="ltr">\(x^2 - 4x + 3 = x - 1\)</span></label>
+        <label class="option-label"><input type="radio" name="diagQ1Answer" value="B"> ב) להשוות <span class="formula-box" dir="ltr">\(x^2 - 4x + 3 + (x - 1) = 0\)</span></label>
+        <label class="option-label"><input type="radio" name="diagQ1Answer" value="C"> ג) לפתור את <span class="formula-box" dir="ltr">\(x^2 - 4x + 3 = 0\)</span> ואת <span class="formula-box" dir="ltr">\(x - 1 = 0\)</span> בנפרד</label>
+        <label class="option-label"><input type="radio" name="diagQ1Answer" value="D"> ד) להשוות <span class="formula-box" dir="ltr">\(x^2 - 4x + 3 - (x - 1) = 0\)</span></label>
+    </div>
+    <button class="submit-button" onclick="checkDiagnosticQ1()">הגש תשובה לשלב 1</button>
+</div>
+
+<div id="diagnosticQ2Section" class="question-section hidden">
+    <p class="problem-statement">שלב 2: יצירת המשוואה הריבועית</p>
+    <p class="question-text">אם השווית נכון <span class="formula-box" dir="ltr">\(x^2 - 4x + 3 = x - 1\)</span>, מהי המשוואה המתקבלת כאשר מעבירים את כל האיברים לאגף אחד ליצירת משוואה ריבועית סטנדרטית (<span class="formula-box" dir="ltr">\(ax^2+bx+c=0\)</span>)?</p>
+    <div id="diagnosticQ2Options">
+        <label class="option-label"><input type="radio" name="diagQ2Answer" value="A"> א) <span class="formula-box" dir="ltr">\(x^2 - 5x + 4 = 0\)</span></label>
+        <label class="option-label"><input type="radio" name="diagQ2Answer" value="B"> ב) <span class="formula-box" dir="ltr">\(x^2 - 3x + 2 = 0\)</span></label>
+        <label class="option-label"><input type="radio" name="diagQ2Answer" value="C"> ג) <span class="formula-box" dir="ltr">\(x^2 - 5x + 2 = 0\)</span></label>
+        <label class="option-label"><input type="radio" name="diagQ2Answer" value="D"> ד) <span class="formula-box" dir="ltr">\(x^2 + 3x + 4 = 0\)</span></label>
+    </div>
+    <button class="submit-button" onclick="checkDiagnosticQ2()">הגש תשובה לשלב 2</button>
+</div>
+
+<div id="diagnosticQ3Section" class="question-section hidden">
+    <p class="problem-statement">שלב 3: מציאת ערכי x</p>
+    <p class="question-text">מהם הפתרונות עבור <span class="formula-box" dir="ltr">\(x\)</span> במשוואה <span class="formula-box" dir="ltr">\(x^2 - 5x + 4 = 0\)</span>?</p>
+    <div id="diagnosticQ3Options">
+        <label class="option-label"><input type="radio" name="diagQ3Answer" value="A"> א) <span dir="ltr">\(x=1, x=4\)</span></label>
+        <label class="option-label"><input type="radio" name="diagQ3Answer" value="B"> ב) <span dir="ltr">\(x=-1, x=-4\)</span></label>
+        <label class="option-label"><input type="radio" name="diagQ3Answer" value="C"> ג) <span dir="ltr">\(x=1\)</span> בלבד</label>
+        <label class="option-label"><input type="radio" name="diagQ3Answer" value="D"> ד) <span dir="ltr">\(x=2, x=2.5\)</span></label>
+    </div>
+    <button class="submit-button" onclick="checkDiagnosticQ3()">הגש תשובה לשלב 3</button>
+</div>
+
+<div id="diagnosticQ4Section" class="question-section hidden">
+    <p class="problem-statement">שלב 4: מציאת ערכי y</p>
+    <p class="question-text" id="diagQ4Text">אם אחד מערכי ה-x עבור נקודת חיתוך הוא <span class="formula-box" dir="ltr">\(x=1\)</span>, ומשוואת הישר היא <span class="formula-box" dir="ltr">\(y = x - 1\)</span>, מהו ערך ה-y המתאים?</p>
+    <div id="diagnosticQ4Options">
+        <label class="option-label"><input type="radio" name="diagQ4Answer" value="A"> א) <span dir="ltr">\(y=0\)</span></label>
+        <label class="option-label"><input type="radio" name="diagQ4Answer" value="B"> ב) <span dir="ltr">\(y=1\)</span></label>
+        <label class="option-label"><input type="radio" name="diagQ4Answer" value="C"> ג) <span dir="ltr">\(y=-1\)</span></label>
+        <label class="option-label"><input type="radio" name="diagQ4Answer" value="D"> ד) <span dir="ltr">\(y=2\)</span></label>
+    </div>
+    <button class="submit-button" onclick="checkDiagnosticQ4()">הגש תשובה לשלב 4</button>
+</div>
+
+<div id="feedbackSection" class="feedback-section hidden">
+    <p id="feedbackText" class="text-lg"></p>
+    <p id="remediationLink" class="mt-3 font-semibold text-md"></p>
+</div>
+</div>
+<script>
+// Ensure KaTeX is rendered after the DOM is fully loaded
+document.addEventListener("DOMContentLoaded", function() {
+    console.log("Interactive Quiz: DOMContentLoaded event fired.");
+    // Attempt to render math in the initially visible section.
+    // The renderMathInElement function itself depends on auto-render.min.js loading successfully.
+    if (typeof renderMathInElement === 'function') {
+        console.log("Interactive Quiz: renderMathInElement is defined. Rendering main problem section.");
+        renderMathInElement(document.getElementById('mainProblemSection'));
+    } else {
+        console.error("Interactive Quiz: renderMathInElement is NOT defined on DOMContentLoaded. Check auto-render.min.js loading.");
+    }
+});
+
+/**
+ * Renders mathematical expressions within a given DOM element using KaTeX.
+ * It relies on the KaTeX auto-render script (contrib/auto-render.min.js) being loaded
+ * and defining window.renderMathInElement.
+ * @param {HTMLElement} element The DOM element to search for math expressions.
+ */
+function renderMathInElement(element) {
+    // Check if the global renderMathInElement function provided by KaTeX's auto-render script is available
+    if (window.renderMathInElement && element) {
+        console.log("Calling window.renderMathInElement for element:", element.id || element.tagName);
+        window.renderMathInElement(element, {
+            delimiters: [
+                {left: "\\(", right: "\\)", display: false}, // Standard inline math
+                {left: "\\[", right: "\\]", display: true}   // Standard display math
+            ],
+            throwOnError: false // Prevents KaTeX from stopping on a rendering error
+        });
+    } else if (!element) {
+        console.warn("renderMathInElement called with no element.");
+    } else {
+        console.warn("window.renderMathInElement is not available. KaTeX math may not render. Element:", element.id || element.tagName);
+    }
+}
+
+// Stores the student's answers and feedback received for diagnostic purposes
+let studentPath = []; 
+const mainProblemCorrectAnswer = "A"; // Correct answer: (1,0) and (4,3)
+let currentXForQ4 = 1; // Stores the current x-value being tested in diagnostic question 4
+let q4Attempts = 0; // Counts attempts for diagnostic question 4 (currently informational)
+
+
+/**
+ * Hides all question sections and shows the specified section.
+ * Also attempts to render KaTeX in the newly shown section.
+ * @param {string|null} sectionId The ID of the section to show, or null to hide all.
+ */
+function showSection(sectionId) {
+    // List of all primary question section IDs
+    ['mainProblemSection', 'diagnosticQ1Section', 'diagnosticQ2Section', 'diagnosticQ3Section', 'diagnosticQ4Section'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden'); // Hide the section
+    });
+    
+    if (sectionId) {
+        const el = document.getElementById(sectionId);
+        if (el) {
+            el.classList.remove('hidden'); // Show the target section
+            console.log(`Showing section: ${sectionId}. Attempting to render math.`);
+            renderMathInElement(el); // Re-render KaTeX for the newly shown section
+        }
+    }
+}
+
+/**
+ * Displays feedback to the student and logs it.
+ * Also attempts to render KaTeX in the feedback section.
+ * @param {string} message The feedback message (can include HTML for KaTeX).
+ * @param {string} [remediation] Optional remediation advice or topic.
+ */
+function displayFeedback(message, remediation) {
+    const feedbackTextEl = document.getElementById('feedbackText');
+    const remediationLinkEl = document.getElementById('remediationLink');
+    
+    feedbackTextEl.innerHTML = message; // Use innerHTML to allow KaTeX spans
+    remediationLinkEl.innerHTML = remediation ? `<strong>מוקד מומלץ לחיזוק:</strong> ${remediation}` : '';
+    
+    const feedbackSectionEl = document.getElementById('feedbackSection');
+    feedbackSectionEl.classList.remove('hidden'); // Make feedback visible
+    console.log("Displaying feedback. Attempting to render math in feedback section.");
+    renderMathInElement(feedbackSectionEl); // Render KaTeX in feedback
+
+    // Log the plain text version of the feedback
+    studentPath.push(`משוב: ${message.replace(/<[^>]*>/g, '')}`); 
+    // console.log("נתיב אבחון של התלמיד:", studentPath); // Optional: uncomment for detailed path logging
+}
+
+/**
+ * Gets the value of the selected radio button from a group.
+ * @param {string} name The name attribute of the radio button group.
+ * @returns {string|null} The value of the selected radio button, or null if none selected.
+ */
+function getSelectedRadioValue(name) {
+    const radios = document.getElementsByName(name);
+    for (let radio of radios) {
+        if (radio.checked) return radio.value;
+    }
+    return null;
+}
+
+/**
+ * Checks the answer for the main problem.
+ */
+function checkMainAnswer() {
+    const answer = getSelectedRadioValue('mainAnswer');
+    if (!answer) {
+        displayFeedback("אנא בחר תשובה.", ""); 
+        return; 
+    }
+
+    studentPath.push({ question: "בעיה ראשית: חיתוך של y = x^2 - 4x + 3 ו- y = x - 1", answer: answer });
+
+    if (answer === mainProblemCorrectAnswer) {
+        displayFeedback("מעולה! תשובתך הסופית נכונה: נקודות החיתוך הן <span class='formula-box' dir='ltr'>(1,0)</span> וגם <span class='formula-box' dir='ltr'>(4,3)</span>.", "");
+        showSection(null); 
+    } else {
+        showSection('diagnosticQ1Section'); 
+        document.getElementById('feedbackSection').classList.add('hidden'); 
+    }
+}
+
+/**
+ * Checks the answer for diagnostic question 1.
+ */
+function checkDiagnosticQ1() {
+    const answer = getSelectedRadioValue('diagQ1Answer');
+    if (!answer) {
+        displayFeedback("אנא בחר תשובה לשלב 1.", "");
+        return;
+    }
+    studentPath.push({ question: "שאלה 1: צעד אלגברי ראשון נכון?", answer: answer });
+
+    if (answer === "A") { 
+        showSection('diagnosticQ2Section');
+        document.getElementById('feedbackSection').classList.add('hidden');
+    } else if (answer === "B" || answer === "D") {
+        displayFeedback("לא בדיוק. כדי למצוא היכן הגרפים נחתכים, אנחנו צריכים למצוא נקודות <span class='formula-box' dir='ltr'>(x,y)</span> שנמצאות על *שני* הגרפים. זה אומר שערכי ה-<span class='formula-box' dir='ltr'>\(y\)</span> שלהם שווים, אז אנחנו משווים את הביטויים עבור <span class='formula-box' dir='ltr'>\(y\)</span>.", "הבנה רעיונית של חיתוכים");
+        showSection(null);
+    } else if (answer === "C") {
+        displayFeedback("פתרון נפרד של כל משוואה ימצא היכן כל גרף חוצה את ציר ה-x (אם <span class='formula-box' dir='ltr'>\(y=0\)</span>) או קווים אחרים, אך לא היכן הם נחתכים זה עם זה. אנחנו צריכים למצוא ערכי <span class='formula-box' dir='ltr'>(x,y)</span> שמקיימים את שתי המשוואות בו-זמנית.", "הבנה רעיונית של חיתוכים");
+        showSection(null);
+    }
+}
+
+/**
+ * Checks the answer for diagnostic question 2.
+ */
+function checkDiagnosticQ2() {
+    const answer = getSelectedRadioValue('diagQ2Answer');
+     if (!answer) {
+        displayFeedback("אנא בחר תשובה לשלב 2.", "");
+        return;
+    }
+    studentPath.push({ question: "שאלה 2: יצירת המשוואה הריבועית ax^2+bx+c=0?", answer: answer });
+
+    if (answer === "A") { 
+        showSection('diagnosticQ3Section');
+        document.getElementById('feedbackSection').classList.add('hidden');
+    } else if (answer === "B") { 
+        displayFeedback("נראה שיש טעות סימן בהעברת אגפים. כאשר מעבירים את <span class='formula-box' dir='ltr'>\(x\)</span> מימין לשמאל, הוא הופך ל-<span class='formula-box' dir='ltr'>\(-x\)</span>. לכן, <span class='formula-box' dir='ltr'>\(-4x - x = -5x\)</span>. גם כאשר מעבירים את <span class='formula-box' dir='ltr'>\(-1\)</span> לשמאל, הוא הופך ל-<span class='formula-box' dir='ltr'>\(+1\)</span>, כך ש-<span class='formula-box' dir='ltr'>\(3+1=4\)</span>. המשוואה הנכונה היא <span class='formula-box' dir='ltr'>\(x^2 - 5x + 4 = 0\)</span>.", "העברת אגפים וחוקי סימנים");
+        showSection(null);
+    } else if (answer === "C") { 
+        displayFeedback("שים לב לקבועים. כאשר מעבירים את <span class='formula-box' dir='ltr'>\(-1\)</span> מהאגף הימני של <span class='formula-box' dir='ltr'>\(x^2 - 4x + 3 = x - 1\)</span> לשמאלי, הוא הופך ל-<span class='formula-box' dir='ltr'>\(+1\)</span>. לכן, <span class='formula-box' dir='ltr'>\(3 + 1 = 4\)</span>. המשוואה הנכונה היא <span class='formula-box' dir='ltr'>\(x^2 - 5x + 4 = 0\)</span>.", "חיבור קבועים במשוואות");
+        showSection(null);
+    } else if (answer === "D") { 
+        displayFeedback("נראה שהיו מספר טעויות סימן בהעברת אגפים. זכור, כאשר איבר עובר את סימן השוויון, הסימן שלו משתנה. <span class='formula-box' dir='ltr'>\(x\)</span> הופך ל-<span class='formula-box' dir='ltr'>\(-x\)</span> באגף שמאל, ו-<span class='formula-box' dir='ltr'>\(-1\)</span> הופך ל-<span class='formula-box' dir='ltr'>\(+1\)</span> באגף שמאל. המשוואה הנכונה היא <span class='formula-box' dir='ltr'>\(x^2 - 5x + 4 = 0\)</span>.", "העברת אגפים וחוקי סימנים");
+        showSection(null);
+    }
+}
+
+/**
+ * Checks the answer for diagnostic question 3.
+ */
+function checkDiagnosticQ3() {
+    const answer = getSelectedRadioValue('diagQ3Answer');
+    if (!answer) {
+        displayFeedback("אנא בחר תשובה לשלב 3.", "");
+        return;
+    }
+    studentPath.push({ question: "שאלה 3: פתרונות עבור x ב-x^2 - 5x + 4 = 0?", answer: answer });
+    q4Attempts = 0; 
+
+    if (answer === "A") { 
+        currentXForQ4 = 1; 
+        document.getElementById('diagQ4Text').innerHTML = `אם אחד מערכי ה-x עבור נקודת חיתוך הוא <span class='formula-box' dir='ltr'>\(x=${currentXForQ4}\)</span>, ומשוואת הישר היא <span class='formula-box' dir='ltr'>\(y = x - 1\)</span>, מהו ערך ה-y המתאים?`;
+        const q4OptionsDiv = document.getElementById('diagnosticQ4Options');
+        q4OptionsDiv.innerHTML = `
+            <label class="option-label"><input type="radio" name="diagQ4Answer" value="A"> א) <span dir="ltr">\\(y=0\\)</span></label>
+            <label class="option-label"><input type="radio" name="diagQ4Answer" value="B"> ב) <span dir="ltr">\\(y=1\\)</span></label>
+            <label class="option-label"><input type="radio" name="diagQ4Answer" value="C"> ג) <span dir="ltr">\\(y=-1\\)</span></label>
+            <label class="option-label"><input type="radio" name="diagQ4Answer" value="D"> ד) <span dir="ltr">\\(y=2\\)</span></label>
+        `;
+        // No need to call renderMathInElement(q4OptionsDiv) here if showSection handles it.
+        // renderMathInElement(document.getElementById('diagQ4Text')); // This element is part of diagnosticQ4Section
+        showSection('diagnosticQ4Section');
+        document.getElementById('feedbackSection').classList.add('hidden');
+    } else if (answer === "B") { 
+        displayFeedback("נראה שיש טעות סימן בפתרון המשוואה הריבועית. עבור <span class='formula-box' dir='ltr'>\(x^2 - 5x + 4 = 0\)</span>, הפתרונות הם <span class='formula-box' dir='ltr'>\(x=1\)</span> ו-<span class='formula-box' dir='ltr'>\(x=4\)</span>. ניתן לבדוק על ידי פירוק לגורמים: <span class='formula-box' dir='ltr'>\((x-1)(x-4)=0\)</span>.", "פתרון משוואות ריבועיות (פירוק/נוסחה)");
+        showSection(null);
+    } else if (answer === "C") { 
+        displayFeedback("מצאת פתרון אחד נכון, <span class='formula-box' dir='ltr'>\(x=1\)</span>. עם זאת, למשוואות ריבועיות יש לעיתים קרובות שני פתרונות. עבור <span class='formula-box' dir='ltr'>\(x^2 - 5x + 4 = 0\)</span>, הפתרון השני הוא <span class='formula-box' dir='ltr'>\(x=4\)</span>. ניתן למצוא זאת על ידי פירוק <span class='formula-box' dir='ltr'>\((x-1)(x-4)=0\)</span> או שימוש בנוסחת השורשים.", "פתרון משוואות ריבועיות (מציאת כל השורשים)");
+        showSection(null);
+    } else if (answer === "D") { 
+        displayFeedback("ערכי ה-x האלו אינם נכונים עבור <span class='formula-box' dir='ltr'>\(x^2 - 5x + 4 = 0\)</span>. נסה לפרק לגורמים (חפש שני מספרים שמכפלתם 4 וסכומם -5) או השתמש בנוסחת השורשים בזהירות. הפתרונות הנכונים הם <span class='formula-box' dir='ltr'>\(x=1\)</span> ו-<span class='formula-box' dir='ltr'>\(x=4\)</span>.", "פתרון משוואות ריבועיות (דיוק בפירוק/נוסחה)");
+        showSection(null);
+    }
+}
+
+/**
+ * Checks the answer for diagnostic question 4.
+ */
+function checkDiagnosticQ4() {
+    const answer = getSelectedRadioValue('diagQ4Answer');
+    if (!answer) {
+        displayFeedback("אנא בחר תשובה לשלב 4.", "");
+        return;
+    }
+
+    studentPath.push({ question: `שאלה 4: ערך y עבור x=${currentXForQ4} באמצעות y=x-1? (ניסיון ${q4Attempts + 1})`, answer: answer });
+    q4Attempts++;
+
+    if (currentXForQ4 === 1) {
+        if (answer === "A") { 
+            currentXForQ4 = 4; 
+            document.getElementById('diagQ4Text').innerHTML = `אם ערך ה-x השני הוא <span class='formula-box' dir='ltr'>\(x=${currentXForQ4}\)</span>, ומשוואת הישר היא <span class='formula-box' dir='ltr'>\(y = x - 1\)</span>, מהו ערך ה-y המתאים?`;
+            const q4OptionsDiv = document.getElementById('diagnosticQ4Options');
+            q4OptionsDiv.innerHTML = `
+                <label class="option-label"><input type="radio" name="diagQ4Answer" value="0"> א) <span dir="ltr">\\(y=0\\)</span></label>
+                <label class="option-label"><input type="radio" name="diagQ4Answer" value="1"> ב) <span dir="ltr">\\(y=1\\)</span></label>
+                <label class="option-label"><input type="radio" name="diagQ4Answer" value="3"> ג) <span dir="ltr">\\(y=3\\)</span></label> 
+                <label class="option-label"><input type="radio" name="diagQ4Answer" value="4"> ד) <span dir="ltr">\\(y=4\\)</span></label>
+            `;
+            document.getElementsByName('diagQ4Answer').forEach(radio => radio.checked = false); 
+            showSection('diagnosticQ4Section'); // This will re-render math for the whole section
+            document.getElementById('feedbackSection').classList.add('hidden');
+        } else {
+            displayFeedback(`לא בדיוק. כדי למצוא את ערך ה-y, הצב <span class='formula-box' dir='ltr'>\(x=1\)</span> במשוואת הישר <span class='formula-box' dir='ltr'>\(y = x - 1\)</span>. לכן, <span class='formula-box' dir='ltr'>\(y = 1 - 1 = 0\)</span>.`, "הצבת x למציאת y במשוואות לינאריות");
+            showSection(null);
+        }
+    } else if (currentXForQ4 === 4) {
+        if (answer === "3") { 
+             displayFeedback(`מצוין! עבור <span class='formula-box' dir='ltr'>\(x=4\)</span>, <span class='formula-box' dir='ltr'>\(y = 4-1 = 3\)</span>. לכן נקודות החיתוך הן <span class='formula-box' dir='ltr'>(1,0)</span> וגם <span class='formula-box' dir='ltr'>(4,3)</span>. זה תואם לאפשרות א' מהבעיה הראשית!`, "");
+             showSection(null);
+        } else {
+            displayFeedback(`לא בדיוק. כדי למצוא את ערך ה-y, הצב <span class='formula-box' dir='ltr'>\(x=4\)</span> במשוואת הישר <span class='formula-box' dir='ltr'>\(y = x - 1\)</span>. לכן, <span class='formula-box' dir='ltr'>\(y = 4 - 1 = 3\)</span>.`, "הצבת x למציאת y במשוואות לינאריות");
+            showSection(null);
+        }
+    }
+}
+</script>
+</body>
+</html>
