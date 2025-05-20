@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>כלי אבחון במתמטיקה</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', 'Helvetica Neue', Helvetica, sans-serif; /* Added Arial for better Hebrew support */
+        }
+        .option-button, .nav-button {
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+        .option-button:hover, .nav-button:hover {
+            background-color: #4a5568; /* darker gray */
+        }
+        .option-button:active, .nav-button:active {
+            transform: scale(0.98);
+        }
+        #report-container h3 {
+            margin-bottom: 0.5rem;
+        }
+        #report-container ul {
+            list-style-type: disc;
+            list-style-position: inside;
+            padding-right: 1rem; /* Adjusted for RTL */
+            padding-left: 0;
+        }
+        #report-container li {
+            margin-bottom: 0.5rem;
+            padding: 0.5rem;
+            background-color: #f9fafb; 
+            border-right: 4px solid #3b82f6; /* Adjusted for RTL */
+            border-left: 0;
+            border-radius: 0.375rem 0 0 0.375rem; /* Adjusted for RTL */
+        }
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        .feedback-correct {
+            color: #059669; /* Tailwind green-600 */
+            font-weight: bold;
+        }
+        .explanation-text {
+            background-color: #eff6ff; /* Tailwind blue-50 */
+            border-right: 4px solid #2563eb; /* Tailwind blue-600 */
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border-radius: 0.375rem 0 0 0.375rem;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col items-center justify-center p-4 selection:bg-sky-300 selection:text-sky-900">
+
+    <div class="bg-white shadow-xl rounded-lg p-6 md:p-8 w-full max-w-2xl">
+        <header class="mb-6 text-center">
+            <h1 class="text-3xl font-bold text-sky-600">כלי אבחון במתמטיקה</h1>
+            <p class="text-slate-600 mt-1">אנא פתרו כל בעיה על דף נייר תחילה, ולאחר מכן בחרו את תשובתכם כאן. זה יעזור למורה שלכם להבין את דרך החשיבה שלכם.</p>
+        </header>
+
+        <main id="quiz-area">
+            <div id="question-container" class="mb-6 p-5 bg-sky-50 rounded-md shadow">
+                <p id="question-text" class="text-lg text-slate-700 leading-relaxed"></p>
+            </div>
+
+            <div id="answer-area" class="mb-6">
+                <div id="options-container" class="space-y-3">
+                    </div>
+                <input type="text" id="text-answer-input" class="mt-3 p-3 w-full border border-slate-300 rounded-md shadow-sm focus:ring-sky-500 focus:border-sky-500 hidden" placeholder="הקלד/י את תשובתך כאן">
+            </div>
+
+            <div id="navigation-area" class="text-center">
+                <button id="submit-answer-button" class="nav-button bg-sky-500 hover:bg-sky-600 text-white font-semibold py-3 px-6 rounded-md shadow-md w-full sm:w-auto">
+                    שלח/י תשובה
+                </button>
+                <button id="next-button" class="nav-button bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-3 px-6 rounded-md shadow-md w-full sm:w-auto hidden">
+                    המשך/י
+                </button>
+            </div>
+        </main>
+
+        <section id="report-section" class="mt-10 pt-6 border-t border-slate-300 hidden">
+            <h2 class="text-2xl font-semibold text-slate-700 mb-4">דוח אבחון</h2>
+            <p class="text-slate-600 mb-3">דוח זה מסכם את התחומים שבהם זוהו קשיים פוטנציאליים. ניתן לשתף אותו עם המורה שלך.</p>
+            <div id="report-content-for-pdf"> <div id="report-container" class="bg-slate-50 p-4 rounded-md shadow max-h-60 overflow-y-auto">
+                    <ul></ul>
+                </div>
+            </div>
+             <div class="mt-4 space-y-2 sm:space-y-0 sm:flex sm:space-x-3 sm:flex-row-reverse"> {/* flex-row-reverse for RTL button order */}
+                <button id="restart-quiz-button" class="nav-button bg-amber-500 hover:bg-amber-600 text-white font-semibold py-3 px-6 rounded-md shadow-md w-full sm:w-auto hidden">
+                    התחל/י אבחון מחדש
+                </button>
+                <button id="download-pdf-button" class="nav-button bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-md shadow-md w-full sm:w-auto hidden">
+                    הורד/י דוח כ-PDF
+                </button>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Ensure jsPDF is loaded before use
+        const { jsPDF } = window.jspdf;
+
+        // --- Quiz Data Structure (Translated to Hebrew) ---
+        const quizData = {
+            "start": { 
+                text: "ברוכים הבאים לכלי האבחון במתמטיקה. <br><br><strong>חשוב:</strong> אנא פתרו כל בעיה על דף נייר תחילה, ולאחר מכן בחרו את תשובתכם בכלי. זה עוזר לכם לחשוב על השלבים ומספק מידע רב ערך למורה שלכם. <br><br>לחצ/י 'המשך/י' כדי להתחיל.",
+                type: "info", 
+                next: "AlgLinEq_Main_Q1" 
+            },
+            // --- 1. אלגברה ---
+            // --- 1.1. פתרון משוואות לינאריות ---
+            "AlgLinEq_Main_Q1": {
+                id: "AlgLinEq_Main_Q1",
+                text: "נתחיל באלגברה. <br>פתור/י את המשוואה: <strong>2(X+3) = 8-2X</strong><br>מהו ערכו של X?",
+                type: "number_input", 
+                correctAnswer: 0.5, 
+                next_correct: "AlgLinEq_Feedback_Main_Q1_Correct", // New feedback node
+                next_incorrect: "AlgLinEq_Sub_Q1_Distributive_Check" 
+            },
+            "AlgLinEq_Feedback_Main_Q1_Correct": {
+                id: "AlgLinEq_Feedback_Main_Q1_Correct",
+                text: "<span class='feedback-correct'>כל הכבוד! פתרת נכון את המשוואה הראשונה.</span><br><br>כעת, ננסה בעיה דומה.",
+                type: "info",
+                next: "AlgLinEq_Main_Q2"
+            },
+            "AlgLinEq_Sub_Q1_Distributive_Check": {
+                id: "AlgLinEq_Sub_Q1_Distributive_Check",
+                text: "במשוואה <strong>2(X+3) = 8-2X</strong>, מה התוצאה של פישוט הביטוי <strong>2(X+3)</strong>?",
+                type: "text_input",
+                correctAnswerRegex: /\s*(?:2\s*[xX]\s*\+\s*6|6\s*\+\s*2\s*[xX])\s*$/, 
+                next_correct: "AlgLinEq_Feedback_Distributive_Correct", // New feedback node
+                next_incorrect: "AlgLinEq_Explain_Distributive_2_X_plus_3" // Explanation before further breakdown
+            },
+            "AlgLinEq_Explain_Distributive_2_X_plus_3": {
+                id: "AlgLinEq_Explain_Distributive_2_X_plus_3",
+                text: "<div class='explanation-text'>בוא נראה: כדי לפשט את <strong>2(X+3)</strong>, אנחנו משתמשים בחוק הפילוג. זה אומר שאנחנו כופלים את ה-2 בכל איבר בתוך הסוגריים: <br>2 כפול X  זה 2X <br>2 כפול 3 זה 6 <br>לכן, <strong>2(X+3) = 2X + 6</strong>. <br>עכשיו, בוא נבדוק את החלקים.</div>",
+                type: "info",
+                next: "AlgLinEq_Sub_Q1a_Distributive_Mult_Var"
+            },
+             "AlgLinEq_Feedback_Distributive_Correct": {
+                id: "AlgLinEq_Feedback_Distributive_Correct",
+                text: "<span class='feedback-correct'>נכון מאוד! 2(X+3) זה אכן 2X+6.</span><br><br>אז המשוואה היא <strong>2X+6 = 8-2X</strong>.",
+                type: "info",
+                next: "AlgLinEq_Sub_Q2_Transpose_Intro"
+            },
+            "AlgLinEq_Sub_Q1a_Distributive_Mult_Var": {
+                id: "AlgLinEq_Sub_Q1a_Distributive_Mult_Var",
+                text: "מה התוצאה של <strong>2 * X</strong>?",
+                type: "text_input",
+                correctAnswerRegex: /\s*2\s*[xX]\s*$/, 
+                next_correct: "AlgLinEq_Feedback_Mult_Var_Correct", // New feedback node
+                next_incorrect: "AlgLinEq_Explain_Mult_Var_By_Const_2X"
+            },
+            "AlgLinEq_Feedback_Mult_Var_Correct": {
+                id: "AlgLinEq_Feedback_Mult_Var_Correct",
+                text: "<span class='feedback-correct'>נכון! 2 כפול X זה 2X.</span>",
+                type: "info",
+                next: "AlgLinEq_Sub_Q1b_Distributive_Mult_Const"
+            },
+            "AlgLinEq_Explain_Mult_Var_By_Const_2X": {
+                id: "AlgLinEq_Explain_Mult_Var_By_Const_2X",
+                text: "<div class='explanation-text'>הסבר: כשכופלים מספר במשתנה, כמו <strong>2 * X</strong>, פשוט כותבים אותם יחד: <strong>2X</strong>.</div>",
+                type: "info",
+                next: "AlgLinEq_Diagnosis_Mult_Var_By_Const" // Or proceed to check 2*3 if we want to continue the flow despite this error
+            },
+            "AlgLinEq_Sub_Q1b_Distributive_Mult_Const": {
+                id: "AlgLinEq_Sub_Q1b_Distributive_Mult_Const",
+                text: "מה התוצאה של <strong>2 * 3</strong>?",
+                type: "number_input",
+                correctAnswer: 6,
+                next_correct: "AlgLinEq_Feedback_Mult_Const_Correct_6", 
+                next_incorrect: "AlgLinEq_Explain_Arithmetic_Mult_2_3"
+            },
+            "AlgLinEq_Feedback_Mult_Const_Correct_6": {
+                id: "AlgLinEq_Feedback_Mult_Const_Correct_6",
+                // This node is reached if 2*X was correct AND 2*3 is correct.
+                // If the original 2(X+3) was incorrect, the issue is combining.
+                text: "<span class='feedback-correct'>נכון, 2 כפול 3 זה 6.</span> <br>אם פירקת נכון את שני החלקים (2X ו-6) אך עדיין טעית ב-2(X+3), כנראה שהקושי הוא בשילובם ל-2X+6.",
+                type: "info",
+                next: "AlgLinEq_Diagnosis_Combining_Distributive_Terms" 
+            },
+            "AlgLinEq_Explain_Arithmetic_Mult_2_3": {
+                id: "AlgLinEq_Explain_Arithmetic_Mult_2_3",
+                text: "<div class='explanation-text'>הסבר: <strong>2 * 3</strong> זה כמו לחבר 3 לעצמו פעמיים (3+3), או לחבר 2 לעצמו שלוש פעמים (2+2+2). התוצאה היא <strong>6</strong>.</div>",
+                type: "info",
+                next: "AlgLinEq_Diagnosis_Arithmetic_Mult"
+            },
+            "AlgLinEq_Diagnosis_Mult_Var_By_Const": {
+                isDiagnosis: true,
+                text: "<strong>אבחון משוואות לינאריות:</strong> קושי בכפל משתנה במספר קבוע (למשל <code>2*X</code>).",
+                nextTopicKey: "AlgExp_Q1_v1" 
+            },
+            "AlgLinEq_Diagnosis_Arithmetic_Mult": {
+                isDiagnosis: true,
+                text: "<strong>אבחון משוואות לינאריות:</strong> טעות אריתמטית בכפל (למשל <code>2*3</code>).",
+                nextTopicKey: "AlgExp_Q1_v1"
+            },
+            "AlgLinEq_Diagnosis_Combining_Distributive_Terms": {
+                isDiagnosis: true,
+                text: "<strong>אבחון משוואות לינאריות:</strong> קושי בשילוב נכון של איברים לאחר שימוש בחוק הפילוג (למשל, הרכבת <code>2X+6</code> מ-<code>2X</code> ו-<code>6</code>).",
+                nextTopicKey: "AlgExp_Q1_v1"
+            },
+            "AlgLinEq_Sub_Q2_Transpose_Intro": { 
+                id: "AlgLinEq_Sub_Q2_Transpose_Intro",
+                // This text is now part of AlgLinEq_Feedback_Distributive_Correct
+                text: "כדי לבודד את X במשוואה <strong>2X+6 = 8-2X</strong>, מהו השלב הראשון הנכון בהעברת אגפים?",
+                type: "radio",
+                options: [
+                    { text: "להוסיף 2X לשני האגפים וגם להחסיר 6 משני האגפים.", next: "AlgLinEq_Feedback_Transpose_Correct" },
+                    { text: "להוסיף 2X לשני האגפים (ולהשאיר את ה-6 בינתיים).", next: "AlgLinEq_Feedback_Transpose_Correct" }, 
+                    { text: "להחסיר 6 משני האגפים (ולהשאיר את ה-2X- בינתיים).", next: "AlgLinEq_Feedback_Transpose_Correct" }, 
+                    { text: "להחסיר 2X משני האגפים.", next: "AlgLinEq_Explain_Transpose_Variable_Error_Sign" },
+                    { text: "להוסיף 6 לשני האגפים.", next: "AlgLinEq_Explain_Transpose_Constant_Error_Sign" }
+                ]
+            },
+            "AlgLinEq_Feedback_Transpose_Correct": {
+                id: "AlgLinEq_Feedback_Transpose_Correct",
+                text: "<span class='feedback-correct'>בחירה טובה! העברת אגפים היא שלב חשוב.</span><br><br>לאחר העברת אגפים נכונה, המשוואה הופכת ל- <strong>2X+2X = 8-6</strong>.",
+                type: "info",
+                next: "AlgLinEq_Sub_Q2a_Equation_After_Transpose_Correct_Choice"
+            },
+            "AlgLinEq_Explain_Transpose_Variable_Error_Sign": {
+                id: "AlgLinEq_Explain_Transpose_Variable_Error_Sign",
+                text: "<div class='explanation-text'>הסבר להעברת אגפים: כדי להעביר איבר מאגף אחד לשני, מבצעים את הפעולה ההפוכה. אם יש לנו <strong>-2X</strong> באגף ימין, כדי 'להעביר' אותו לאגף שמאל, אנחנו צריכים <strong>להוסיף 2X</strong> לשני האגפים. זה מבטל אותו מימין ומוסיף אותו לשמאל.</div>",
+                type: "info",
+                next: "AlgLinEq_Diagnosis_Transpose_Variable_Error_Sign"
+            },
+            "AlgLinEq_Explain_Transpose_Constant_Error_Sign": {
+                id: "AlgLinEq_Explain_Transpose_Constant_Error_Sign",
+                text: "<div class='explanation-text'>הסבר להעברת אגפים: כדי להעביר איבר מאגף אחד לשני, מבצעים את הפעולה ההפוכה. אם יש לנו <strong>+6</strong> באגף שמאל, כדי 'להעביר' אותו לאגף ימין, אנחנו צריכים <strong>להחסיר 6</strong> משני האגפים. זה מבטל אותו משמאל ומוסיף אותו (כ-6-) לימין.</div>",
+                type: "info",
+                next: "AlgLinEq_Diagnosis_Transpose_Constant_Error_Sign"
+            },
+             "AlgLinEq_Sub_Q2a_Equation_After_Transpose_Correct_Choice": {
+                id: "AlgLinEq_Sub_Q2a_Equation_After_Transpose_Correct_Choice",
+                // Text moved to AlgLinEq_Feedback_Transpose_Correct
+                text: "נתמקד בכינוס האיברים. מהו <strong>2X + 2X</strong>?",
+                type: "text_input",
+                correctAnswerRegex: /\s*4\s*[xX]\s*$/, 
+                next_correct: "AlgLinEq_Feedback_Combine_Vars_Correct", // New feedback
+                next_incorrect: "AlgLinEq_Explain_Combine_Like_Terms_Variables_2X_2X"
+            },
+             "AlgLinEq_Feedback_Combine_Vars_Correct": {
+                id: "AlgLinEq_Feedback_Combine_Vars_Correct",
+                text: "<span class='feedback-correct'>מצוין! 2X + 2X זה אכן 4X.</span>",
+                type: "info",
+                next: "AlgLinEq_Sub_Q3_Combine_Const_Check"
+            },
+            "AlgLinEq_Explain_Combine_Like_Terms_Variables_2X_2X": {
+                id: "AlgLinEq_Explain_Combine_Like_Terms_Variables_2X_2X",
+                text: "<div class='explanation-text'>הסבר לכינוס איברים דומים: <strong>2X + 2X</strong> זה כמו להגיד 'שני X ועוד שני X'. ביחד יש לנו ארבעה X, כלומר <strong>4X</strong>.</div>",
+                type: "info",
+                next: "AlgLinEq_Diagnosis_Combine_Like_Terms_Variables"
+            },
+            "AlgLinEq_Diagnosis_Transpose_Variable_Error_Sign": {
+                isDiagnosis: true,
+                text: "<strong>אבחון משוואות לינאריות:</strong> טעות בסימן בעת העברת אגף של איבר עם משתנה (למשל, החסרת 2X במקום הוספת 2X).",
+                nextTopicKey: "AlgExp_Q1_v1"
+            },
+            "AlgLinEq_Diagnosis_Transpose_Constant_Error_Sign": {
+                isDiagnosis: true,
+                text: "<strong>אבחון משוואות לינאריות:</strong> טעות בסימן בעת העברת אגף של מספר קבוע (למשל, הוספת 6 במקום החסרת 6).",
+                nextTopicKey: "AlgExp_Q1_v1"
+            },
+            "AlgLinEq_Sub_Q3_Combine_Const_Check": {
+                id: "AlgLinEq_Sub_Q3_Combine_Const_Check",
+                text: "במשוואה <strong>4X = 8-6</strong> (בהנחה שכינסנו את ה-X ל-4X), מהו <strong>8 - 6</strong>?",
+                type: "number_input",
+                correctAnswer: 2,
+                next_correct: "AlgLinEq_Feedback_Combine_Const_Correct", // New feedback
+                next_incorrect: "AlgLinEq_Explain_Arithmetic_Subtraction_8_6"
+            },
+            "AlgLinEq_Feedback_Combine_Const_Correct": {
+                id: "AlgLinEq_Feedback_Combine_Const_Correct",
+                text: "<span class='feedback-correct'>נכון! 8 - 6 זה 2.</span><br><br>אז המשוואה כעת היא <strong>4X = 2</strong>.",
+                type: "info",
+                next: "AlgLinEq_Sub_Q4_Final_Equation_State"
+            },
+            "AlgLinEq_Explain_Arithmetic_Subtraction_8_6": {
+                id: "AlgLinEq_Explain_Arithmetic_Subtraction_8_6",
+                text: "<div class='explanation-text'>הסבר: <strong>8 - 6</strong>. אם יש לך 8 ואת/ה מוריד/ה 6, נשארים עם <strong>2</strong>.</div>",
+                type: "info",
+                next: "AlgLinEq_Diagnosis_Arithmetic_Subtraction"
+            },
+            "AlgLinEq_Diagnosis_Combine_Like_Terms_Variables": {
+                isDiagnosis: true,
+                text: "<strong>אבחון משוואות לינאריות:</strong> קושי בכינוס איברים דומים עם משתנים (למשל <code>2X+2X</code>).",
+                nextTopicKey: "AlgExp_Q1_v1"
+            },
+            "AlgLinEq_Diagnosis_Arithmetic_Subtraction": {
+                isDiagnosis: true,
+                text: "<strong>אבחון משוואות לינאריות:</strong> טעות אריתמטית בחיסור (למשל <code>8-6</code>).",
+                nextTopicKey: "AlgExp_Q1_v1"
+            },
+            "AlgLinEq_Sub_Q4_Final_Equation_State": {
+                id: "AlgLinEq_Sub_Q4_Final_Equation_State",
+                // Text moved to AlgLinEq_Feedback_Combine_Const_Correct
+                text: "מהו ערכו של X במשוואה <strong>4X = 2</strong>?",
+                type: "number_input", 
+                correctAnswer: 0.5,
+                next_correct: "AlgLinEq_Feedback_Final_Solve_Correct", // New feedback
+                next_incorrect: "AlgLinEq_Explain_Final_Division_4X_2"
+            },
+            "AlgLinEq_Feedback_Final_Solve_Correct": {
+                id: "AlgLinEq_Feedback_Final_Solve_Correct",
+                text: "<span class='feedback-correct'>כל הכבוד על ההתמדה! פתרת נכון את כל השלבים.</span>",
+                type: "info",
+                next: "AlgLinEq_Diagnosis_Specific_Problem_Understood_Late"
+            },
+            "AlgLinEq_Explain_Final_Division_4X_2": {
+                id: "AlgLinEq_Explain_Final_Division_4X_2",
+                text: "<div class='explanation-text'>הסבר: במשוואה <strong>4X = 2</strong>, כדי למצוא את X, אנחנו צריכים לחלק את שני האגפים ב-4 (המקדם של X). <br>X = 2 / 4 <br>אפשר לצמצם את השבר 2/4 ל-<strong>1/2</strong>, או לכתוב אותו כמספר עשרוני <strong>0.5</strong>.</div>",
+                type: "info",
+                next: "AlgLinEq_Diagnosis_Final_Division_Error"
+            },
+            "AlgLinEq_Diagnosis_Final_Division_Error": {
+                isDiagnosis: true,
+                text: "<strong>אבחון משוואות לינאריות:</strong> טעות בשלב החילוק הסופי כדי למצוא את המשתנה (מתוך <code>4X=2</code>).",
+                nextTopicKey: "AlgExp_Q1_v1"
+            },
+            "AlgLinEq_Diagnosis_Specific_Problem_Understood_Late": {
+                isDiagnosis: true,
+                text: "<strong>אבחון משוואות לינאריות:</strong> התלמיד/ה הצליח/ה לפתור את הבעיה <code>2(X+3)=8-2X</code> לאחר פירוק לשלבים. זה עשוי להצביע על קושי בשילוב כל השלבים יחד בבעיה המקורית, או טעות חישוב נקודתית בתחילה.",
+                nextTopicKey: "AlgExp_Q1_v1" 
+            },
+
+            "AlgLinEq_Main_Q2": {
+                id: "AlgLinEq_Main_Q2",
+                // Text moved to AlgLinEq_Feedback_Main_Q1_Correct
+                text: "פתור/י בעיה דומה: <strong>3(Y-1) = 12-Y</strong>. <br>מהו ערכו של Y?",
+                type: "number_input", 
+                correctAnswer: 3.75,
+                next_correct: "AlgLinEq_Feedback_Main_Q2_Correct", // New feedback
+                next_incorrect: "AlgLinEq_Diagnosis_Inconsistent_Performance" 
+            },
+            "AlgLinEq_Feedback_Main_Q2_Correct": {
+                id: "AlgLinEq_Feedback_Main_Q2_Correct",
+                text: "<span class='feedback-correct'>מעולה! פתרת נכון גם את המשוואה השנייה.</span>",
+                type: "info",
+                next: "AlgLinEq_Diagnosis_Topic_Understood"
+            },
+            "AlgLinEq_Diagnosis_Topic_Understood": {
+                isDiagnosis: true,
+                text: "<strong>אבחון משוואות לינאריות:</strong> התלמיד/ה פתר/ה נכונה שתי בעיות מסוג זה, מה שמצביע על הבנה טובה של הנושא. (יש לבדוק את העבודה על הדף).",
+                nextTopicKey: "AlgExp_Q1_v1" 
+            },
+            "AlgLinEq_Diagnosis_Inconsistent_Performance": {
+                isDiagnosis: true,
+                text: "<strong>אבחון משוואות לינאריות:</strong> התלמיד/ה פתר/ה נכון את הבעיה הראשונה אך טעה/תה בשנייה. ייתכן שיש צורך בחיזוק נוסף או שמדובר בטעות מקרית. (יש לבדוק את העבודה על הדף).",
+                nextTopicKey: "AlgExp_Q1_v1" 
+            },
+
+            // --- Placeholder for Exponents - to be revamped similarly ---
+            "AlgExp_Q1_v1": {
+                id: "AlgExp_Q1_v1",
+                text: "נעבור לחזקות. (תוכן השאלות בנושא חזקות יפותח בהמשך בדומה למשוואות). לחץ המשך כדי לעבור לדוח בינתיים.",
+                type: "info",
+                next: "quiz_completed" // Temporary jump to end
+            },
+
+
+            // --- Placeholders for other topics ---
+            "WP_Q1_v1": { id: "WP_Q1_v1", text: "בעיות מילוליות (יפותח בהמשך). המשך לדוח.", type: "info", next: "quiz_completed"},
+            "Geo_Q1_v1": { id: "Geo_Q1_v1", text: "גיאומטריה (יפותח בהמשך). המשך לדוח.", type: "info", next: "quiz_completed"},
+            "Trig_Q1_v1": { id: "Trig_Q1_v1", text: "טריגונומטריה (יפותח בהמשך). המשך לדוח.", type: "info", next: "quiz_completed"},
+            "Func_Q1_v1": { id: "Func_Q1_v1", text: "פונקציות (יפותח בהמשך). המשך לדוח.", type: "info", next: "quiz_completed"},
+
+            // --- סיום האבחון ---
+            "quiz_completed": {
+                text: "האבחון הסתיים! אנא עיין/י בדוח שלך למטה. ניתן להוריד אותו כקובץ PDF כדי לשתף עם המורה שלך.",
+                type: "info",
+                isEnd: true
+            }
+        };
+
+        // --- DOM Elements ---
+        const questionTextElement = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const textAnswerInput = document.getElementById('text-answer-input');
+        const submitAnswerButton = document.getElementById('submit-answer-button');
+        const nextButton = document.getElementById('next-button');
+        const reportSection = document.getElementById('report-section');
+        const reportContainer = document.getElementById('report-container').querySelector('ul');
+        const restartQuizButton = document.getElementById('restart-quiz-button');
+        const downloadPdfButton = document.getElementById('download-pdf-button');
+
+
+        // --- Quiz State ---
+        let currentQuestionId = 'start';
+        let diagnosesReport = [];
+
+        // --- Functions ---
+
+        function startQuiz() {
+            currentQuestionId = 'start';
+            diagnosesReport = [];
+            reportContainer.innerHTML = ''; 
+            reportSection.classList.add('hidden');
+            restartQuizButton.classList.add('hidden');
+            downloadPdfButton.classList.add('hidden');
+            submitAnswerButton.classList.remove('hidden');
+            document.getElementById('quiz-area').classList.remove('hidden'); 
+            loadQuestion(currentQuestionId);
+        }
+
+        function loadQuestion(questionId) {
+            const questionData = quizData[questionId];
+            if (!questionData) {
+                questionTextElement.innerHTML = "שגיאה: סוף מסלול או שאלה לא נמצאה. אנא עיין/י בדוח או התחל/י מחדש.";
+                console.error("Question ID not found:", questionId);
+                submitAnswerButton.classList.add('hidden');
+                nextButton.classList.add('hidden');
+                document.getElementById('quiz-area').classList.add('hidden'); 
+                displayReport();
+                restartQuizButton.classList.remove('hidden');
+                downloadPdfButton.classList.remove('hidden');
+                return;
+            }
+
+            currentQuestionId = questionId; 
+            questionTextElement.innerHTML = questionData.text; // Use innerHTML to render feedback spans and explanation divs
+            optionsContainer.innerHTML = '';
+            textAnswerInput.classList.add('hidden');
+            textAnswerInput.value = '';
+            submitAnswerButton.classList.remove('hidden');
+            nextButton.classList.add('hidden');
+
+            if (questionData.type === 'radio' && questionData.options) {
+                questionData.options.forEach((option) => {
+                    const button = document.createElement('button');
+                    button.innerHTML = option.text;
+                    button.classList.add('option-button', 'block', 'w-full', 'text-right', 'p-3', 'bg-slate-200', 'hover:bg-slate-300', 'rounded-md', 'border', 'border-slate-300'); // text-right for RTL
+                    button.onclick = () => handleAnswer(questionData.id, option.next);
+                    optionsContainer.appendChild(button);
+                });
+                submitAnswerButton.classList.add('hidden'); 
+            } else if (questionData.type === 'number_input' || questionData.type === 'text_input') {
+                textAnswerInput.classList.remove('hidden');
+                textAnswerInput.type = questionData.type === 'number_input' ? 'number' : 'text';
+                submitAnswerButton.textContent = 'שלח/י תשובה';
+                submitAnswerButton.onclick = () => handleAnswer(questionData.id, null); 
+            } else if (questionData.type === 'info') {
+                submitAnswerButton.classList.add('hidden');
+                nextButton.classList.remove('hidden');
+                nextButton.textContent = questionData.isEnd ? 'צפה/י בדוח וסיים/י' : 'המשך/י';
+                nextButton.onclick = () => {
+                    if (questionData.isEnd) {
+                        document.getElementById('quiz-area').classList.add('hidden'); 
+                        displayReport();
+                        nextButton.classList.add('hidden');
+                        restartQuizButton.classList.remove('hidden');
+                        downloadPdfButton.classList.remove('hidden');
+                    } else if (questionData.next) {
+                        loadQuestion(questionData.next);
+                    } else {
+                        console.warn("Info node without 'next' or 'isEnd':", questionId);
+                        loadQuestion("quiz_completed");
+                    }
+                };
+            }
+
+            // This handles diagnoses which are also info nodes that then proceed.
+            // Actual diagnoses that are end-points of a branch are handled in handleAnswer.
+            if (questionData.isDiagnosis && questionData.nextTopicKey) {
+                addToReport(questionData.text); // Add to report if it's a diagnosis node
+                submitAnswerButton.classList.add('hidden');
+                nextButton.classList.remove('hidden');
+                nextButton.textContent = 'המשך/י';
+                nextButton.onclick = () => {
+                    if (quizData[questionData.nextTopicKey]) {
+                         loadQuestion(questionData.nextTopicKey);
+                    } else if (questionData.nextTopicKey === "quiz_completed") {
+                        loadQuestion("quiz_completed");
+                    } else {
+                        console.error("Diagnosis node missing valid nextTopicKey or points to end:", questionData.nextTopicKey, "Falling back to quiz_completed.");
+                        loadQuestion("quiz_completed"); 
+                    }
+                };
+            }
+        }
+
+        function handleAnswer(questionId, selectedNextId) {
+            const questionData = quizData[questionId];
+            let nextId = selectedNextId;
+
+            if (questionData.type === 'number_input' || questionData.type === 'text_input') {
+                const userAnswer = textAnswerInput.value.trim();
+                if (userAnswer === '') {
+                    showModal('אנא ספק/י תשובה.');
+                    return;
+                }
+
+                if (questionData.type === 'number_input') {
+                    const userNum = parseFloat(userAnswer);
+                    let isCorrect = Math.abs(userNum - questionData.correctAnswer) < 0.001; // Tolerance for floating point
+                    if (questionData.correctAnswer === 0.5 && (userAnswer === "0.5" || userAnswer === "1/2" || userAnswer === ".5")) isCorrect = true;
+                    if (questionData.correctAnswer === 3.75 && (userAnswer === "3.75" || userAnswer === "15/4")) isCorrect = true;
+                    
+                    nextId = isCorrect ? questionData.next_correct : questionData.next_incorrect;
+
+                } else if (questionData.type === 'text_input' && questionData.correctAnswerRegex) {
+                    const regex = new RegExp(questionData.correctAnswerRegex, 'i'); 
+                    nextId = regex.test(userAnswer) ? questionData.next_correct : questionData.next_incorrect;
+                }
+            }
+            
+            if (nextId) {
+                const nextNode = quizData[nextId];
+                if (nextNode && nextNode.isDiagnosis) { // If the next node itself is a diagnosis
+                    addToReport(nextNode.text);
+                    if (nextNode.nextTopicKey && quizData[nextNode.nextTopicKey]) {
+                        loadQuestion(nextNode.nextTopicKey);
+                    } else if (nextNode.nextTopicKey === "quiz_completed") {
+                         loadQuestion("quiz_completed");
+                    } else { // Diagnosis is an end point for this topic or error in logic
+                        console.warn("Diagnosis node '", nextId, "' has no valid nextTopicKey. Ending topic or going to full completion.");
+                        loadQuestion("quiz_completed"); // Default to full completion if no specific next topic
+                    }
+                } else if (nextNode) { // If it's a regular question or an info/feedback node
+                    loadQuestion(nextId);
+                } else {
+                    console.error("Next ID not found in quizData:", nextId, "Current Question:", questionId);
+                    loadQuestion("quiz_completed"); 
+                }
+            } else {
+                console.warn("No nextId determined for question:", questionId, "SelectedNextId was:", selectedNextId, "User answer:", textAnswerInput.value);
+                if(questionData.next_incorrect && quizData[questionData.next_incorrect] && quizData[questionData.next_incorrect].isDiagnosis){
+                    const diagNode = quizData[questionData.next_incorrect];
+                    addToReport(diagNode.text);
+                    if(diagNode.nextTopicKey && quizData[diagNode.nextTopicKey]){
+                        loadQuestion(diagNode.nextTopicKey);
+                    } else {
+                        loadQuestion("quiz_completed");
+                    }
+                } else {
+                   loadQuestion("quiz_completed"); 
+                }
+            }
+        }
+        
+        function addToReport(diagnosisText) {
+            const plainText = stripHtml(diagnosisText); // Use plain text for checking duplicates to avoid issues with HTML tags
+            if (!diagnosesReport.some(d => d.plain === plainText)) { 
+                diagnosesReport.push({html: diagnosisText, plain: plainText});
+                const listItem = document.createElement('li');
+                listItem.innerHTML = diagnosisText; 
+                reportContainer.appendChild(listItem);
+            }
+        }
+
+        function displayReport() {
+            reportSection.classList.remove('hidden');
+            if (diagnosesReport.length === 0) {
+                const noDiagnosisItem = document.createElement('li');
+                noDiagnosisItem.innerHTML = "לא זוהו נקודות אבחון ספציפיות בסבב זה, או שכל המסלולים הובילו ל'ככל הנראה מבין/ה'. יש לזכור לעבור על העבודה שנעשתה על הדף עם המורה.";
+                reportContainer.appendChild(noDiagnosisItem);
+            }
+        }
+
+        function stripHtml(html) {
+           let tmp = document.createElement("DIV");
+           tmp.innerHTML = html; // Let browser parse HTML
+           return tmp.textContent || tmp.innerText || "";
+        }
+
+        function downloadReportAsPdf() {
+            const doc = new jsPDF();
+            doc.setLanguage("he"); 
+            doc.setFont("Arial", "normal"); 
+
+            let yPos = 15;
+            const pageHeight = doc.internal.pageSize.height;
+            const margin = 15;
+            const lineHeight = 8; 
+            const listIndent = 5;
+
+            doc.setFontSize(18);
+            doc.text("דוח אבחון במתמטיקה", doc.internal.pageSize.width - margin, yPos, { align: 'right' });
+            yPos += lineHeight * 2;
+
+            doc.setFontSize(10);
+            doc.text("דוח זה מסכם תחומים שבהם זוהו קשיים פוטנציאליים.", doc.internal.pageSize.width - margin, yPos, { align: 'right' });
+            yPos += lineHeight * 1.5;
+            doc.text("יש לעבור על דוח זה יחד עם העבודה שהתלמיד/ה ביצע/ה על הדף.", doc.internal.pageSize.width - margin, yPos, { align: 'right' });
+            yPos += lineHeight * 2;
+
+            if (diagnosesReport.length === 0) {
+                doc.setFontSize(12);
+                doc.text("• לא זוהו נקודות אבחון ספציפיות או שכל המסלולים הובילו ל'ככל הנראה מבין/ה'.", doc.internal.pageSize.width - margin, yPos, { align: 'right' });
+                yPos += lineHeight;
+                doc.text("  יש לזכור לעבור על העבודה שנעשתה על הדף עם המורה.", doc.internal.pageSize.width - margin, yPos, { align: 'right' });
+            } else {
+                doc.setFontSize(12);
+                diagnosesReport.forEach((diag) => {
+                    const plainTextDiagnosis = diag.plain; // Use the pre-stripped plain text
+                    const splitText = doc.splitTextToSize(plainTextDiagnosis, doc.internal.pageSize.width - margin * 2 - listIndent);
+                    
+                    if (yPos + (splitText.length * lineHeight) > pageHeight - margin) {
+                        doc.addPage();
+                        yPos = margin;
+                        doc.setFontSize(16); 
+                        doc.text("דוח אבחון (המשך)", doc.internal.pageSize.width - margin, yPos, { align: 'right' });
+                        yPos += lineHeight * 2;
+                        doc.setFontSize(12);
+                    }
+                    
+                    splitText.forEach(line => {
+                        doc.text(`• ${line}`, doc.internal.pageSize.width - margin - listIndent, yPos, { align: 'right' });
+                        yPos += lineHeight;
+                    });
+                    yPos += lineHeight * 0.5; 
+                });
+            }
+            doc.save('math_diagnostic_report_he.pdf');
+        }
+
+        function showModal(message) {
+            let modal = document.getElementById('custom-alert-modal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'custom-alert-modal';
+                modal.classList.add('fixed', 'inset-0', 'bg-gray-600', 'bg-opacity-50', 'overflow-y-auto', 'h-full', 'w-full', 'flex', 'items-center', 'justify-center', 'z-50');
+                modal.innerHTML = `
+                    <div class="relative mx-auto p-5 border w-11/12 sm:w-96 shadow-lg rounded-md bg-white text-right">
+                        <div class="mt-3 text-center">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900">הודעה</h3>
+                            <div class="mt-2 px-7 py-3">
+                                <p class="text-sm text-gray-500" id="modal-message-content"></p>
+                            </div>
+                            <div class="items-center px-4 py-3">
+                                <button id="modal-ok-button" class="px-4 py-2 bg-sky-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-sky-300">
+                                    אישור
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+
+                document.getElementById('modal-ok-button').onclick = function() {
+                    modal.style.display = 'none'; 
+                };
+            }
+            document.getElementById('modal-message-content').textContent = message;
+            modal.style.display = 'flex'; 
+        }
+
+        restartQuizButton.onclick = startQuiz;
+        downloadPdfButton.onclick = downloadReportAsPdf;
+
+        startQuiz();
+    </script>
+
+</body>
+</html>

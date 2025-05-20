@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>כלי אבחון במתמטיקה - דף ראשי</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Assistant', sans-serif;
+            background-color: #f1f5f9; /* slate-100 */
+            color: #1e293b; /* slate-800 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 1rem;
+        }
+        .container-index {
+            max-width: 600px;
+            width: 100%;
+            padding: 2.5rem;
+            background-color: #ffffff;
+            border-radius: 0.75rem; 
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+        .index-title {
+            font-size: 2rem; /* text-3xl */
+            font-weight: 700; /* bold */
+            color: #0f172a; /* slate-900 */
+            margin-bottom: 2rem;
+        }
+        .index-intro {
+            font-size: 1.125rem; /* text-lg */
+            color: #334155; /* slate-700 */
+            margin-bottom: 2.5rem;
+        }
+        .link-button {
+            display: block;
+            width: 100%;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1rem;
+            background-color: #2563eb; /* blue-600 */
+            color: white;
+            border: none;
+            border-radius: 0.5rem; /* rounded-lg */
+            font-weight: 600; /* semibold */
+            font-size: 1.125rem; /* text-lg */
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+        .link-button:hover {
+            background-color: #1d4ed8; /* blue-700 */
+            transform: translateY(-2px);
+        }
+        .link-button:last-child {
+            margin-bottom: 0;
+        }
+        .footer-text {
+            margin-top: 2.5rem;
+            font-size: 0.875rem; /* text-sm */
+            color: #64748b; /* slate-500 */
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800">
+
+    <div class="container-index">
+        <h1 class="index-title">ברוכים הבאים לכלי האבחון במתמטיקה</h1>
+        <p class="index-intro">בחר את הנושא שבו תרצה לבצע אבחון:</p>
+
+        <a href="linear_equation_diagnostic.html" class="link-button">פתרון משוואה לינארית עם נעלם אחד</a>
+        <a href="system_equations_diagnostic.html" class="link-button">פתרון מערכת משוואות עם שני נעלמים</a>
+        <a href="quadratic_equation_diagnostic.html" class="link-button">פתרון משוואה ממעלה שנייה (ריבועית)</a>
+        
+        <p class="footer-text">בהצלחה!</p>
+    </div>
+
+</body>
+</html>
