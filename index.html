@@ -12,6 +12,7 @@
             background-color: #f1f5f9; /* slate-100 */
             color: #1e293b; /* slate-800 */
             display: flex;
+            flex-direction: column; 
             justify-content: center;
             align-items: center;
             min-height: 100vh;
@@ -19,7 +20,7 @@
             padding: 1rem;
         }
         .container-index {
-            max-width: 600px;
+            max-width: 700px; 
             width: 100%;
             padding: 2.5rem;
             background-color: #ffffff;
@@ -28,33 +29,50 @@
             text-align: center;
         }
         .index-title {
-            font-size: 2rem; /* text-3xl */
-            font-weight: 700; /* bold */
-            color: #0f172a; /* slate-900 */
-            margin-bottom: 2rem;
+            font-size: 2rem; 
+            font-weight: 700; 
+            color: #0f172a; 
+            margin-bottom: 1rem;
+        }
+        .index-subtitle {
+            font-size: 1.25rem; 
+            font-weight: 600; 
+            color: #1e3a8a; 
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 0.5rem;
         }
         .index-intro {
-            font-size: 1.125rem; /* text-lg */
-            color: #334155; /* slate-700 */
-            margin-bottom: 2.5rem;
+            font-size: 1.125rem; 
+            color: #334155; 
+            margin-bottom: 2rem;
         }
-        .link-button {
+        .link-button, .report-button { /* Added .report-button */
             display: block;
             width: 100%;
-            padding: 1rem 1.5rem;
+            padding: 0.875rem 1.5rem; 
             margin-bottom: 1rem;
-            background-color: #2563eb; /* blue-600 */
+            background-color: #2563eb; 
             color: white;
             border: none;
-            border-radius: 0.5rem; /* rounded-lg */
-            font-weight: 600; /* semibold */
-            font-size: 1.125rem; /* text-lg */
+            border-radius: 0.5rem; 
+            font-weight: 600; 
+            font-size: 1.05rem; 
             text-decoration: none;
             cursor: pointer;
             transition: background-color 0.2s, transform 0.1s;
+            text-align: center;
+        }
+        .report-button { /* Specific style for report button */
+            background-color: #16a34a; /* green-600 */
+            margin-top: 1.5rem;
+        }
+        .report-button:hover {
+            background-color: #15803d; /* green-700 */
         }
         .link-button:hover {
-            background-color: #1d4ed8; /* blue-700 */
+            background-color: #1d4ed8; 
             transform: translateY(-2px);
         }
         .link-button:last-child {
@@ -62,23 +80,148 @@
         }
         .footer-text {
             margin-top: 2.5rem;
-            font-size: 0.875rem; /* text-sm */
-            color: #64748b; /* slate-500 */
+            font-size: 0.875rem; 
+            color: #64748b; 
         }
+        #mainReportArea {
+            display: none;
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            background-color: #f8fafc;
+            text-align: right;
+        }
+        #mainReportContent h3 { font-weight: 600; margin-top: 1rem; margin-bottom: 0.5rem; border-bottom: 1px solid #ccc; padding-bottom: 0.25rem;}
+        #mainReportContent .mistake-item { margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px dotted #eee;}
+        #mainReportContent p { margin-bottom: 0.25rem; }
+        #mainReportContent strong { font-weight: 600; }
+
+        @media print {
+            body > .container-index > *:not(#mainReportArea):not(#printableMainReportTitle) {
+                display: none !important;
+            }
+            #mainReportArea, #printableMainReportTitle {
+                display: block !important;
+                visibility: visible !important;
+                width: 100% !important;
+                box-shadow: none !important;
+                border: none !important;
+            }
+             #mainReportArea button { display: none !important; } /* Hide buttons in print */
+        }
+
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800">
 
     <div class="container-index">
         <h1 class="index-title">ברוכים הבאים לכלי האבחון במתמטיקה</h1>
-        <p class="index-intro">בחר את הנושא שבו תרצה לבצע אבחון:</p>
+        <p class="index-intro">בחרו את הנושא שבו תרצו לבצע אבחון:</p>
 
+        <h2 class="index-subtitle">תרגול כללי</h2>
         <a href="linear_equation_diagnostic.html" class="link-button">פתרון משוואה לינארית עם נעלם אחד</a>
         <a href="system_equations_diagnostic.html" class="link-button">פתרון מערכת משוואות עם שני נעלמים</a>
         <a href="quadratic_equation_diagnostic.html" class="link-button">פתרון משוואה ממעלה שנייה (ריבועית)</a>
+        <a href="parabola_line_intersection_diagnostic.html" class="link-button">חיתוך פרבולה וישר</a>
+        <a href="percentage_word_problems_diagnostic.html" class="link-button">בעיות מילוליות עם אחוזים</a>
+        <a href="geometry_word_problem_diagnostic.html" class="link-button">בעיית מלבן (שטח ומידות)</a>
+        
+        <h2 class="index-subtitle">שאלות מבגרות (שאלון 35182, קיץ תשפ"ד מועד ב')</h2>
+        <a href="bagrut_35182_q1_diagnostic.html" class="link-button">שאלה 1: כרטיסים למוזיאון (אלגברה, אחוזים)</a>
+        <a href="bagrut_35182_q2_diagnostic.html" class="link-button">שאלה 2: תוכנית אימונים (סדרות חשבוניות)</a>
+        <a href="bagrut_35182_q3_diagnostic.html" class="link-button">שאלה 3: הצעות מחיר גננים (פונקציות וגרפים)</a>
+        <a href="bagrut_35182_q4_diagnostic.html" class="link-button">שאלה 4: גיאומטריה אנליטית (משולש)</a>
+        <a href="bagrut_35182_q5_diagnostic.html" class="link-button">שאלה 5: טריגונומטריה (משולש ישר זווית)</a>
+        <a href="bagrut_35182_q6_diagnostic.html" class="link-button">שאלה 6: סטטיסטיקה והסתברות (דיאגרמת מקלות)</a>
+        
+        <button class="report-button" onclick="generateAndShowMainReport()">הצג דוח ראשי מסכם</button>
+        <p class="text-xs text-slate-500 mt-2">(הדוח הראשי אוסף נתונים מהמבחנים שבוצעו בדפדפן זה בלבד)</p>
+
+        <div id="mainReportArea">
+            <h2 id="printableMainReportTitle" class="index-title" style="display:none;">דוח ראשי מסכם</h2>
+            <div id="mainReportContent">
+                </div>
+            <button class="action-button mt-4" onclick="printMainReport()">הדפס דוח ראשי</button>
+        </div>
         
         <p class="footer-text">בהצלחה!</p>
     </div>
+    <script>
+        const allTestFiles = [
+            "linear_equation_diagnostic.html",
+            "system_equations_diagnostic.html",
+            "quadratic_equation_diagnostic.html",
+            "parabola_line_intersection_diagnostic.html",
+            "percentage_word_problems_diagnostic.html",
+            "geometry_word_problem_diagnostic.html",
+            "bagrut_35182_q1_diagnostic.html",
+            "bagrut_35182_q2_diagnostic.html",
+            "bagrut_35182_q3_diagnostic.html",
+            "bagrut_35182_q4_diagnostic.html",
+            "bagrut_35182_q5_diagnostic.html",
+            "bagrut_35182_q6_diagnostic.html"
+        ];
 
+        function getTestName(filename) {
+            // Extract a more readable name from the filename
+            if (filename.startsWith("bagrut_35182_q")) {
+                const qNum = filename.split('_q')[1].split('_')[0];
+                // Find the corresponding link text
+                const link = document.querySelector(`a[href="${filename}"]`);
+                return link ? link.textContent : `מבחן בגרות שאלה ${qNum}`;
+            }
+            const link = document.querySelector(`a[href="${filename}"]`);
+            return link ? link.textContent : filename.replace(".html", "").replace(/_/g, " ");
+        }
+
+        function generateAndShowMainReport() {
+            const mainReportContent = document.getElementById('mainReportContent');
+            const mainReportArea = document.getElementById('mainReportArea');
+            const printableTitle = document.getElementById('printableMainReportTitle');
+            let reportHTML = "";
+            let hasAnyMistakes = false;
+
+            allTestFiles.forEach(testFile => {
+                const storageKey = `diagnosticReportData_${testFile}`;
+                const storedData = localStorage.getItem(storageKey);
+                if (storedData) {
+                    try {
+                        const mistakes = JSON.parse(storedData);
+                        if (mistakes && mistakes.length > 0) {
+                            hasAnyMistakes = true;
+                            reportHTML += `<h3>ניתוח טעויות עבור: ${getTestName(testFile)}</h3>`;
+                            mistakes.forEach(mistake => {
+                                reportHTML += `<div class="mistake-item">`;
+                                reportHTML += `<p><strong>בשלב:</strong> ${mistake.step || 'לא צוין'}</p>`;
+                                reportHTML += `<p><strong>השאלה:</strong> ${mistake.question || 'לא צוין'}</p>`;
+                                reportHTML += `<p><strong>התשובה שלך:</strong> ${mistake.userAnswer || 'לא צוינה'}</p>`;
+                                reportHTML += `<p><strong>המשוב שניתן:</strong> ${mistake.feedback || 'לא צוין'}</p>`;
+                                if (mistake.remediation) {
+                                    reportHTML += `<p><strong>מוקד לשיפור:</strong> ${mistake.remediation}</p>`;
+                                }
+                                reportHTML += `</div>`;
+                            });
+                        }
+                    } catch (e) {
+                        console.error("Error parsing stored report data for " + testFile, e);
+                    }
+                }
+            });
+
+            if (!hasAnyMistakes) {
+                reportHTML = "<p>לא נמצאו טעויות מתועדות במבחנים שבוצעו בדפדפן זה.</p>";
+            }
+
+            mainReportContent.innerHTML = reportHTML;
+            mainReportArea.style.display = 'block';
+            printableTitle.style.display = 'block'; // Show title for printing
+        }
+
+        function printMainReport() {
+            window.print();
+        }
+
+    </script>
 </body>
 </html>
