@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>אבחון: שאלה 1 - כרטיסים למוזיאון</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Assistant', sans-serif; background-color: #f1f5f9; color: #1e293b; }
+        .container-quiz { max-width: 750px; margin: 2rem auto; padding: 2rem; background-color: #ffffff; border-radius: 0.75rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .question-section { margin-bottom: 1.5rem; padding: 1.5rem; border: 1px solid #e2e8f0; border-radius: 0.5rem; background-color: #f8fafc; }
+        .problem-statement { font-size: 1.25rem; font-weight: 600; color: #0f172a; margin-bottom: 1rem; }
+        .question-text, .problem-context { font-size: 1.1rem; color: #334155; margin-bottom: 0.75rem; line-height: 1.6; }
+        .problem-context p { margin-bottom: 0.25rem; text-align: right; font-weight: 500; }
+        label.option-label { display: block; padding: 0.75rem 1rem; margin-bottom: 0.5rem; background-color: #fff; border: 1px solid #cbd5e1; border-radius: 0.375rem; cursor: pointer; transition: background-color 0.2s, border-color 0.2s; }
+        label.option-label:hover { background-color: #f1f5f9; border-color: #94a3b8; }
+        input[type="radio"] { margin-left: 0.5rem; accent-color: #2563eb; }
+        button.submit-button { padding: 0.75rem 1.5rem; background-color: #2563eb; color: white; border: none; border-radius: 0.375rem; font-weight: 500; cursor: pointer; transition: background-color 0.2s; margin-top: 1rem; }
+        button.submit-button:hover { background-color: #1d4ed8; }
+        button.action-button { padding: 0.5rem 1rem; background-color: #475569; color: white; border: none; border-radius: 0.375rem; font-weight: 500; cursor: pointer; transition: background-color 0.2s; margin-right: 0.5rem; }
+        button.action-button:hover { background-color: #334155; }
+        .feedback-section { margin-top: 1.5rem; padding: 1.5rem; border-radius: 0.5rem; background-color: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+        .hidden { display: none; }
+        #printableReport { display: none; padding: 20px; font-family: 'Assistant', sans-serif; color: #000; direction: rtl; }
+        #printableReport h2, #printableReport h3 { font-weight: 600; margin-bottom: 1rem; border-bottom: 1px solid #ccc; padding-bottom: 0.5rem; }
+        #printableReport h2 { font-size: 1.5rem; }
+        #printableReport h3 { font-size: 1.3rem; margin-top: 1.5rem;}
+        #printableReport .report-item { margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px dotted #eee; }
+        #printableReport .report-item:last-child { border-bottom: none; }
+        #printableReport p { margin-bottom: 0.25rem; }
+        #printableReport strong { font-weight: 600; }
+        #printableReport ul { list-style-type: disc; margin-right: 20px; padding-right: 20px; }
+        #printableReport li { margin-bottom: 0.25rem; }
+        @media print {
+            body * { visibility: hidden; }
+            #printableReport, #printableReport * { visibility: visible; }
+            #printableReport { position: absolute; left: 0; top: 0; width: 100%; display: block !important; font-size: 12pt; }
+            .container-quiz > h1, .container-quiz > div:first-of-type, .question-section, .feedback-section { display: none !important; visibility: hidden !important; }
+        }
+    </style>
+    <script>
+        window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div class="container-quiz">
+        <h1 class="text-2xl font-bold text-center text-slate-700 mb-6">אבחון: שאלה 1 - כרטיסים למוזיאון</h1>
+        <div class="mb-6 text-center">
+            <button class="action-button" onclick="startOverQ1()">התחל מחדש</button>
+            <button class="action-button" onclick="shareReportQ1()">שתף דוח</button>
+        </div>
+
+        <div id="mainQ1PartASection" class="question-section">
+            <p class="problem-statement">בעיה ראשית - סעיף א':</p>
+            <div class="problem-context">
+                <p>המחיר לכרטיס כניסה למוזאון הוא 34 שקלים למבוגר ו-20 שקלים לילד.</p>
+                <p>למוזאון הגיעה קבוצה של 50 מבקרים, ובה מבוגרים וילדים.</p>
+                <p>העלות של כל כרטיסי הכניסה של קבוצת המבקרים הייתה 1,182 שקלים סך הכול.</p>
+            </div>
+            <p class="question-text">מצאו כמה מבוגרים היו בקבוצה.</p>
+            <div id="mainQ1PartAOptions">
+                <label class="option-label"><input type="radio" name="mainQ1A_Answer" value="13"> א) 13 מבוגרים</label>
+                <label class="option-label"><input type="radio" name="mainQ1A_Answer" value="15"> ב) 15 מבוגרים</label>
+                <label class="option-label"><input type="radio" name="mainQ1A_Answer" value="37"> ג) 37 מבוגרים</label>
+                <label class="option-label"><input type="radio" name="mainQ1A_Answer" value="10"> ד) 10 מבוגרים</label>
+            </div>
+            <button class="submit-button" onclick="checkMainQ1PartAAnswer()">הגש תשובה לסעיף א'</button>
+        </div>
+
+        <div id="q1_1_defineVarsNumSection" class="question-section hidden">
+            <p class="problem-statement">שלב 1.1: הגדרת משתנים ובניית משוואה (מספר מבקרים)</p>
+            <p class="question-text">נסמן את מספר המבוגרים ב-$a$ ואת מספר הילדים ב-$c$.<br>נתון שהיו בקבוצה 50 מבקרים בסך הכול. איזו משוואה מתארת נתון זה?</p>
+            <div id="q1_1_defineVarsNumOptions">
+                <label class="option-label"><input type="radio" name="q1_1_varsNumAns" value="a+c=50"> א) $a+c=50$</label>
+                <label class="option-label"><input type="radio" name="q1_1_varsNumAns" value="a-c=50"> ב) $a-c=50$</label>
+                <label class="option-label"><input type="radio" name="q1_1_varsNumAns" value="ac=50"> ג) $a \cdot c = 50$</label>
+                <label class="option-label"><input type="radio" name="q1_1_varsNumAns" value="50a+50c=X"> ד) $50a+50c=X$ (לא רלוונטי)</label>
+            </div>
+            <button class="submit-button" onclick="checkQ1_1_defineVarsNum()">הגש תשובה</button>
+        </div>
+
+        <div id="q1_2_defineVarsCostSection" class="question-section hidden">
+            <p class="problem-statement">שלב 1.2: בניית משוואה (עלות כוללת)</p>
+            <p class="question-text">מחיר כרטיס למבוגר הוא 34 ש"ח, ולכן העלות עבור $a$ מבוגרים היא $34a$.<br>מחיר כרטיס לילד הוא 20 ש"ח, ולכן העלות עבור $c$ ילדים היא $20c$.<br>העלות הכוללת הייתה 1,182 ש"ח. איזו משוואה מתארת נתון זה?</p>
+            <div id="q1_2_defineVarsCostOptions">
+                <label class="option-label"><input type="radio" name="q1_2_varsCostAns" value="34a+20c=1182"> א) $34a+20c=1182$</label>
+                <label class="option-label"><input type="radio" name="q1_2_varsCostAns" value="20a+34c=1182"> ב) $20a+34c=1182$</label>
+                <label class="option-label"><input type="radio" name="q1_2_varsCostAns" value="a+c=1182"> ג) $a+c=1182$</label>
+                <label class="option-label"><input type="radio" name="q1_2_varsCostAns" value="50(34a+20c)=1182"> ד) $50(34a+20c)=1182$</label>
+            </div>
+            <button class="submit-button" onclick="checkQ1_2_defineVarsCost()">הגש תשובה</button>
+        </div>
+        
+        <div id="q1_3_isolateVarSection" class="question-section hidden">
+            <p class="problem-statement">שלב 1.3: בידוד משתנה (לקראת הצבה)</p>
+            <p class="question-text">יש לנו שתי משוואות:<br>1) $a+c=50$<br>2) $34a+20c=1182$<br>כדי לפתור בשיטת ההצבה, נבודד את אחד המשתנים ממשוואה 1. אם נבודד את $c$, למה הוא יהיה שווה?</p>
+            <div id="q1_3_isolateVarOptions">
+                <label class="option-label"><input type="radio" name="q1_3_isolateAns" value="c=50-a"> א) $c = 50-a$</label>
+                <label class="option-label"><input type="radio" name="q1_3_isolateAns" value="c=a-50"> ב) $c = a-50$</label>
+                <label class="option-label"><input type="radio" name="q1_3_isolateAns" value="c=50/a"> ג) $c = 50/a$</label>
+                <label class="option-label"><input type="radio" name="q1_3_isolateAns" value="a=50-c"> ד) $a = 50-c$ (בודדת את $a$)</label>
+            </div>
+            <button class="submit-button" onclick="checkQ1_3_isolateVar()">הגש תשובה</button>
+        </div>
+
+        <div id="q1_4_substituteSection" class="question-section hidden">
+            <p class="problem-statement">שלב 1.4: הצבה ויצירת משוואה בנעלם אחד</p>
+            <p class="question-text">אם $c = 50-a$, נציב זאת במשוואה השנייה: $34a+20c=1182$.<br>איזו משוואה מתקבלת לאחר ההצבה (לפני פתיחת סוגריים)?</p>
+            <div id="q1_4_substituteOptions">
+                <label class="option-label"><input type="radio" name="q1_4_substituteAns" value="34a+20(50-a)=1182"> א) $34a+20(50-a)=1182$</label>
+                <label class="option-label"><input type="radio" name="q1_4_substituteAns" value="34(50-c)+20c=1182"> ב) $34(50-c)+20c=1182$ (הצבת ביטוי עבור $a$)</label>
+                <label class="option-label"><input type="radio" name="q1_4_substituteAns" value="34a+20(50+a)=1182"> ג) $34a+20(50+a)=1182$ (טעות בסימן בהצבה)</label>
+            </div>
+            <button class="submit-button" onclick="checkQ1_4_substitute()">הגש תשובה</button>
+        </div>
+
+        <div id="q1_5_expandSimplifySection" class="question-section hidden">
+            <p class="problem-statement">שלב 1.5: פתיחת סוגריים וכינוס איברים</p>
+            <p class="question-text">נתונה המשוואה: $34a+20(50-a)=1182$.<br>לאחר פתיחת סוגריים וכינוס איברים, איזו משוואה מתקבלת?</p>
+            <div id="q1_5_expandSimplifyOptions">
+                <label class="option-label"><input type="radio" name="q1_5_expandAns" value="14a+1000=1182"> א) $14a+1000=1182$</label>
+                <label class="option-label"><input type="radio" name="q1_5_expandAns" value="54a+1000=1182"> ב) $54a+1000=1182$ (טעות בכינוס $a$)</label>
+                <label class="option-label"><input type="radio" name="q1_5_expandAns" value="34a+1000-a=1182"> ג) $34a+1000-a=1182$ (שכחת לכפול $20$ ב-$a$ שבסוגריים)</label>
+                <label class="option-label"><input type="radio" name="q1_5_expandAns" value="14a-1000=1182"> ד) $14a-1000=1182$ (טעות בסימן הקבוע)</label>
+            </div>
+            <button class="submit-button" onclick="checkQ1_5_expandSimplify()">הגש תשובה</button>
+        </div>
+        
+        <div id="q1_5_sub_distributiveSection" class="question-section hidden">
+            <p class="problem-statement">פירוק שלב 1.5: פתיחת סוגריים $20(50-a)$</p>
+            <p class="question-text">למה שווה הביטוי $20(50-a)$ לאחר פתיחת סוגריים (חוק הפילוג)?</p>
+            <div id="q1_5_sub_distributiveOptions">
+                <label class="option-label"><input type="radio" name="q1_5_sub_distAns" value="1000-20a"> א) $1000-20a$</label>
+                <label class="option-label"><input type="radio" name="q1_5_sub_distAns" value="1000-a"> ב) $1000-a$</label>
+                <label class="option-label"><input type="radio" name="q1_5_sub_distAns" value="70-20a"> ג) $70-20a$</label>
+            </div>
+            <button class="submit-button" onclick="checkQ1_5_sub_distributive()">הגש תשובה</button>
+        </div>
+
+
+        <div id="q1_6_solveForASection" class="question-section hidden">
+            <p class="problem-statement">שלב 1.6: פתרון עבור $a$</p>
+            <p class="question-text">אם $14a+1000=1182$, מהו ערכו של $a$?</p>
+            <div id="q1_6_solveForAOptions">
+                <label class="option-label"><input type="radio" name="q1_6_solveAAns" value="13"> א) $a=13$</label>
+                <label class="option-label"><input type="radio" name="q1_6_solveAAns" value="182"> ב) $a=182$ (שכחת לחלק ב-14)</label>
+                <label class="option-label"><input type="radio" name="q1_6_solveAAns" value="15.57"> ג) $a \approx 15.57$ (טעות חישוב)</label>
+            </div>
+            <button class="submit-button" onclick="checkQ1_6_solveForA()">הגש תשובה</button>
+        </div>
+
+        <div id="mainQ1PartBSection" class="question-section hidden">
+            <p class="problem-statement">בעיה ראשית - סעיף ב':</p>
+            <div class="problem-context">
+                <p>בעת התשלום בקופה קיבלה הקבוצה הנחה של 18% עבור כרטיס כניסה לכל ילד (המחיר של כרטיס למבוגר לא השתנה).</p>
+                <p>ידוע כי בקבוצה היו <span id="numAdultsForB"></span> מבוגרים ו-<span id="numChildrenForB"></span> ילדים.</p>
+            </div>
+            <p class="question-text">מצאו כמה שילמה קבוצת המבקרים סך הכול בעבור כרטיסי הכניסה (לאחר ההנחה).</p>
+            <div id="mainQ1PartBOptions">
+                <label class="option-label"><input type="radio" name="mainQ1B_Answer" value="1048.8"> א) 1048.8 ש"ח</label>
+                <label class="option-label"><input type="radio" name="mainQ1B_Answer" value="1182"> ב) 1182 ש"ח (המחיר המקורי)</label>
+                <label class="option-label"><input type="radio" name="mainQ1B_Answer" value="969.24"> ג) 969.24 ש"ח (18% הנחה על כל הסכום)</label>
+                <label class="option-label"><input type="radio" name="mainQ1B_Answer" value="606.8"> ד) 606.8 ש"ח (רק עלות הילדים)</label>
+            </div>
+            <button class="submit-button" onclick="checkMainQ1PartBAnswer()">הגש תשובה לסעיף ב'</button>
+        </div>
+
+        <div id="q2_1_childDiscountAmountSection" class="question-section hidden">
+            <p class="problem-statement">שלב 2.1: חישוב סכום ההנחה לילד</p>
+            <p class="question-text">מחיר כרטיס לילד הוא 20 ש"ח. ניתנת הנחה של 18% על כרטיס זה.<br>מהו סכום ההנחה (בש"ח) עבור כרטיס ילד אחד?</p>
+            <div id="q2_1_childDiscountOptions">
+                <label class="option-label"><input type="radio" name="q2_1_childDiscAns" value="3.6"> א) 3.6 ש"ח</label>
+                <label class="option-label"><input type="radio" name="q2_1_childDiscAns" value="18"> ב) 18 ש"ח</label>
+                <label class="option-label"><input type="radio" name="q2_1_childDiscAns" value="0.18"> ג) 0.18 ש"ח</label>
+            </div>
+            <button class="submit-button" onclick="checkQ2_1_childDiscountAmount()">הגש תשובה</button>
+        </div>
+
+        <div id="q2_2_newChildPriceSection" class="question-section hidden">
+            <p class="problem-statement">שלב 2.2: חישוב מחיר כרטיס ילד לאחר הנחה</p>
+            <p class="question-text">המחיר המקורי לילד הוא 20 ש"ח, וההנחה היא 3.6 ש"ח.<br>מהו המחיר החדש של כרטיס לילד?</p>
+            <div id="q2_2_newChildPriceOptions">
+                <label class="option-label"><input type="radio" name="q2_2_newChildPriceAns" value="16.4"> א) 16.4 ש"ח</label>
+                <label class="option-label"><input type="radio" name="q2_2_newChildPriceAns" value="23.6"> ב) 23.6 ש"ח (הוספת את ההנחה)</label>
+                <label class="option-label"><input type="radio" name="q2_2_newChildPriceAns" value="3.6"> ג) 3.6 ש"ח (זה סכום ההנחה)</label>
+            </div>
+            <button class="submit-button" onclick="checkQ2_2_newChildPrice()">הגש תשובה</button>
+        </div>
+        
+        <div id="q2_3_totalChildrenCostSection" class="question-section hidden">
+            <p class="problem-statement">שלב 2.3: חישוב עלות כוללת לילדים (לאחר הנחה)</p>
+            <p class="question-text">יש <span id="numChildrenForQ2_3"></span> ילדים, וכל כרטיס ילד עולה 16.4 ש"ח.<br>מהי העלות הכוללת עבור כל כרטיסי הילדים?</p>
+            <div id="q2_3_totalChildrenCostOptions">
+                 <label class="option-label"><input type="radio" name="q2_3_totalChildCostAns" value="606.8"> א) 606.8 ש"ח</label>
+                 <label class="option-label"><input type="radio" name="q2_3_totalChildCostAns" value="740"> ב) 740 ש"ח (עלות מקורית לילדים)</label>
+                 <label class="option-label"><input type="radio" name="q2_3_totalChildCostAns" value="133.2"> ג) 133.2 ש"ח (סך כל ההנחות לילדים)</label>
+            </div>
+            <button class="submit-button" onclick="checkQ2_3_totalChildrenCost()">הגש תשובה</button>
+        </div>
+
+        <div id="q2_4_totalAdultsCostSection" class="question-section hidden">
+            <p class="problem-statement">שלב 2.4: חישוב עלות כוללת למבוגרים</p>
+            <p class="question-text">יש <span id="numAdultsForQ2_4"></span> מבוגרים, וכל כרטיס מבוגר עולה 34 ש"ח (אין הנחה למבוגרים).<br>מהי העלות הכוללת עבור כל כרטיסי המבוגרים?</p>
+             <div id="q2_4_totalAdultsCostOptions">
+                 <label class="option-label"><input type="radio" name="q2_4_totalAdultCostAns" value="442"> א) 442 ש"ח</label>
+                 <label class="option-label"><input type="radio" name="q2_4_totalAdultCostAns" value="13"> ב) 13 ש"ח</label>
+                 <label class="option-label"><input type="radio" name="q2_4_totalAdultCostAns" value="1182"> ג) 1182 ש"ח</label>
+            </div>
+            <button class="submit-button" onclick="checkQ2_4_totalAdultsCost()">הגש תשובה</button>
+        </div>
+        
+        <div id="q2_5_finalTotalCostSection" class="question-section hidden">
+            <p class="problem-statement">שלב 2.5: חישוב עלות כוללת סופית</p>
+            <p class="question-text">העלות הכוללת לילדים היא 606.8 ש"ח, והעלות הכוללת למבוגרים היא 442 ש"ח.<br>מהי העלות הכוללת ששילמה הקבוצה?</p>
+            <div id="q2_5_finalTotalCostOptions">
+                <label class="option-label"><input type="radio" name="q2_5_finalTotalAns" value="1048.8"> א) 1048.8 ש"ח</label>
+                <label class="option-label"><input type="radio" name="q2_5_finalTotalAns" value="164.8"> ב) 164.8 ש"ח (הפרש עלויות)</label>
+                <label class="option-label"><input type="radio" name="q2_5_finalTotalAns" value="1048"> ג) 1048 ש"ח (עיגול)</label>
+            </div>
+            <button class="submit-button" onclick="checkQ2_5_finalTotalCost()">הגש תשובה</button>
+        </div>
+
+
+        <div id="feedbackQ1Section" class="feedback-section hidden">
+            <p id="feedbackQ1Text" class="text-lg"></p>
+            <p id="remediationQ1Link" class="mt-2 font-semibold"></p>
+        </div>
+        <div id="printableReport"></div>
+    </div>
+
+    <script>
+        let studentQ1Path = [];
+        const mainQ1PartACorrectAnswer = "13"; // Number of adults
+        const totalVisitors = 50;
+        const adultPrice = 34;
+        const childPrice = 20;
+        const originalTotalCost = 1182;
+        const childDiscountPercent = 18;
+        const mainQ1PartBCorrectAnswer = "1048.8";
+
+        // --- Utility Functions ---
+        function queueMathJaxTypeset(element) {
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                window.MathJax.typesetPromise(element ? [element] : undefined).catch((err) => console.error('MathJax typesetting error:', err));
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            queueMathJaxTypeset(document.getElementById('mainQ1PartASection'));
+        });
+
+        function showQ1Section(sectionId) {
+            const allSectionIds = [
+                'mainQ1PartASection', 'q1_1_defineVarsNumSection', 'q1_2_defineVarsCostSection', 
+                'q1_3_isolateVarSection', 'q1_4_substituteSection', 'q1_5_expandSimplifySection', 'q1_5_sub_distributiveSection', 'q1_6_solveForASection',
+                'mainQ1PartBSection', 'q2_1_childDiscountAmountSection', 'q2_2_newChildPriceSection',
+                'q2_3_totalChildrenCostSection', 'q2_4_totalAdultsCostSection', 'q2_5_finalTotalCostSection'
+            ];
+            allSectionIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+            if (sectionId) {
+                const el = document.getElementById(sectionId);
+                if (el) {
+                    el.classList.remove('hidden');
+                    queueMathJaxTypeset(el);
+                }
+            }
+        }
+
+        function displayQ1Feedback(message, remediation) {
+            const feedbackTextEl = document.getElementById('feedbackQ1Text');
+            const remediationLinkEl = document.getElementById('remediationQ1Link');
+            feedbackTextEl.innerHTML = message; 
+            remediationLinkEl.innerHTML = remediation ? `<strong>מוקד מומלץ לחיזוק:</strong> ${remediation}` : '';
+            document.getElementById('feedbackQ1Section').classList.remove('hidden');
+            queueMathJaxTypeset(document.getElementById('feedbackQ1Section')); 
+            studentQ1Path.push({ type: 'feedback', message: (feedbackTextEl.textContent || "").trim(), remediationTopic: remediation || null });
+        }
+        
+        function startOverQ1() {
+            studentQ1Path = []; 
+            const radioGroups = [
+                'mainQ1A_Answer', 'q1_1_varsNumAns', 'q1_2_varsCostAns', 'q1_3_isolateAns', 
+                'q1_4_substituteAns', 'q1_5_expandAns', 'q1_5_sub_distAns', 'q1_6_solveAAns',
+                'mainQ1B_Answer', 'q2_1_childDiscAns', 'q2_2_newChildPriceAns', 
+                'q2_3_totalChildCostAns', 'q2_4_totalAdultCostAns', 'q2_5_finalTotalAns'
+            ];
+            radioGroups.forEach(groupName => {
+                const radios = document.getElementsByName(groupName);
+                if (radios) radios.forEach(radio => radio.checked = false);
+            });
+            sessionStorage.removeItem('q1_numAdults');
+            sessionStorage.removeItem('q1_numChildren');
+            document.getElementById('feedbackQ1Section').classList.add('hidden');
+            showQ1Section('mainQ1PartASection'); 
+        }
+
+        function getSelectedRadioValueQ1(name) {
+            const radios = document.getElementsByName(name);
+            for (let i = 0; i < radios.length; i++) { if (radios[i].checked) return radios[i].value; }
+            return null;
+        }
+
+        function logQ1Attempt(stepDesc, sectionId, selectedValue, radioGroupName) {
+            const questionReportText = getQuestionTextForReportQ1(sectionId);
+            const selectedOption = document.querySelector(`input[name="${radioGroupName}"]:checked`);
+            const answerText = selectedOption ? (selectedOption.parentElement.textContent || "").replace(/^[א-ד]\)\s*/, '').trim() : selectedValue;
+            studentQ1Path.push({ type: 'attempt', stepDescription: stepDesc, questionText: questionReportText, selectedAnswer: selectedValue, selectedAnswerText: answerText });
+            document.getElementById('feedbackQ1Section').classList.add('hidden');
+        }
+        
+        function getQuestionTextForReportQ1(sectionId) { /* Basic implementation */ return document.getElementById(sectionId)?.querySelector('.problem-statement')?.textContent || "טקסט שאלה לא זמין"; }
+        function shareReportQ1() { /* Basic implementation */ alert(JSON.stringify(studentQ1Path, null, 2)); }
+
+        // --- Check Answer Functions - Part A ---
+        function checkMainQ1PartAAnswer() {
+            const answer = getSelectedRadioValueQ1('mainQ1A_Answer');
+            if (!answer) { displayQ1Feedback("אנא בחר תשובה.", null); return; }
+            logQ1Attempt("סעיף א': מספר מבוגרים", 'mainQ1PartASection', answer, 'mainQ1A_Answer');
+            if (answer === mainQ1PartACorrectAnswer) {
+                const numAdults = parseInt(mainQ1PartACorrectAnswer);
+                const numChildren = totalVisitors - numAdults;
+                sessionStorage.setItem('q1_numAdults', numAdults);
+                sessionStorage.setItem('q1_numChildren', numChildren);
+                displayQ1Feedback("נכון מאוד! היו 13 מבוגרים בקבוצה. כעת נעבור לסעיף ב'.", null);
+                document.getElementById('numAdultsForB').textContent = numAdults;
+                document.getElementById('numChildrenForB').textContent = numChildren;
+                setTimeout(() => showQ1Section('mainQ1PartBSection'), 2500);
+            } else {
+                displayQ1Feedback("התשובה אינה נכונה. בוא נפרק את השלבים לבניית ופתרון מערכת המשוואות.", "בניית מערכת משוואות");
+                showQ1Section('q1_1_defineVarsNumSection');
+            }
+        }
+
+        function checkQ1_1_defineVarsNum() {
+            const answer = getSelectedRadioValueQ1('q1_1_varsNumAns');
+            if (!answer) { displayQ1Feedback("אנא בחר תשובה.", null); return; }
+            logQ1Attempt("שלב 1.1: משוואת מספר מבקרים", 'q1_1_defineVarsNumSection', answer, 'q1_1_varsNumAns');
+            if (answer === "a+c=50") {
+                displayQ1Feedback("נכון! $a+c=50$ היא המשוואה למספר המבקרים. כעת נבנה את משוואת העלות.", null);
+                setTimeout(() => showQ1Section('q1_2_defineVarsCostSection'), 2000);
+            } else {
+                displayQ1Feedback("לא נכון. סכום המבוגרים ($a$) והילדים ($c$) הוא 50.", "תרגום לביטוי אלגברי");
+                showQ1Section(null);
+            }
+        }
+
+        function checkQ1_2_defineVarsCost() {
+            const answer = getSelectedRadioValueQ1('q1_2_varsCostAns');
+            if (!answer) { displayQ1Feedback("אנא בחר תשובה.", null); return; }
+            logQ1Attempt("שלב 1.2: משוואת עלות", 'q1_2_defineVarsCostSection', answer, 'q1_2_varsCostAns');
+            if (answer === "34a+20c=1182") {
+                displayQ1Feedback("נכון! $34a+20c=1182$ היא משוואת העלות. כעת נפתור את מערכת המשוואות.", null);
+                setTimeout(() => showQ1Section('q1_3_isolateVarSection'), 2000);
+            } else {
+                displayQ1Feedback("לא נכון. העלות הכוללת היא סכום העלות למבוגרים (34 כפול מספר המבוגרים) והעלות לילדים (20 כפול מספר הילדים).", "בניית משוואת עלות");
+                showQ1Section(null);
+            }
+        }
+        
+        function checkQ1_3_isolateVar() {
+            const answer = getSelectedRadioValueQ1('q1_3_isolateAns');
+            if (!answer) { displayQ1Feedback("אנא בחר תשובה.", null); return; }
+            logQ1Attempt("שלב 1.3: בידוד משתנה", 'q1_3_isolateVarSection', answer, 'q1_3_isolateAns');
+            if (answer === "c=50-a") {
+                displayQ1Feedback("נכון! $c=50-a$. כעת נציב זאת במשוואת העלות.", null);
+                setTimeout(() => showQ1Section('q1_4_substituteSection'), 2000);
+            } else {
+                displayQ1Feedback("כדי לבודד את $c$ מ-$a+c=50$, מחסרים $a$ משני האגפים.", "בידוד נעלם");
+                showQ1Section(null);
+            }
+        }
+
+        function checkQ1_4_substitute() {
+            const answer = getSelectedRadioValueQ1('q1_4_substituteAns');
+            if (!answer) { displayQ1Feedback("אנא בחר תשובה.", null); return; }
+            logQ1Attempt("שלב 1.4: הצבה", 'q1_4_substituteSection', answer, 'q1_4_substituteAns');
+            if (answer === "34a+20(50-a)=1182") {
+                displayQ1Feedback("הצבה נכונה! כעת נפתח סוגריים ונכנס איברים.", null);
+                setTimeout(() => showQ1Section('q1_5_expandSimplifySection'), 2000);
+            } else {
+                displayQ1Feedback("יש להציב את הביטוי $50-a$ במקום $c$ במשוואה $34a+20c=1182$.", "ביצוע הצבה");
+                showQ1Section(null);
+            }
+        }
+        
+        function checkQ1_5_expandSimplify() {
+            const answer = getSelectedRadioValueQ1('q1_5_expandAns');
+            if (!answer) { displayQ1Feedback("אנא בחר תשובה.", null); return; }
+            logQ1Attempt("שלב 1.5: פתיחה וכינוס", 'q1_5_expandSimplifySection', answer, 'q1_5_expandAns');
+            if (answer === "14a+1000=1182") {
+                displayQ1Feedback("נכון! $14a+1000=1182$. כעת נפתור עבור $a$.", null);
+                setTimeout(() => showQ1Section('q1_6_solveForASection'), 2000);
+            } else {
+                displayQ1Feedback("יש טעות בפתיחת הסוגריים או בכינוס האיברים. נבדוק את פתיחת הסוגריים.", "חוק הפילוג וכינוס איברים");
+                showQ1Section('q1_5_sub_distributiveSection');
+            }
+        }
+
+        function checkQ1_5_sub_distributive() {
+            const answer = getSelectedRadioValueQ1('q1_5_sub_distAns');
+            if (!answer) { displayQ1Feedback("אנא בחר תשובה.", null); return; }
+            logQ1Attempt("שלב 1.5.1: פתיחת סוגריים", 'q1_5_sub_distributiveSection', answer, 'q1_5_sub_distAns');
+            if (answer === "1000-20a") {
+                displayQ1Feedback("נכון! $20(50-a) = 1000-20a$. לכן המשוואה היא $34a + 1000 - 20a = 1182$. נחזור לשלב הקודם.", null);
+                setTimeout(() => showQ1Section('q1_5_expandSimplifySection'), 3000);
+            } else {
+                displayQ1Feedback("לפי חוק הפילוג: $20(50-a) = 20 \cdot 50 - 20 \cdot a = 1000-20a$.", "חוק הפילוג");
+                showQ1Section(null);
+            }
+        }
+
+        function checkQ1_6_solveForA() {
+            const answer = getSelectedRadioValueQ1('q1_6_solveAAns');
+            if (!answer) { displayQ1Feedback("אנא בחר תשובה.", null); return; }
+            logQ1Attempt("שלב 1.6: פתרון עבור a", 'q1_6_solveForASection', answer, 'q1_6_solveAAns');
+            if (answer === mainQ1PartACorrectAnswer) { // "13"
+                const numAdults = parseInt(mainQ1PartACorrectAnswer);
+                const numChildren = totalVisitors - numAdults;
+                sessionStorage.setItem('q1_numAdults', numAdults);
+                sessionStorage.setItem('q1_numChildren', numChildren);
+                displayQ1Feedback("נכון מאוד! $a=13$. היו 13 מבוגרים בקבוצה. כעת נעבור לסעיף ב'.", null);
+                document.getElementById('numAdultsForB').textContent = numAdults;
+                document.getElementById('numChildrenForB').textContent = numChildren;
+                setTimeout(() => showQ1Section('mainQ1PartBSection'), 2500);
+            } else {
+                displayQ1Feedback("מ-$14a+1000=1182$, נעביר אגפים: $14a = 1182-1000 \Rightarrow 14a = 182$. נחלק ב-14: $a = 182/14 = 13$.", "פתרון משוואה לינארית");
+                showQ1Section(null);
+            }
+        }
+
+        // --- Check Answer Functions - Part B ---
+        function checkMainQ1PartBAnswer() {
+            const answer = getSelectedRadioValueQ1('mainQ1B_Answer');
+            if (!answer) { displayQ1Feedback("אנא בחר תשובה.", null); return; }
+            logQ1Attempt("סעיף ב': עלות לאחר הנחה", 'mainQ1PartBSection', answer, 'mainQ1B_Answer');
+            if (answer === mainQ1PartBCorrectAnswer) {
+                displayQ1Feedback("מעולה! העלות הכוללת לאחר ההנחה היא 1048.8 ש\"ח.", null);
+                showQ1Section(null); 
+            } else {
+                displayQ1Feedback("התשובה אינה נכונה. בוא נפרק את השלבים לחישוב העלות לאחר ההנחה.", "חישוב אחוזים והנחה");
+                // Ensure numAdults and numChildren are available for the diagnostic steps of Part B
+                const numAdults = sessionStorage.getItem('q1_numAdults') || 0; // Default if not set (e.g. user skipped Part A)
+                const numChildren = sessionStorage.getItem('q1_numChildren') || 0;
+                if (numAdults === 0 && numChildren === 0 && studentQ1Path.length > 0) { // Attempt to find from path if storage failed
+                    const lastAdultCountAttempt = studentQ1Path.slice().reverse().find(item => item.stepDescription === "שלב 1.6: פתרון עבור a" && item.selectedAnswer === mainQ1PartACorrectAnswer);
+                    if(lastAdultCountAttempt) {
+                        sessionStorage.setItem('q1_numAdults', parseInt(mainQ1PartACorrectAnswer));
+                        sessionStorage.setItem('q1_numChildren', totalVisitors - parseInt(mainQ1PartACorrectAnswer));
+                    } else { // If still not found, make them solve Part A first
+                         displayQ1Feedback("נראה שדילגת על סעיף א' או שלא פתרת אותו נכון. יש לפתור את סעיף א' תחילה כדי לקבל את מספר המבוגרים והילדים.", null);
+                         showQ1Section('mainQ1PartASection');
+                         return;
+                    }
+                }
+                document.getElementById('numAdultsForB').textContent = sessionStorage.getItem('q1_numAdults');
+                document.getElementById('numChildrenForB').textContent = sessionStorage.getItem('q1_numChildren');
+                document.getElementById('numChildrenForQ2_3').textContent = sessionStorage.getItem('q1_numChildren');
+                document.getElementById('numAdultsForQ2_4').textContent = sessionStorage.getItem('q1_numAdults');
+
+                showQ1Section('q2_1_childDiscountAmountSection');
+            }
+        }
+        
+        function checkQ2_1_childDiscountAmount() {
+            const answer = getSelectedRadioValueQ1('q2_1_childDiscAns');
+            if (!answer) { displayQ1Feedback("אנא בחר תשובה.", null); return; }
+            logQ1Attempt("שלב 2.1: סכום הנחה לילד", 'q2_1_childDiscountAmountSection', answer, 'q2_1_childDiscAns');
+            if (parseFloat(answer) === 3.6) {
+                displayQ1Feedback("נכון! ההנחה לילד היא 3.6 ש\"ח ($20 \cdot 0.18$).", null);
+                setTimeout(() => showQ1Section('q2_2_newChildPriceSection'), 2000);
+            } else {
+                displayQ1Feedback("כדי לחשב 18% מ-20, נכפול $20 \cdot \frac{18}{100} = 20 \cdot 0.18 = 3.6$.", "חישוב ערך האחוז");
+                showQ1Section(null);
+            }
+        }
+
+        function checkQ2_2_newChildPrice() {
+            const answer = getSelectedRadioValueQ1('q2_2_newChildPriceAns');
+            if (!answer) { displayQ1Feedback("אנא בחר תשובה.", null); return; }
+            logQ1Attempt("שלב 2.2: מחיר ילד לאחר הנחה", 'q2_2_newChildPriceSection', answer, 'q2_2_newChildPriceAns');
+            if (parseFloat(answer) === 16.4) {
+                displayQ1Feedback("נכון! המחיר החדש לילד הוא 16.4 ש\"ח ($20 - 3.6$).", null);
+                document.getElementById('numChildrenForQ2_3').textContent = sessionStorage.getItem('q1_numChildren');
+                setTimeout(() => showQ1Section('q2_3_totalChildrenCostSection'), 2000);
+            } else {
+                displayQ1Feedback("המחיר החדש הוא המחיר המקורי פחות ההנחה: $20 - 3.6 = 16.4$.", "חיסור לקבלת מחיר לאחר הנחה");
+                showQ1Section(null);
+            }
+        }
+
+        function checkQ2_3_totalChildrenCost() {
+            const answer = getSelectedRadioValueQ1('q2_3_totalChildCostAns');
+            if (!answer) { displayQ1Feedback("אנא בחר תשובה.", null); return; }
+            logQ1Attempt("שלב 2.3: עלות כוללת לילדים", 'q2_3_totalChildrenCostSection', answer, 'q2_3_totalChildCostAns');
+            const numChildren = parseInt(sessionStorage.getItem('q1_numChildren')) || 0;
+            if (parseFloat(answer) === (numChildren * 16.4).toFixed(1)) { //toFixed to handle potential float issues
+                displayQ1Feedback("נכון! העלות הכוללת לילדים היא " + (numChildren * 16.4).toFixed(1) + " ש\"ח.", null);
+                document.getElementById('numAdultsForQ2_4').textContent = sessionStorage.getItem('q1_numAdults');
+                setTimeout(() => showQ1Section('q2_4_totalAdultsCostSection'), 2000);
+            } else {
+                displayQ1Feedback(`יש ${numChildren} ילדים. העלות היא ${numChildren} כפול 16.4.`, "כפל למציאת עלות כוללת");
+                showQ1Section(null);
+            }
+        }
+        
+        function checkQ2_4_totalAdultsCost() {
+            const answer = getSelectedRadioValueQ1('q2_4_totalAdultCostAns');
+            if (!answer) { displayQ1Feedback("אנא בחר תשובה.", null); return; }
+            logQ1Attempt("שלב 2.4: עלות כוללת למבוגרים", 'q2_4_totalAdultsCostSection', answer, 'q2_4_totalAdultCostAns');
+            const numAdults = parseInt(sessionStorage.getItem('q1_numAdults')) || 0;
+            if (parseFloat(answer) === numAdults * adultPrice) {
+                displayQ1Feedback("נכון! העלות הכוללת למבוגרים היא " + (numAdults * adultPrice) + " ש\"ח.", null);
+                setTimeout(() => showQ1Section('q2_5_finalTotalCostSection'), 2000);
+            } else {
+                 displayQ1Feedback(`יש ${numAdults} מבוגרים. העלות היא ${numAdults} כפול 34.`, "כפל למציאת עלות כוללת");
+                showQ1Section(null);
+            }
+        }
+
+        function checkQ2_5_finalTotalCost() {
+            const answer = getSelectedRadioValueQ1('q2_5_finalTotalAns');
+            if (!answer) { displayQ1Feedback("אנא בחר תשובה.", null); return; }
+            logQ1Attempt("שלב 2.5: עלות סופית", 'q2_5_finalTotalCostSection', answer, 'q2_5_finalTotalAns');
+            if (answer === mainQ1PartBCorrectAnswer) {
+                displayQ1Feedback("מעולה! העלות הכוללת לאחר ההנחה היא 1048.8 ש\"ח.", null);
+                showQ1Section(null);
+            } else {
+                const numAdults = parseInt(sessionStorage.getItem('q1_numAdults')) || 0;
+                const numChildren = parseInt(sessionStorage.getItem('q1_numChildren')) || 0;
+                const childrenCost = (numChildren * 16.4).toFixed(1);
+                const adultsCost = numAdults * adultPrice;
+                displayQ1Feedback(`העלות הסופית היא סכום עלות הילדים (${childrenCost}) ועלות המבוגרים (${adultsCost}).`, "חיבור לקבלת סכום כולל");
+                showQ1Section(null);
+            }
+        }
+
+    </script>
+</body>
+</html>

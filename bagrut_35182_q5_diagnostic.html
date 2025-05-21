@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>אבחון: שאלה 5 - טריגונומטריה</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Assistant', sans-serif; background-color: #f1f5f9; color: #1e293b; }
+        .container-quiz { max-width: 800px; margin: 2rem auto; padding: 2rem; background-color: #ffffff; border-radius: 0.75rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .question-section { margin-bottom: 1.5rem; padding: 1.5rem; border: 1px solid #e2e8f0; border-radius: 0.5rem; background-color: #f8fafc; }
+        .problem-statement { font-size: 1.25rem; font-weight: 600; color: #0f172a; margin-bottom: 1rem; }
+        .question-text, .problem-context { font-size: 1.1rem; color: #334155; margin-bottom: 0.75rem; line-height: 1.6; }
+        .problem-context p { margin-bottom: 0.25rem; text-align: right; font-weight: 500; }
+        .svg-container { width: 100%; max-width: 350px; height: auto; background-color: #f8fafc; border: 1px solid #e2e8f0; display: flex; justify-content: center; align-items: center; margin: 1rem auto; padding: 1rem; border-radius: 0.5rem; }
+        .svg-triangle { stroke-width: 2; stroke: #334155; fill: none; }
+        .svg-text { font-family: 'Assistant', sans-serif; font-size: 14px; fill: #1e293b; }
+        .svg-angle-arc { stroke: #4f46e5; stroke-width: 1.5; fill: none; }
+        .svg-angle-text { font-size: 12px; fill: #4f46e5; }
+        .svg-side-length { font-size: 12px; fill: #059669; font-weight: 600;}
+
+        label.option-label { display: block; padding: 0.75rem 1rem; margin-bottom: 0.5rem; background-color: #fff; border: 1px solid #cbd5e1; border-radius: 0.375rem; cursor: pointer; transition: background-color 0.2s, border-color 0.2s; }
+        label.option-label:hover { background-color: #f1f5f9; border-color: #94a3b8; }
+        input[type="radio"] { margin-left: 0.5rem; accent-color: #2563eb; }
+        button.submit-button { padding: 0.75rem 1.5rem; background-color: #2563eb; color: white; border: none; border-radius: 0.375rem; font-weight: 500; cursor: pointer; transition: background-color 0.2s; margin-top: 1rem; }
+        button.submit-button:hover { background-color: #1d4ed8; }
+        button.action-button { padding: 0.5rem 1rem; background-color: #475569; color: white; border: none; border-radius: 0.375rem; font-weight: 500; cursor: pointer; transition: background-color 0.2s; margin-right: 0.5rem; }
+        button.action-button:hover { background-color: #334155; }
+        .feedback-section { margin-top: 1.5rem; padding: 1.5rem; border-radius: 0.5rem; background-color: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+        .hidden { display: none; }
+        #printableReport { display: none; padding: 20px; font-family: 'Assistant', sans-serif; color: #000; direction: rtl; }
+        #printableReport h2, #printableReport h3 { font-weight: 600; margin-bottom: 1rem; border-bottom: 1px solid #ccc; padding-bottom: 0.5rem; }
+        #printableReport h2 { font-size: 1.5rem; }
+        #printableReport h3 { font-size: 1.3rem; margin-top: 1.5rem;}
+        #printableReport .mistake-item { margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px dotted #eee; }
+        #printableReport .mistake-item:last-child { border-bottom: none; }
+        #printableReport p { margin-bottom: 0.25rem; }
+        #printableReport strong { font-weight: 600; }
+        @media print {
+            body * { visibility: hidden; }
+            #printableReport, #printableReport * { visibility: visible; }
+            .svg-container { display: none !important; } 
+            #printableReport { position: absolute; left: 0; top: 0; width: 100%; display: block !important; font-size: 12pt; }
+            .container-quiz > h1, .container-quiz > div:first-of-type, .question-section, .feedback-section { display: none !important; visibility: hidden !important; }
+        }
+    </style>
+    <script>
+        window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div class="container-quiz">
+        <h1 class="text-2xl font-bold text-center text-slate-700 mb-6">אבחון: שאלה 5 - טריגונומטריה</h1>
+        <div class="mb-6 text-center">
+            <button class="action-button" onclick="startOver()">התחל מחדש</button>
+            <button class="action-button" onclick="shareReport()">שתף דוח</button>
+        </div>
+
+        <div id="q5ProblemContext" class="problem-context question-section bg-blue-50 border-blue-200">
+            <p class="problem-statement text-blue-700">נתוני השאלה:</p>
+            <p>נתון משולש ישר זווית ABC ($\angle ACB = 90^{\circ}$).</p>
+            <p>D היא נקודה על הצלע CB.</p>
+            <p>נתון: $\angle CBA = 32^{\circ}$, $AB = 14$ ס"מ.</p>
+            <div class="svg-container">
+                <svg id="triangleSvgQ5" viewBox="0 0 300 250" width="300" height="250" xmlns="http://www.w3.org/2000/svg">
+                    <polygon points="50,200 250,200 50,50" class="svg-triangle" />
+                    <circle cx="150" cy="200" r="3" fill="#334155" />
+                    <line x1="50" y1="50" x2="150" y2="200" stroke="#4f46e5" stroke-width="1.5" stroke-dasharray="4,2" />
+                    <text x="40" y="40" class="svg-text">A</text>
+                    <text x="255" y="215" class="svg-text">B</text>
+                    <text x="40" y="215" class="svg-text">C</text>
+                    <text x="145" y="218" class="svg-text">D</text>
+                    <polyline points="50,190 60,190 60,200" stroke="#334155" stroke-width="1.5" fill="none" />
+                    <path d="M 230 200 A 20 20 0 0 0 240 183" class="svg-angle-arc" />
+                    <text x="210" y="185" class="svg-angle-text">32°</text>
+                    <text x="130" y="115" class="svg-side-length" transform="rotate(-49 130 115)">14</text>
+                    <text id="svg_AC_length" x="30" y="125" class="svg-side-length"></text>
+                    <text id="svg_CD_length" x="95" y="218" class="svg-side-length"></text>
+                    <text id="svg_AD_length" x="90" y="135" class="svg-side-length" transform="rotate(-56 90 135)"></text>
+                    <text id="svg_angle_CAD" x="65" y="70" class="svg-angle-text"></text>
+                </svg>
+            </div>
+        </div>
+
+        <div id="mainQ5PartASection" class="question-section">
+            <p class="problem-statement">בעיה ראשית - סעיף א':</p>
+            <p class="question-text">מצאו את אורך הצלע AC.</p>
+            <div id="mainQ5PartAOptions">
+                <label class="option-label"><input type="radio" name="mainQ5A_Answer" value="7.419"> א) 7.419 ס"מ (בערך)</label>
+                <label class="option-label"><input type="radio" name="mainQ5A_Answer" value="11.87"> ב) 11.87 ס"מ (בערך)</label>
+                <label class="option-label"><input type="radio" name="mainQ5A_Answer" value="8.748"> ג) 8.748 ס"מ (בערך)</label>
+            </div>
+            <button class="submit-button" onclick="checkMainQ5PartAAnswer()">הגש תשובה לסעיף א'</button>
+        </div>
+
+        <div id="q5_a1_identifyKnownsACSection" class="question-section hidden">
+            <p class="problem-statement">סעיף א' - שלב 1: זיהוי נתונים במשולש ABC</p>
+            <p class="question-text">במשולש ישר הזווית ABC, אנו יודעים את זווית B ($32^{\circ}$) ואת אורך היתר AB (14 ס"מ).<br>אנו רוצים למצוא את אורך הניצב AC. איזה יחס טריגונומטרי (סינוס, קוסינוס, טנגנס) מקשר בין זווית נתונה, הניצב שמול הזווית, והיתר?</p>
+            <div id="q5_a1_identifyKnownsACOptions">
+                <label class="option-label"><input type="radio" name="q5_a1_trigRatioAns" value="sin"> א) סינוס ($\sin$)</label>
+                <label class="option-label"><input type="radio" name="q5_a1_trigRatioAns" value="cos"> ב) קוסינוס ($\cos$)</label>
+                <label class="option-label"><input type="radio" name="q5_a1_trigRatioAns" value="tan"> ג) טנגנס ($\tan$)</label>
+            </div>
+            <button class="submit-button" onclick="checkQ5_a1_identifyKnownsAC()">הגש תשובה</button>
+        </div>
+
+        <div id="q5_a2_setupEqACSection" class="question-section hidden">
+            <p class="problem-statement">סעיף א' - שלב 2: בניית המשוואה</p>
+            <p class="question-text">היחס הנכון הוא סינוס: $\sin(\text{זווית}) = \frac{\text{ניצב מול}}{\text{יתר}}$.<br>הצב את הנתונים: זווית $B=32^{\circ}$, יתר $AB=14$, ניצב מול $AC$. איזו משוואה מתקבלת?</p>
+            <div id="q5_a2_setupEqACOptions">
+                <label class="option-label"><input type="radio" name="q5_a2_eqACAns" value="sin(32)=AC/14"> א) $\sin(32^{\circ}) = \frac{AC}{14}$</label>
+                <label class="option-label"><input type="radio" name="q5_a2_eqACAns" value="sin(32)=14/AC"> ב) $\sin(32^{\circ}) = \frac{14}{AC}$</label>
+                <label class="option-label"><input type="radio" name="q5_a2_eqACAns" value="cos(32)=AC/14"> ג) $\cos(32^{\circ}) = \frac{AC}{14}$</label>
+            </div>
+            <button class="submit-button" onclick="checkQ5_a2_setupEqAC()">הגש תשובה</button>
+        </div>
+        
+        <div id="q5_a3_solveACSection" class="question-section hidden">
+            <p class="problem-statement">סעיף א' - שלב 3: פתרון עבור AC</p>
+            <p class="question-text">מהמשוואה $\sin(32^{\circ}) = \frac{AC}{14}$, בטא את AC וחשב את ערכו (ודא שהמחשבון במעלות).</p>
+            <div id="q5_a3_solveACOptions">
+                <label class="option-label"><input type="radio" name="q5_a3_solveACAns" value="7.419"> א) $AC = 14 \cdot \sin(32^{\circ}) \approx 7.419$ ס"מ</label>
+                <label class="option-label"><input type="radio" name="q5_a3_solveACAns" value="26.42"> ב) $AC = \frac{14}{\sin(32^{\circ})} \approx 26.420$ ס"מ</label>
+                <label class="option-label"><input type="radio" name="q5_a3_solveACAns" value="0.037"> ג) $AC = \frac{\sin(32^{\circ})}{14} \approx 0.037$ ס"מ</label>
+            </div>
+            <button class="submit-button" onclick="checkQ5_a3_solveAC()">הגש תשובה</button>
+        </div>
+
+        <div id="mainQ5PartBSection" class="question-section hidden">
+            <p class="problem-statement">בעיה ראשית - סעיף ב':</p>
+            <p class="question-text">נתון: AD חוצה את זווית CAB. מצאו את אורך הקטע CD.</p>
+            <p class="problem-context">ידוע (מסעיף א'): $AC \approx 7.419$ ס"מ.</p>
+            <div id="mainQ5PartBOptions">
+                <label class="option-label"><input type="radio" name="mainQ5B_Answer" value="4.115"> א) 4.115 ס"מ (בערך)</label>
+                <label class="option-label"><input type="radio" name="mainQ5B_Answer" value="3.709"> ב) 3.709 ס"מ (בערך)</label>
+                <label class="option-label"><input type="radio" name="mainQ5B_Answer" value="13.38"> ג) 13.38 ס"מ (בערך)</label>
+            </div>
+            <button class="submit-button" onclick="checkMainQ5PartBAnswer()">הגש תשובה לסעיף ב'</button>
+        </div>
+
+        <div id="q5_b1_calcAngleCABSection" class="question-section hidden">
+            <p class="problem-statement">סעיף ב' - שלב 1: חישוב זווית CAB</p>
+            <p class="question-text">במשולש ישר זווית ABC, $\angle ACB = 90^{\circ}$ ו-$\angle CBA = 32^{\circ}$.<br>מהי זווית CAB?</p>
+            <div id="q5_b1_calcAngleCABOptions">
+                <label class="option-label"><input type="radio" name="q5_b1_angleCABAns" value="58"> א) $58^{\circ}$</label>
+                <label class="option-label"><input type="radio" name="q5_b1_angleCABAns" value="148"> ב) $148^{\circ}$</label>
+                <label class="option-label"><input type="radio" name="q5_b1_angleCABAns" value="32"> ג) $32^{\circ}$</label>
+            </div>
+            <button class="submit-button" onclick="checkQ5_b1_calcAngleCAB()">הגש תשובה</button>
+        </div>
+        
+        <div id="q5_b2_calcAngleCADSection" class="question-section hidden">
+            <p class="problem-statement">סעיף ב' - שלב 2: חישוב זווית CAD</p>
+            <p class="question-text">נתון ש-AD חוצה את זווית CAB, וחישבנו ש-$\angle CAB = 58^{\circ}$.<br>מהי זווית CAD?</p>
+            <div id="q5_b2_calcAngleCADOptions">
+                <label class="option-label"><input type="radio" name="q5_b2_angleCADAns" value="29"> א) $29^{\circ}$</label>
+                <label class="option-label"><input type="radio" name="q5_b2_angleCADAns" value="58"> ב) $58^{\circ}$</label>
+                <label class="option-label"><input type="radio" name="q5_b2_angleCADAns" value="116"> ג) $116^{\circ}$</label>
+            </div>
+            <button class="submit-button" onclick="checkQ5_b2_calcAngleCAD()">הגש תשובה</button>
+        </div>
+
+        <div id="q5_b3_identifyKnownsCDSection" class="question-section hidden">
+            <p class="problem-statement">סעיף ב' - שלב 3: זיהוי נתונים במשולש ACD</p>
+            <p class="question-text">במשולש ישר הזווית ACD ($\angle ACD = 90^{\circ}$), אנו יודעים את אורך ניצב AC (מסעיף א', $AC \approx 7.419$) ואת זווית CAD ($29^{\circ}$).<br>אנו רוצים למצוא את אורך הניצב CD (מול זווית CAD). איזה יחס טריגונומטרי מקשר בין זווית נתונה, הניצב שמול הזווית, והניצב שליד הזווית?</p>
+            <div id="q5_b3_identifyKnownsCDOptions">
+                <label class="option-label"><input type="radio" name="q5_b3_trigRatioCDAns" value="tan"> א) טנגנס ($\tan$)</label>
+                <label class="option-label"><input type="radio" name="q5_b3_trigRatioCDAns" value="sin"> ב) סינוס ($\sin$)</label>
+                <label class="option-label"><input type="radio" name="q5_b3_trigRatioCDAns" value="cos"> ג) קוסינוס ($\cos$)</label>
+            </div>
+            <button class="submit-button" onclick="checkQ5_b3_identifyKnownsCD()">הגש תשובה</button>
+        </div>
+
+        <div id="q5_b4_setupEqCDSection" class="question-section hidden">
+            <p class="problem-statement">סעיף ב' - שלב 4: בניית המשוואה ל-CD</p>
+            <p class="question-text">היחס הנכון הוא טנגנס: $\tan(\text{זווית}) = \frac{\text{ניצב מול}}{\text{ניצב ליד}}$.<br>הצב את הנתונים: זווית $CAD=29^{\circ}$, ניצב ליד $AC \approx 7.419$, ניצב מול $CD$. איזו משוואה מתקבלת?</p>
+            <div id="q5_b4_setupEqCDOptions">
+                <label class="option-label"><input type="radio" name="q5_b4_eqCDAns" value="tan(29)=CD/AC"> א) $\tan(29^{\circ}) = \frac{CD}{AC}$</label>
+                <label class="option-label"><input type="radio" name="q5_b4_eqCDAns" value="tan(29)=AC/CD"> ב) $\tan(29^{\circ}) = \frac{AC}{CD}$</label>
+                <label class="option-label"><input type="radio" name="q5_b4_eqCDAns" value="sin(29)=CD/AC"> ג) $\sin(29^{\circ}) = \frac{CD}{AC}$</label>
+            </div>
+            <button class="submit-button" onclick="checkQ5_b4_setupEqCD()">הגש תשובה</button>
+        </div>
+
+        <div id="q5_b5_solveCDSection" class="question-section hidden">
+            <p class="problem-statement">סעיף ב' - שלב 5: פתרון עבור CD</p>
+            <p class="question-text">מהמשוואה $\tan(29^{\circ}) = \frac{CD}{AC}$ (כאשר $AC \approx 7.419$), בטא את CD וחשב את ערכו.</p>
+            <div id="q5_b5_solveCDOptions">
+                <label class="option-label"><input type="radio" name="q5_b5_solveCDAns" value="4.115"> א) $CD = AC \cdot \tan(29^{\circ}) \approx 4.115$ ס"מ</label>
+                <label class="option-label"><input type="radio" name="q5_b5_solveCDAns" value="13.38"> ב) $CD = \frac{AC}{\tan(29^{\circ})} \approx 13.380$ ס"מ</label>
+            </div>
+            <button class="submit-button" onclick="checkQ5_b5_solveCD()">הגש תשובה</button>
+        </div>
+
+        <div id="mainQ5PartCSection" class="question-section hidden">
+            <p class="problem-statement">בעיה ראשית - סעיף ג':</p>
+            <p class="question-text">מצאו את היקף המשולש ACD.</p>
+            <p class="problem-context">ידוע: $AC \approx 7.419$ ס"מ, $CD \approx 4.115$ ס"מ.</p>
+            <div id="mainQ5PartCOptions">
+                <label class="option-label"><input type="radio" name="mainQ5C_Answer" value="19.99"> א) 19.99 ס"מ (בערך)</label>
+                <label class="option-label"><input type="radio" name="mainQ5C_Answer" value="11.534"> ב) 11.534 ס"מ (בערך)</label>
+                <label class="option-label"><input type="radio" name="mainQ5C_Answer" value="20.46"> ג) 20.46 ס"מ (בערך)</label>
+            </div>
+            <button class="submit-button" onclick="checkMainQ5PartCAnswer()">הגש תשובה לסעיף ג'</button>
+        </div>
+
+        <div id="q5_c1_findADSection" class="question-section hidden">
+            <p class="problem-statement">סעיף ג' - שלב 1: מציאת אורך AD</p>
+            <p class="question-text">במשולש ישר הזווית ACD, אנו יודעים את $AC \approx 7.419$ ואת $\angle CAD = 29^{\circ}$.<br>כדי למצוא את היתר AD, באיזה יחס טריגונומטרי נשתמש?</p>
+            <div id="q5_c1_findADOptions1">
+                <label class="option-label"><input type="radio" name="q5_c1_trigRatioADAns" value="cos"> א) קוסינוס ($\cos(\text{זווית}) = \frac{\text{ניצב ליד}}{\text{יתר}}$)</label>
+                <label class="option-label"><input type="radio" name="q5_c1_trigRatioADAns" value="sin"> ב) סינוס ($\sin(\text{זווית}) = \frac{\text{ניצב מול}}{\text{יתר}}$)</label>
+            </div>
+            <button class="submit-button" onclick="checkQ5_c1_findADRatio()">הגש תשובה</button>
+        </div>
+        <div id="q5_c1_solveADSection" class="question-section hidden">
+            <p class="problem-statement">סעיף ג' - שלב 1 (המשך): חישוב AD</p>
+            <p class="question-text">אם $\cos(29^{\circ}) = \frac{AC}{AD}$ (כאשר $AC \approx 7.419$), בטא את AD וחשב את ערכו.</p>
+            <div id="q5_c1_solveADOptions">
+                <label class="option-label"><input type="radio" name="q5_c1_solveADAns" value="8.486"> א) $AD = \frac{AC}{\cos(29^{\circ})} \approx 8.486$ ס"מ</label>
+                <label class="option-label"><input type="radio" name="q5_c1_solveADAns" value="6.489"> ב) $AD = AC \cdot \cos(29^{\circ}) \approx 6.489$ ס"מ</label>
+            </div>
+            <button class="submit-button" onclick="checkQ5_c1_solveAD()">הגש תשובה</button>
+        </div>
+        
+        <div id="q5_c2_calcPerimeterSection" class="question-section hidden">
+            <p class="problem-statement">סעיף ג' - שלב 2: חישוב היקף משולש ACD</p>
+            <p class="question-text">היקף משולש הוא סכום אורכי שלוש צלעותיו.<br>ידוע: $AC \approx 7.419$, $CD \approx 4.115$, $AD \approx 8.486$.<br>מהו היקף המשולש ACD?</p>
+            <div id="q5_c2_calcPerimeterOptions">
+                 <label class="option-label"><input type="radio" name="q5_c2_perimeterAns" value="19.99"> א) 19.99 ס"מ (בערך)</label>
+                 <label class="option-label"><input type="radio" name="q5_c2_perimeterAns" value="11.534"> ב) 11.534 ס"מ (בערך)</label>
+            </div>
+            <button class="submit-button" onclick="checkQ5_c2_calcPerimeter()">הגש תשובה</button>
+        </div>
+
+
+        <div id="feedbackQ5Section" class="feedback-section hidden">
+            <p id="feedbackQ5Text" class="text-lg"></p>
+            <p id="remediationQ5Link" class="mt-2 font-semibold"></p>
+        </div>
+        <div id="printableReport"></div>
+    </div>
+
+    <script>
+        let studentPath = []; // Renamed from studentQ5Path
+        // Correct answers (approximate values)
+        const q5_AC_correct = 7.419;
+        const q5_angle_CAB_correct = 58;
+        const q5_angle_CAD_correct = 29;
+        const q5_CD_correct = 4.115;
+        const q5_AD_correct = 8.486;
+        const q5_perimeter_ACD_correct = 19.99; 
+
+        // --- SVG Update Function ---
+        function updateTriangleSVG() {
+            const acVal = sessionStorage.getItem('q5_AC_val');
+            const cdVal = sessionStorage.getItem('q5_CD_val');
+            const adVal = sessionStorage.getItem('q5_AD_val');
+            const angleCAD = sessionStorage.getItem('q5_angle_CAD_val');
+
+            const svgAC = document.getElementById('svg_AC_length');
+            const svgCD = document.getElementById('svg_CD_length');
+            const svgAD = document.getElementById('svg_AD_length');
+            const svgAngleCAD = document.getElementById('svg_angle_CAD');
+
+            if (svgAC) svgAC.textContent = acVal ? parseFloat(acVal).toFixed(1) : '';
+            if (svgCD) svgCD.textContent = cdVal ? parseFloat(cdVal).toFixed(1) : '';
+            if (svgAD) svgAD.textContent = adVal ? parseFloat(adVal).toFixed(1) : '';
+            if (svgAngleCAD) svgAngleCAD.textContent = angleCAD ? angleCAD + "°" : '';
+        }
+
+
+        // --- Utility Functions ---
+        function queueMathJaxTypeset(element) {
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                window.MathJax.typesetPromise(element ? [element] : undefined).catch((err) => console.error('MathJax typesetting error:', err));
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            queueMathJaxTypeset(document.getElementById('mainQ5PartASection'));
+            queueMathJaxTypeset(document.getElementById('q5ProblemContext'));
+            updateTriangleSVG(); 
+        });
+
+        function showSection(sectionId) { // Renamed from showQ5Section
+            const allSectionIds = [
+                'mainQ5PartASection', 'q5_a1_identifyKnownsACSection', 'q5_a2_setupEqACSection', 'q5_a3_solveACSection',
+                'mainQ5PartBSection', 'q5_b1_calcAngleCABSection', 'q5_b2_calcAngleCADSection', 'q5_b3_identifyKnownsCDSection', 'q5_b4_setupEqCDSection', 'q5_b5_solveCDSection',
+                'mainQ5PartCSection', 'q5_c1_findADSection', 'q5_c1_solveADSection', 'q5_c2_calcPerimeterSection'
+            ];
+            allSectionIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+            if (sectionId) {
+                const el = document.getElementById(sectionId);
+                if (el) {
+                    el.classList.remove('hidden');
+                    queueMathJaxTypeset(el);
+                }
+            }
+            updateTriangleSVG(); 
+        }
+
+        function displayFeedback(message, remediation) { // Renamed from displayQ5Feedback
+            const feedbackTextEl = document.getElementById('feedbackQ5Text'); 
+            const remediationLinkEl = document.getElementById('remediationQ5Link'); 
+            feedbackTextEl.innerHTML = message; 
+            remediationLinkEl.innerHTML = remediation ? `<strong>מוקד מומלץ לחיזוק:</strong> ${remediation}` : '';
+            document.getElementById('feedbackQ5Section').classList.remove('hidden'); 
+            queueMathJaxTypeset(document.getElementById('feedbackQ5Section')); 
+        }
+        
+        function startOver() { // Renamed from startOverQ5
+            studentPath = []; 
+            const radioGroups = [
+                'mainQ5A_Answer', 'q5_a1_trigRatioAns', 'q5_a2_eqACAns', 'q5_a3_solveACAns',
+                'mainQ5B_Answer', 'q5_b1_angleCABAns', 'q5_b2_angleCADAns', 'q5_b3_trigRatioCDAns', 'q5_b4_eqCDAns', 'q5_b5_solveCDAns',
+                'mainQ5C_Answer', 'q5_c1_trigRatioADAns', 'q5_c1_solveADAns', 'q5_c2_perimeterAns'
+            ];
+            radioGroups.forEach(groupName => {
+                const radios = document.getElementsByName(groupName);
+                if (radios) radios.forEach(radio => radio.checked = false);
+            });
+            sessionStorage.removeItem('q5_AC_val');
+            sessionStorage.removeItem('q5_angle_CAD_val');
+            sessionStorage.removeItem('q5_CD_val');
+            sessionStorage.removeItem('q5_AD_val');
+            document.getElementById('feedbackQ5Section').classList.add('hidden'); 
+            updateTriangleSVG(); 
+            showSection('mainQ5PartASection'); 
+        }
+
+        function getSelectedRadioValue(name) { // Renamed from getSelectedRadioValueQ5
+            const radios = document.getElementsByName(name);
+            for (let i = 0; i < radios.length; i++) { 
+                if (radios[i].checked) {
+                     return { value: radios[i].value, text: radios[i].parentElement.textContent.replace(/^[א-ד]\)\s*/, '').trim() };
+                }
+            }
+            return null;
+        }
+
+        function logAttempt(stepDesc, sectionId, selectedValue, selectedAnswerText, radioGroupName, isCorrect, feedbackMessage = "", remediationTopic = null) { // Renamed from logQ5Attempt
+            let questionReportText = document.getElementById(sectionId)?.querySelector('.question-text')?.textContent.trim() || "טקסט שאלה לא זמין";
+            const pContext = document.getElementById(sectionId)?.querySelector('.problem-context p'); 
+            if(pContext && !sectionId.startsWith('mainQ5')) { 
+                 questionReportText = (document.getElementById(sectionId)?.querySelector('.problem-statement')?.textContent.trim() || "") + " " + questionReportText;
+            } else if (pContext && sectionId.startsWith('mainQ5')) { 
+                 questionReportText = (document.getElementById(sectionId)?.querySelector('.problem-context')?.innerHTML || "").trim() + "<br>" + questionReportText;
+            }
+            
+            studentPath.push({ 
+                type: 'attempt', 
+                stepDescription: stepDesc, 
+                questionText: questionReportText, 
+                selectedAnswer: selectedValue, 
+                selectedAnswerText: selectedAnswerText,
+                isCorrect: isCorrect, 
+                feedbackForAttempt: isCorrect ? null : { message: feedbackMessage, remediationTopic: remediationTopic } 
+            });
+            document.getElementById('feedbackQ5Section').classList.add('hidden'); 
+        }
+        
+        function shareReport() { // Renamed from shareReportQ5
+            const reportContainer = document.getElementById('printableReport');
+            if (!reportContainer) { return; }
+            let reportHTML = '<h2>אבחון: שאלה 5 - טריגונומטריה</h2>';
+            
+            const mistakesAndLearnings = [];
+
+            studentPath.forEach((item) => {
+                if (item.type === 'attempt' && !item.isCorrect && item.feedbackForAttempt) {
+                    mistakesAndLearnings.push({
+                        question: item.questionText,
+                        userAnswer: item.selectedAnswerText || item.selectedAnswer,
+                        feedback: item.feedbackForAttempt.message,
+                        remediation: item.feedbackForAttempt.remediationTopic,
+                        step: item.stepDescription
+                    });
+                }
+            });
+            
+            if (mistakesAndLearnings.length > 0) {
+                reportHTML += '<h3>ניתוח טעויות ונקודות לשיפור:</h3>';
+                mistakesAndLearnings.forEach(mistake => {
+                    reportHTML += `<div class="mistake-item">`;
+                    reportHTML += `<p><strong>בשלב:</strong> ${mistake.step}</p>`;
+                    reportHTML += `<p><strong>השאלה:</strong> ${mistake.question}</p>`;
+                    reportHTML += `<p><strong>התשובה שלך:</strong> ${mistake.userAnswer}</p>`;
+                    reportHTML += `<p><strong>המשוב שניתן:</strong> ${mistake.feedback}</p>`;
+                    if (mistake.remediation) {
+                        reportHTML += `<p><strong>מוקד לשיפור:</strong> ${mistake.remediation}</p>`;
+                    }
+                    reportHTML += `</div>`;
+                });
+            } else if (studentPath.length > 0) {
+                 const mainCCorrect = studentPath.some(item => item.stepDescription === "סעיף ג': היקף משולש ACD" && item.isCorrect);
+                 if (mainCCorrect) { 
+                     reportHTML += '<p><strong>כל הכבוד! נראה שהבנת את כל השלבים ולא זוהו טעויות הדורשות התייחסות מיוחדת.</strong></p>';
+                 } else {
+                     reportHTML += '<p><strong>לא זוהו טעויות ספציפיות הדורשות התייחסות מיוחדת במהלך סשן זה, אך ייתכן שלא כל חלקי השאלה הושלמו בהצלחה.</strong></p>';
+                 }
+            } else { 
+                 reportHTML += '<p>לא נרשמה התקדמות עדיין.</p>';
+            }
+
+            const currentFileName = "bagrut_35182_q5_diagnostic.html"; 
+            if (mistakesAndLearnings.length > 0) {
+                localStorage.setItem(`diagnosticReportData_${currentFileName}`, JSON.stringify(mistakesAndLearnings));
+            } else {
+                localStorage.removeItem(`diagnosticReportData_${currentFileName}`); 
+            }
+
+            reportContainer.innerHTML = reportHTML;
+            window.print(); 
+        }
+        
+        function approxEqual(val1, val2, tolerance = 0.0015) { // Slightly increased tolerance for multi-step calcs
+            return Math.abs(val1 - val2) < tolerance;
+        }
+
+        // --- Check Answer Functions ---
+        // Part A
+        function checkMainQ5PartAAnswer() {
+            const selection = getSelectedRadioValue('mainQ5A_Answer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = approxEqual(parseFloat(selection.value), q5_AC_correct);
+            const feedbackMsg = isCorrect ? `נכון! אורך הצלע AC הוא בקירוב ${q5_AC_correct} ס"מ.` : "התשובה אינה נכונה. בוא נפרק את השלבים.";
+            const remediation = isCorrect ? null : "שימוש בפונקציות טריגונומטריות במשולש ישר זווית";
+            logAttempt("סעיף א': אורך AC", 'mainQ5PartASection', selection.value, selection.text, 'mainQ5A_Answer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            if (isCorrect) {
+                sessionStorage.setItem('q5_AC_val', q5_AC_correct);
+                document.querySelector('#mainQ5PartBSection .problem-context').innerHTML = `<p>ידוע (מסעיף א'): $AC \approx ${q5_AC_correct.toFixed(3)}$ ס"מ.</p>`;
+                queueMathJaxTypeset(document.querySelector('#mainQ5PartBSection .problem-context'));
+                updateTriangleSVG();
+                setTimeout(() => showSection('mainQ5PartBSection'), 2500);
+            } else {
+                setTimeout(() => {
+                    document.getElementById('feedbackQ5Section').classList.add('hidden');
+                    showSection('q5_a1_identifyKnownsACSection');
+                }, 3000);
+            }
+        }
+
+        function checkQ5_a1_identifyKnownsAC() {
+            const selection = getSelectedRadioValue('q5_a1_trigRatioAns');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = selection.value === "sin";
+            const feedbackMsg = isCorrect ? "נכון. סינוס מקשר בין הזווית, הניצב שמולה והיתר." : "לא נכון. חשוב איזה ניצב (מול/ליד) ואיזה חלק מהמשולש (יתר) ידועים או דרושים ביחס לזווית הנתונה. נסה שוב.";
+            const remediation = isCorrect ? null : "הגדרות סינוס, קוסינוס וטנגנס";
+            logAttempt("סעיף א' שלב 1: בחירת יחס טריגונומטרי", 'q5_a1_identifyKnownsACSection', selection.value, selection.text, 'q5_a1_trigRatioAns', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+            setTimeout(() => {
+                document.getElementById('feedbackQ5Section').classList.add('hidden');
+                showSection(isCorrect ? 'q5_a2_setupEqACSection' : 'q5_a1_identifyKnownsACSection');
+            }, isCorrect ? 2000 : 3500);
+        }
+
+        function checkQ5_a2_setupEqAC() {
+            const selection = getSelectedRadioValue('q5_a2_eqACAns');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = selection.value === "sin(32)=AC/14";
+            const feedbackMsg = isCorrect ? "משוואה נכונה! כעת בודד את AC וחשב." : "טעות בבניית המשוואה. $\sin(B) = \frac{\text{מול}}{\text{יתר}} = \frac{AC}{AB}$. נסה שוב.";
+            const remediation = isCorrect ? null : "הצבת נתונים בנוסחה טריגונומטרית";
+            logAttempt("סעיף א' שלב 2: בניית משוואה ל-AC", 'q5_a2_setupEqACSection', selection.value, selection.text, 'q5_a2_eqACAns', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+            setTimeout(() => {
+                document.getElementById('feedbackQ5Section').classList.add('hidden');
+                showSection(isCorrect ? 'q5_a3_solveACSection' : 'q5_a2_setupEqACSection');
+            }, isCorrect ? 2000 : 3500);
+        }
+        
+        function checkQ5_a3_solveAC() {
+            const selection = getSelectedRadioValue('q5_a3_solveACAns');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = approxEqual(parseFloat(selection.value), q5_AC_correct);
+            const feedbackMsg = isCorrect ? `נכון! $AC \approx ${q5_AC_correct.toFixed(3)}$ ס"מ. נחזור לשאלה הראשית של סעיף א'.` : `לא נכון. $AC = 14 \cdot \sin(32^{\circ})$. ודא שהמחשבון על מעלות (DEG). $\sin(32^{\circ}) \approx 0.5299$. נסה שוב.`;
+            const remediation = isCorrect ? null : "פתרון משוואה טריגונומטרית ושימוש במחשבון";
+            logAttempt("סעיף א' שלב 3: פתרון עבור AC", 'q5_a3_solveACSection', selection.value, selection.text, 'q5_a3_solveACAns', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+            if (isCorrect) {
+                sessionStorage.setItem('q5_AC_val', q5_AC_correct);
+                updateTriangleSVG();
+            }
+            setTimeout(() => {
+                document.getElementById('feedbackQ5Section').classList.add('hidden');
+                showSection(isCorrect ? 'mainQ5PartASection' : 'q5_a3_solveACSection');
+            }, isCorrect ? 2000 : 4000);
+        }
+
+        // Part B
+        function checkMainQ5PartBAnswer() {
+            const selection = getSelectedRadioValue('mainQ5B_Answer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = approxEqual(parseFloat(selection.value), q5_CD_correct);
+            const feedbackMsg = isCorrect ? `נכון! אורך הקטע CD הוא בקירוב ${q5_CD_correct.toFixed(3)} ס"מ.` : "התשובה אינה נכונה. בוא נפרק את השלבים.";
+            const remediation = isCorrect ? null : "שימוש בחוצה זווית וטריגונומטריה";
+            logAttempt("סעיף ב': אורך CD", 'mainQ5PartBSection', selection.value, selection.text, 'mainQ5B_Answer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            if (isCorrect) {
+                sessionStorage.setItem('q5_CD_val', q5_CD_correct);
+                const acVal = sessionStorage.getItem('q5_AC_val') || q5_AC_correct; 
+                document.querySelector('#mainQ5PartCSection .problem-context').innerHTML = `<p>ידוע: $AC \approx ${parseFloat(acVal).toFixed(3)}$ ס"מ, $CD \approx ${q5_CD_correct.toFixed(3)}$ ס"מ.</p>`;
+                queueMathJaxTypeset(document.querySelector('#mainQ5PartCSection .problem-context'));
+                updateTriangleSVG();
+                setTimeout(() => showSection('mainQ5PartCSection'), 2500);
+            } else {
+                setTimeout(() => {
+                    document.getElementById('feedbackQ5Section').classList.add('hidden');
+                    showSection('q5_b1_calcAngleCABSection');
+                }, 3000);
+            }
+        }
+        
+        function checkQ5_b1_calcAngleCAB() {
+            const selection = getSelectedRadioValue('q5_b1_angleCABAns');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = parseFloat(selection.value) === q5_angle_CAB_correct;
+            const feedbackMsg = isCorrect ? `נכון! $\angle CAB = ${q5_angle_CAB_correct}^{\circ}$.` : `לא נכון. סכום הזוויות במשולש ABC הוא $180^{\circ}$. $\angle CAB = 180^{\circ} - 90^{\circ} - 32^{\circ}$. נסה שוב.`;
+            const remediation = isCorrect ? null : "סכום זוויות במשולש";
+            logAttempt("סעיף ב' שלב 1: חישוב זווית CAB", 'q5_b1_calcAngleCABSection', selection.value, selection.text, 'q5_b1_angleCABAns', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+            setTimeout(() => {
+                document.getElementById('feedbackQ5Section').classList.add('hidden');
+                showSection(isCorrect ? 'q5_b2_calcAngleCADSection' : 'q5_b1_calcAngleCABSection');
+            }, isCorrect ? 2000 : 3500);
+        }
+
+        function checkQ5_b2_calcAngleCAD() {
+            const selection = getSelectedRadioValue('q5_b2_angleCADAns');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = parseFloat(selection.value) === q5_angle_CAD_correct;
+            const feedbackMsg = isCorrect ? `נכון! $\angle CAD = ${q5_angle_CAD_correct}^{\circ}$.` : `לא נכון. AD חוצה את $\angle CAB = ${q5_angle_CAB_correct}^{\circ}$, לכן $\angle CAD = \frac{1}{2} \angle CAB$. נסה שוב.`;
+            const remediation = isCorrect ? null : "הגדרת חוצה זווית";
+            logAttempt("סעיף ב' שלב 2: חישוב זווית CAD", 'q5_b2_calcAngleCADSection', selection.value, selection.text, 'q5_b2_angleCADAns', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+            if(isCorrect) {
+                sessionStorage.setItem('q5_angle_CAD_val', q5_angle_CAD_correct);
+                updateTriangleSVG();
+            }
+            setTimeout(() => {
+                document.getElementById('feedbackQ5Section').classList.add('hidden');
+                showSection(isCorrect ? 'q5_b3_identifyKnownsCDSection' : 'q5_b2_calcAngleCADSection');
+            }, isCorrect ? 2000 : 3500);
+        }
+        
+        function checkQ5_b3_identifyKnownsCD() {
+            const selection = getSelectedRadioValue('q5_b3_trigRatioCDAns');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = selection.value === "tan";
+            const feedbackMsg = isCorrect ? "נכון. טנגנס מקשר בין הזווית, הניצב שמולה והניצב שלידה." : "לא נכון. במשולש ACD, ידועה זווית CAD, הניצב שלידה (AC) ודרוש הניצב שמולה (CD). נסה שוב.";
+            const remediation = isCorrect ? null : "הגדרות סינוס, קוסינוס וטנגנס";
+            logAttempt("סעיף ב' שלב 3: בחירת יחס ל-CD", 'q5_b3_identifyKnownsCDSection', selection.value, selection.text, 'q5_b3_trigRatioCDAns', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+            setTimeout(() => {
+                document.getElementById('feedbackQ5Section').classList.add('hidden');
+                showSection(isCorrect ? 'q5_b4_setupEqCDSection' : 'q5_b3_identifyKnownsCDSection');
+            }, isCorrect ? 2000 : 3500);
+        }
+
+        function checkQ5_b4_setupEqCD() {
+            const selection = getSelectedRadioValue('q5_b4_eqCDAns');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = selection.value === "tan(29)=CD/AC";
+            const feedbackMsg = isCorrect ? "משוואה נכונה! כעת בודד את CD וחשב." : "טעות בבניית המשוואה. $\tan(CAD) = \frac{\text{מול}}{\text{ליד}} = \frac{CD}{AC}$. נסה שוב.";
+            const remediation = isCorrect ? null : "הצבת נתונים בנוסחה טריגונומטרית";
+            logAttempt("סעיף ב' שלב 4: בניית משוואה ל-CD", 'q5_b4_setupEqCDSection', selection.value, selection.text, 'q5_b4_eqCDAns', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+            setTimeout(() => {
+                document.getElementById('feedbackQ5Section').classList.add('hidden');
+                showSection(isCorrect ? 'q5_b5_solveCDSection' : 'q5_b4_setupEqCDSection');
+            }, isCorrect ? 2000 : 3500);
+        }
+
+        function checkQ5_b5_solveCD() {
+            const selection = getSelectedRadioValue('q5_b5_solveCDAns');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = approxEqual(parseFloat(selection.value), q5_CD_correct);
+            const acVal = parseFloat(sessionStorage.getItem('q5_AC_val')) || q5_AC_correct;
+            const feedbackMsg = isCorrect ? `נכון! $CD \approx ${q5_CD_correct.toFixed(3)}$ ס"מ. נחזור לשאלה הראשית של סעיף ב'.` : `לא נכון. $CD = AC \cdot \tan(29^{\circ}) \approx ${acVal.toFixed(3)} \cdot \tan(29^{\circ})$. $\tan(29^{\circ}) \approx 0.5543$. נסה שוב.`;
+            const remediation = isCorrect ? null : "פתרון משוואה טריגונומטרית ושימוש במחשבון";
+            logAttempt("סעיף ב' שלב 5: פתרון עבור CD", 'q5_b5_solveCDSection', selection.value, selection.text, 'q5_b5_solveCDAns', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+            if (isCorrect) {
+                sessionStorage.setItem('q5_CD_val', q5_CD_correct);
+                updateTriangleSVG();
+            }
+            setTimeout(() => {
+                document.getElementById('feedbackQ5Section').classList.add('hidden');
+                showSection(isCorrect ? 'mainQ5PartBSection' : 'q5_b5_solveCDSection');
+            }, isCorrect ? 2000 : 4000);
+        }
+
+        // Part C
+        function checkMainQ5PartCAnswer() {
+            const selection = getSelectedRadioValue('mainQ5C_Answer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = approxEqual(parseFloat(selection.value), q5_perimeter_ACD_correct);
+            const feedbackMsg = isCorrect ? `נכון! היקף משולש ACD הוא בקירוב ${q5_perimeter_ACD_correct.toFixed(2)} ס"מ.` : "התשובה אינה נכונה. בוא נפרק את השלבים.";
+            const remediation = isCorrect ? null : "חישוב היקף משולש";
+            logAttempt("סעיף ג': היקף משולש ACD", 'mainQ5PartCSection', selection.value, selection.text, 'mainQ5C_Answer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            if (isCorrect) {
+                showSection(null);
+            } else {
+                setTimeout(() => {
+                    document.getElementById('feedbackQ5Section').classList.add('hidden');
+                    showSection('q5_c1_findADSection');
+                }, 3000);
+            }
+        }
+
+        function checkQ5_c1_findADRatio() {
+            const selection = getSelectedRadioValue('q5_c1_trigRatioADAns');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = selection.value === "cos";
+            const feedbackMsg = isCorrect ? "נכון. קוסינוס מקשר בין הזווית, הניצב שלידה והיתר. כעת הצב וחשב את AD." : "לא נכון. במשולש ACD, ידועה זווית CAD, הניצב שלידה (AC) ודרוש היתר (AD). נסה שוב.";
+            const remediation = isCorrect ? null : "הגדרות סינוס, קוסינוס וטנגנס";
+            logAttempt("סעיף ג' שלב 1.1: בחירת יחס ל-AD", 'q5_c1_findADSection', selection.value, selection.text, 'q5_c1_trigRatioADAns', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+            setTimeout(() => {
+                document.getElementById('feedbackQ5Section').classList.add('hidden');
+                showSection(isCorrect ? 'q5_c1_solveADSection' : 'q5_c1_findADSection');
+            }, isCorrect ? 2000 : 3500);
+        }
+
+        function checkQ5_c1_solveAD() {
+            const selection = getSelectedRadioValue('q5_c1_solveADAns');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = approxEqual(parseFloat(selection.value), q5_AD_correct);
+            const acVal = parseFloat(sessionStorage.getItem('q5_AC_val')) || q5_AC_correct;
+            const feedbackMsg = isCorrect ? `נכון! $AD \approx ${q5_AD_correct.toFixed(3)}$ ס"מ. כעת נחשב את ההיקף.` : `לא נכון. $AD = \frac{AC}{\cos(29^{\circ})} \approx \frac{${acVal.toFixed(3)}}{\cos(29^{\circ})}$. $\cos(29^{\circ}) \approx 0.8746$. נסה שוב.`;
+            const remediation = isCorrect ? null : "פתרון משוואה טריגונומטרית ושימוש במחשבון";
+            logAttempt("סעיף ג' שלב 1.2: חישוב AD", 'q5_c1_solveADSection', selection.value, selection.text, 'q5_c1_solveADAns', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+            if (isCorrect) {
+                sessionStorage.setItem('q5_AD_val', q5_AD_correct);
+                updateTriangleSVG();
+            }
+            setTimeout(() => {
+                document.getElementById('feedbackQ5Section').classList.add('hidden');
+                showSection(isCorrect ? 'q5_c2_calcPerimeterSection' : 'q5_c1_solveADSection');
+            }, isCorrect ? 2000 : 4000);
+        }
+        
+        function checkQ5_c2_calcPerimeter() {
+            const selection = getSelectedRadioValue('q5_c2_perimeterAns');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = approxEqual(parseFloat(selection.value), q5_perimeter_ACD_correct);
+            const acVal = parseFloat(sessionStorage.getItem('q5_AC_val')) || q5_AC_correct;
+            const cdVal = parseFloat(sessionStorage.getItem('q5_CD_val')) || q5_CD_correct;
+            const adVal = parseFloat(sessionStorage.getItem('q5_AD_val')) || q5_AD_correct;
+            const perimeterCalc = (acVal + cdVal + adVal);
+            const feedbackMsg = isCorrect ? `נכון! היקף המשולש ACD הוא בקירוב ${q5_perimeter_ACD_correct.toFixed(2)} ס"מ. נחזור לשאלה הראשית של סעיף ג'.` : `לא נכון. היקף הוא סכום הצלעות: $AC+CD+AD \approx ${acVal.toFixed(3)} + ${cdVal.toFixed(3)} + ${adVal.toFixed(3)} = ${perimeterCalc.toFixed(3)}$. נסה שוב.`;
+            const remediation = isCorrect ? null : "חישוב היקף משולש";
+            logAttempt("סעיף ג' שלב 2: חישוב היקף", 'q5_c2_calcPerimeterSection', selection.value, selection.text, 'q5_c2_perimeterAns', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+             setTimeout(() => {
+                document.getElementById('feedbackQ5Section').classList.add('hidden');
+                showSection(isCorrect ? 'mainQ5PartCSection' : 'q5_c2_calcPerimeterSection');
+            }, isCorrect ? 2000 : 4000);
+        }
+
+
+    </script>
+</body>
+</html>

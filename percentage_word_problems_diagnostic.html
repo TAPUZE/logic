@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מבחן אבחון: בעיות מילוליות אחוזים</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Assistant', sans-serif;
+            background-color: #f1f5f9; 
+            color: #1e293b; 
+        }
+        .container-quiz {
+            max-width: 700px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: #ffffff;
+            border-radius: 0.75rem; 
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .question-section {
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            border: 1px solid #e2e8f0; 
+            border-radius: 0.5rem;
+            background-color: #f8fafc; 
+        }
+        .problem-statement {
+            font-size: 1.25rem; 
+            font-weight: 600;
+            color: #0f172a; 
+            margin-bottom: 1rem;
+        }
+        .question-text, .problem-context {
+            font-size: 1.1rem; 
+            color: #334155; 
+            margin-bottom: 0.75rem;
+        }
+        .problem-context p { margin-bottom: 0.25rem; text-align: right; font-weight: 500;}
+        label.option-label {
+            display: block;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            background-color: #fff;
+            border: 1px solid #cbd5e1; 
+            border-radius: 0.375rem; 
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        label.option-label:hover {
+            background-color: #f1f5f9; 
+            border-color: #94a3b8; 
+        }
+        input[type="radio"], input[type="number"] {
+            margin-left: 0.5rem; 
+            accent-color: #2563eb; 
+        }
+        input[type="number"] {
+            padding: 0.5rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 0.375rem;
+            width: 100px;
+        }
+        button.submit-button {
+            padding: 0.75rem 1.5rem;
+            background-color: #2563eb; 
+            color: white;
+            border: none;
+            border-radius: 0.375rem; 
+            font-weight: 500; 
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 1rem;
+        }
+        button.submit-button:hover {
+            background-color: #1d4ed8; 
+        }
+        button.action-button {
+            padding: 0.5rem 1rem;
+            background-color: #475569; 
+            color: white;
+            border: none;
+            border-radius: 0.375rem; 
+            font-weight: 500; 
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-right: 0.5rem; 
+        }
+        button.action-button:hover {
+            background-color: #334155; 
+        }
+        .feedback-section {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            background-color: #eff6ff; 
+            color: #1e40af; 
+            border: 1px solid #bfdbfe; 
+        }
+        .hidden {
+            display: none;
+        }
+        
+        #printableReport {
+            display: none; 
+            padding: 20px;
+            font-family: 'Assistant', sans-serif;
+            color: #000; 
+            direction: rtl; 
+        }
+        #printableReport h2, #printableReport h3 {
+            font-weight: 600; margin-bottom: 1rem; border-bottom: 1px solid #ccc; padding-bottom: 0.5rem;
+        }
+        #printableReport h2 { font-size: 1.5rem; }
+        #printableReport h3 { font-size: 1.3rem; margin-top: 1.5rem;}
+        #printableReport .mistake-item { margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px dotted #eee; }
+        #printableReport .mistake-item:last-child { border-bottom: none; }
+        #printableReport p { margin-bottom: 0.25rem; }
+        #printableReport strong { font-weight: 600; }
+        @media print {
+            body * { visibility: hidden; }
+            #printableReport, #printableReport * { visibility: visible; }
+            #printableReport { position: absolute; left: 0; top: 0; width: 100%; display: block !important; font-size: 12pt; }
+            .container-quiz > h1, .container-quiz > div:first-of-type, .question-section, .feedback-section { display: none !important; visibility: hidden !important; }
+        }
+    </style>
+    <script>
+        window.MathJax = {
+          tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']]
+          },
+          svg: {
+            fontCache: 'global'
+          }
+        };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
+</head>
+<body class="bg-slate-100 text-slate-800">
+
+    <div class="container-quiz">
+        <h1 class="text-2xl font-bold text-center text-slate-700 mb-6">מבחן אבחון: בעיות מילוליות אחוזים</h1>
+
+        <div class="mb-6 text-center">
+            <button class="action-button" onclick="startOver()">התחל מחדש</button>
+            <button class="action-button" onclick="shareReport()">שתף דוח</button>
+        </div>
+
+        <div id="mainPercentageProblemSection" class="question-section">
+            <p class="problem-statement">בעיה ראשית:</p>
+            <div class="problem-context">
+                <p>חולצה עולה 200 ש"ח.</p>
+                <p>החולצה נמכרת בהנחה של 20%.</p>
+            </div>
+            <p class="question-text">מהו מחיר החולצה לאחר ההנחה?</p>
+            <p class="text-sm text-slate-500 mb-3">אנא פתור זאת במחברתך תחילה, ולאחר מכן בחר את תשובתך הסופית למטה.</p>
+            
+            <div id="mainPercentageProblemOptions">
+                <label class="option-label"><input type="radio" name="mainPercentageAnswer" value="160"> א) 160 ש"ח</label>
+                <label class="option-label"><input type="radio" name="mainPercentageAnswer" value="180"> ב) 180 ש"ח</label>
+                <label class="option-label"><input type="radio" name="mainPercentageAnswer" value="40"> ג) 40 ש"ח (זהו סכום ההנחה, לא המחיר הסופי)</label>
+                <label class="option-label"><input type="radio" name="mainPercentageAnswer" value="240"> ד) 240 ש"ח</label>
+            </div>
+            <button class="submit-button" onclick="checkMainPercentageAnswer()">הגש תשובה</button>
+        </div>
+
+        <div id="diagnosticPercQ1_strategySection" class="question-section hidden">
+            <p class="problem-statement">שלב 1: בחירת אסטרטגיית פתרון</p>
+            <p class="question-text">נתונים: מחיר מקורי 200 ש"ח, הנחה 20%. מהו המחיר לאחר הנחה?<br>באיזו דרך תעדיף לחשב את המחיר לאחר ההנחה?</p>
+            <div id="diagnosticPercQ1_strategyOptions">
+                <label class="option-label"><input type="radio" name="diagPercQ1_strategyAnswer" value="calculate_discount_first"> א) לחשב תחילה את סכום ההנחה (20% מ-200), ואז להפחית אותו מהמחיר המקורי.</label>
+                <label class="option-label"><input type="radio" name="diagPercQ1_strategyAnswer" value="calculate_remaining_percentage_first"> ב) לחשב תחילה את אחוז המחיר הנותר (100% - 20%), ואז לחשב את ערכו מהמחיר המקורי.</label>
+            </div>
+            <button class="submit-button" onclick="checkDiagnosticPercQ1_strategy()">הגש תשובה לשלב 1</button>
+        </div>
+        
+        <div id="diagnosticPercQ2a_calcDiscountAmountSection" class="question-section hidden">
+            <p class="problem-statement">שלב 2א: חישוב סכום ההנחה</p>
+            <p class="question-text">המחיר המקורי הוא 200 ש"ח וההנחה היא 20%.<br>מהו סכום ההנחה ב-ש"ח? (כלומר, כמה זה 20% מתוך 200?)</p>
+            <div id="diagnosticPercQ2a_calcDiscountAmountOptions">
+                <label class="option-label"><input type="radio" name="diagPercQ2a_discountAnswer" value="40"> א) 40 ש"ח</label>
+                <label class="option-label"><input type="radio" name="diagPercQ2a_discountAnswer" value="20"> ב) 20 ש"ח</label>
+                <label class="option-label"><input type="radio" name="diagPercQ2a_discountAnswer" value="10"> ג) 10 ש"ח</label>
+                 <label class="option-label"><input type="radio" name="diagPercQ2a_discountAnswer" value="0.2"> ד) 0.2 ש"ח (זהו האחוז כשבר עשרוני, לא סכום ההנחה)</label>
+            </div>
+            <button class="submit-button" onclick="checkDiagnosticPercQ2a_calcDiscountAmount()">הגש תשובה לשלב 2א</button>
+        </div>
+
+        <div id="diagnosticPercQ2a_sub_percentToDecimal" class="question-section hidden">
+            <p class="problem-statement">פירוק שלב 2א: המרת אחוז לשבר</p>
+            <p class="question-text">כדי לחשב "אחוז מתוך מספר", נוח להמיר את האחוז לשבר עשרוני או פשוט.<br>למה שווה 20% כשבר עשרוני?</p>
+            <div id="diagnosticPercQ2a_sub_percentToDecimalOptions">
+                <label class="option-label"><input type="radio" name="diagPercQ2a_sub_p2dAnswer" value="0.2"> א) $0.2$ (או $0.20$)</label>
+                <label class="option-label"><input type="radio" name="diagPercQ2a_sub_p2dAnswer" value="20"> ב) $20$</label>
+                <label class="option-label"><input type="radio" name="diagPercQ2a_sub_p2dAnswer" value="0.02"> ג) $0.02$</label>
+            </div>
+            <button class="submit-button" onclick="checkDiagnosticPercQ2a_sub_percentToDecimal()">הגש תשובה</button>
+        </div>
+
+        <div id="diagnosticPercQ3a_calcFinalPriceSection" class="question-section hidden">
+            <p class="problem-statement">שלב 3א: חישוב המחיר הסופי</p>
+            <p class="question-text">המחיר המקורי הוא 200 ש"ח, וסכום ההנחה הוא 40 ש"ח.<br>מהו המחיר הסופי של החולצה לאחר ההנחה?</p>
+            <div id="diagnosticPercQ3a_calcFinalPriceOptions">
+                <label class="option-label"><input type="radio" name="diagPercQ3a_finalPriceAnswer" value="160"> א) 160 ש"ח</label>
+                <label class="option-label"><input type="radio" name="diagPercQ3a_finalPriceAnswer" value="240"> ב) 240 ש"ח (חיברת את ההנחה במקום להפחית)</label>
+                <label class="option-label"><input type="radio" name="diagPercQ3a_finalPriceAnswer" value="180"> ג) 180 ש"ח</label>
+            </div>
+            <button class="submit-button" onclick="checkDiagnosticPercQ3a_calcFinalPrice()">הגש תשובה לשלב 3א</button>
+        </div>
+
+        <div id="diagnosticPercQ2b_calcRemainingPercSection" class="question-section hidden">
+            <p class="problem-statement">שלב 2ב: חישוב אחוז המחיר הנותר</p>
+            <p class="question-text">אם ניתנת הנחה של 20% על המחיר המקורי (שהוא 100%), איזה אחוז מהמחיר המקורי נשלם בפועל?</p>
+            <div id="diagnosticPercQ2b_calcRemainingPercOptions">
+                <label class="option-label"><input type="radio" name="diagPercQ2b_remPercAnswer" value="80"> א) 80%</label>
+                <label class="option-label"><input type="radio" name="diagPercQ2b_remPercAnswer" value="20"> ב) 20% (זהו אחוז ההנחה, לא האחוז הנותר)</label>
+                <label class="option-label"><input type="radio" name="diagPercQ2b_remPercAnswer" value="120"> ג) 120%</label>
+            </div>
+            <button class="submit-button" onclick="checkDiagnosticPercQ2b_calcRemainingPerc()">הגש תשובה לשלב 2ב</button>
+        </div>
+        
+        <div id="diagnosticPercQ3b_calcFinalPriceFromRemPercSection" class="question-section hidden">
+            <p class="problem-statement">שלב 3ב: חישוב המחיר הסופי מהאחוז הנותר</p>
+            <p class="question-text">המחיר המקורי הוא 200 ש"ח, ואנו צריכים לשלם 80% ממנו.<br>מהו המחיר הסופי? (כלומר, כמה זה 80% מתוך 200?)</p>
+             <div id="diagnosticPercQ3b_calcFinalPriceFromRemPercOptions">
+                <label class="option-label"><input type="radio" name="diagPercQ3b_finalPriceRemAnswer" value="160"> א) 160 ש"ח</label>
+                <label class="option-label"><input type="radio" name="diagPercQ3b_finalPriceRemAnswer" value="80"> ב) 80 ש"ח</label>
+                <label class="option-label"><input type="radio" name="diagPercQ3b_finalPriceRemAnswer" value="0.8"> ג) 0.8 ש"ח (זהו האחוז כשבר עשרוני)</label>
+            </div>
+            <button class="submit-button" onclick="checkDiagnosticPercQ3b_calcFinalPriceFromRemPerc()">הגש תשובה לשלב 3ב</button>
+        </div>
+
+
+        <div id="feedbackSection" class="feedback-section hidden">
+            <p id="feedbackText" class="text-lg"></p>
+            <p id="remediationLink" class="mt-2 font-semibold"></p>
+        </div>
+
+        <div id="printableReport">
+        </div>
+    </div>
+
+    <script>
+        let studentPath = []; // Renamed from studentPercentagePath
+        const mainProblemCorrectAnswer = "160"; // Renamed from mainPercentageCorrectAnswer
+        const originalPrice = 200;
+        const discountPercentage = 20;
+        const correctDiscountAmount = 40;
+        const correctRemainingPercentage = 80;
+
+        function queueMathJaxTypeset(element) {
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                window.MathJax.typesetPromise(element ? [element] : undefined).catch((err) => console.error('MathJax typesetting error:', err));
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            queueMathJaxTypeset(document.getElementById('mainPercentageProblemSection'));
+        });
+
+        function showSection(sectionId) { // Renamed from showPercentageSection
+            const allSectionIds = [
+                'mainPercentageProblemSection', 
+                'diagnosticPercQ1_strategySection',
+                'diagnosticPercQ2a_calcDiscountAmountSection', 'diagnosticPercQ2a_sub_percentToDecimal', 'diagnosticPercQ3a_calcFinalPriceSection',
+                'diagnosticPercQ2b_calcRemainingPercSection', 'diagnosticPercQ3b_calcFinalPriceFromRemPercSection'
+            ];
+
+            allSectionIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+            
+            if (sectionId) {
+                const el = document.getElementById(sectionId);
+                if (el) {
+                    el.classList.remove('hidden');
+                    queueMathJaxTypeset(el);
+                } else {
+                    console.error("Attempted to show non-existent section:", sectionId);
+                }
+            }
+        }
+
+        function displayFeedback(message, remediation) { // Renamed from displayPercentageFeedback
+            const feedbackTextEl = document.getElementById('feedbackText');
+            const remediationLinkEl = document.getElementById('remediationLink');
+            
+            feedbackTextEl.innerHTML = message; 
+            remediationLinkEl.innerHTML = remediation ? `<strong>מוקד מומלץ לחיזוק:</strong> ${remediation}` : '';
+            
+            const feedbackSectionEl = document.getElementById('feedbackSection');
+            feedbackSectionEl.classList.remove('hidden');
+            queueMathJaxTypeset(feedbackSectionEl); 
+        }
+        
+        function startOver() { // Renamed from startOverPercentage
+            studentPath = []; 
+            const radioGroups = [
+                'mainPercentageAnswer', 
+                'diagPercQ1_strategyAnswer',
+                'diagPercQ2a_discountAnswer', 'diagPercQ2a_sub_p2dAnswer', 'diagPercQ3a_finalPriceAnswer',
+                'diagPercQ2b_remPercAnswer', 'diagPercQ3b_finalPriceRemAnswer'
+            ];
+            radioGroups.forEach(groupName => {
+                const radios = document.getElementsByName(groupName);
+                radios.forEach(radio => radio.checked = false);
+            });
+            
+            document.getElementById('feedbackSection').classList.add('hidden');
+            showSection('mainPercentageProblemSection'); 
+        }
+
+        function getSelectedRadioValue(name) { // Renamed from getSelectedRadioValuePercentage
+            const radios = document.getElementsByName(name);
+            for (let i = 0; i < radios.length; i++) {
+                if (radios[i].checked) {
+                    return { value: radios[i].value, text: radios[i].parentElement.textContent.replace(/^[א-ד]\)\s*/, '').trim() };
+                }
+            }
+            return null;
+        }
+
+        function getQuestionTextForReport(sectionId) { // Renamed from getQuestionTextForReportPercentage
+            const section = document.getElementById(sectionId);
+            if (section) {
+                const problemStatementEl = section.querySelector('.problem-statement');
+                const problemContextEl = section.querySelector('.problem-context');
+                const questionTextEl = section.querySelector('.question-text');
+                let fullQuestionText = "";
+
+                if (problemStatementEl) {
+                    fullQuestionText += (problemStatementEl.textContent || "").trim();
+                }
+                 if (problemContextEl) {
+                     fullQuestionText += (fullQuestionText ? "<br>" : "") + (problemContextEl.innerHTML || "").replace(/\s\s+/g, ' ').trim();
+                }
+                if (questionTextEl) {
+                    fullQuestionText += (fullQuestionText ? "<br>" : "") + (questionTextEl.innerHTML || "").trim();
+                }
+                return fullQuestionText.replace(/\s\s+/g, ' ').trim() || "טקסט שאלה לא נמצא";
+            }
+            return "טקסט שאלה לא נמצא";
+        }
+        
+        function logAttempt(stepDesc, sectionId, selectedValue, selectedAnswerText, radioGroupName, isCorrect, feedbackMessage = "", remediationTopic = null) {
+            const questionReportText = getQuestionTextForReport(sectionId);
+            studentPath.push({ 
+                type: 'attempt', 
+                stepDescription: stepDesc, 
+                questionText: questionReportText, 
+                selectedAnswer: selectedValue, 
+                selectedAnswerText: selectedAnswerText,
+                isCorrect: isCorrect, 
+                feedbackForAttempt: isCorrect ? null : { message: feedbackMessage, remediationTopic: remediationTopic } 
+            });
+            document.getElementById('feedbackSection').classList.add('hidden');
+        }
+
+        function shareReport() { // Renamed from shareReportPercentage
+            const reportContainer = document.getElementById('printableReport');
+            if (!reportContainer) { return; }
+
+            let reportHTML = '<h2>אבחון: בעיות מילוליות אחוזים</h2>';
+            const mistakesAndLearnings = [];
+
+            studentPath.forEach((item) => {
+                if (item.type === 'attempt' && !item.isCorrect && item.feedbackForAttempt) {
+                    mistakesAndLearnings.push({
+                        question: item.questionText,
+                        userAnswer: item.selectedAnswerText || item.selectedAnswer,
+                        feedback: item.feedbackForAttempt.message,
+                        remediation: item.feedbackForAttempt.remediationTopic,
+                        step: item.stepDescription
+                    });
+                }
+            });
+            
+            if (mistakesAndLearnings.length > 0) {
+                reportHTML += '<h3>ניתוח טעויות ונקודות לשיפור:</h3>';
+                mistakesAndLearnings.forEach(mistake => {
+                    reportHTML += `<div class="mistake-item">`;
+                    reportHTML += `<p><strong>בשלב:</strong> ${mistake.step}</p>`;
+                    reportHTML += `<p><strong>השאלה:</strong> ${mistake.question}</p>`;
+                    reportHTML += `<p><strong>התשובה שלך:</strong> ${mistake.userAnswer}</p>`;
+                    reportHTML += `<p><strong>המשוב שניתן:</strong> ${mistake.feedback}</p>`;
+                    if (mistake.remediation) {
+                        reportHTML += `<p><strong>מוקד לשיפור:</strong> ${mistake.remediation}</p>`;
+                    }
+                    reportHTML += `</div>`;
+                });
+            } else if (studentPath.length > 0) {
+                 const lastAttempt = studentPath.filter(item => item.type === 'attempt').pop();
+                 let mainProblemSolvedCorrectly = false;
+                 if (lastAttempt && lastAttempt.stepDescription === "בעיה ראשית" && lastAttempt.selectedAnswer === mainProblemCorrectAnswer && lastAttempt.isCorrect) {
+                    mainProblemSolvedCorrectly = true;
+                 } else {
+                    // Check if the final diagnostic step that leads to the correct answer was successful
+                    const finalDiagnosticStepA = studentPath.find(item => item.stepDescription === "שלב 3א: חישוב מחיר סופי" && item.isCorrect);
+                    const finalDiagnosticStepB = studentPath.find(item => item.stepDescription === "שלב 3ב: חישוב מחיר סופי מאחוז נותר" && item.isCorrect);
+                    if(finalDiagnosticStepA || finalDiagnosticStepB) mainProblemSolvedCorrectly = true;
+                 }
+
+                if (mainProblemSolvedCorrectly) {
+                     reportHTML += '<p><strong>כל הכבוד! נראה שהבנת את כל השלבים ולא זוהו טעויות הדורשות התייחסות מיוחדת.</strong></p>';
+                } else {
+                     reportHTML += '<p>לא זוהו טעויות ספציפיות הדורשות התייחסות מיוחדת, אך ייתכן שלא כל חלקי השאלה הושלמו בהצלחה.</p>';
+                }
+            } else {
+                 reportHTML += '<p>לא נרשמה התקדמות עדיין.</p>';
+            }
+
+            const currentFileName = "percentage_word_problems_diagnostic.html"; 
+            if (mistakesAndLearnings.length > 0) {
+                localStorage.setItem(`diagnosticReportData_${currentFileName}`, JSON.stringify(mistakesAndLearnings));
+            } else {
+                localStorage.removeItem(`diagnosticReportData_${currentFileName}`); 
+            }
+
+            reportContainer.innerHTML = reportHTML;
+            window.print(); 
+        }
+
+        // --- Check Answer Functions ---
+
+        function checkMainPercentageAnswer() {
+            const selection = getSelectedRadioValue('mainPercentageAnswer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            
+            const isCorrect = selection.value === mainProblemCorrectAnswer;
+            const feedbackMsg = isCorrect ? "מעולה! המחיר לאחר ההנחה הוא 160 ש\"ח." : "התשובה אינה מדויקת. בוא נפרק את השלבים.";
+            const remediation = isCorrect ? null : "פתרון בעיות אחוזים (הנחה)";
+            logAttempt("בעיה ראשית", 'mainPercentageProblemSection', selection.value, selection.text, 'mainPercentageAnswer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            if (isCorrect) {
+                showSection(null); 
+            } else {
+                setTimeout(() => {
+                    document.getElementById('feedbackSection').classList.add('hidden');
+                    showSection('diagnosticPercQ1_strategySection');
+                }, 3000);
+            }
+        }
+
+        function checkDiagnosticPercQ1_strategy() {
+            const selection = getSelectedRadioValue('diagPercQ1_strategyAnswer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            
+            const isCorrect = true; // Both strategies are valid, so this step is always "correct" in terms of choice
+            let feedbackMsg = "";
+            let nextSection = null;
+            
+            if (selection.value === "calculate_discount_first") {
+                feedbackMsg = "אסטרטגיה טובה! בוא נחשב את סכום ההנחה.";
+                nextSection = 'diagnosticPercQ2a_calcDiscountAmountSection';
+            } else if (selection.value === "calculate_remaining_percentage_first") {
+                feedbackMsg = "גם זו אסטרטגיה טובה! בוא נחשב את אחוז המחיר הנותר.";
+                nextSection = 'diagnosticPercQ2b_calcRemainingPercSection';
+            }
+            // No remediation needed for strategy choice itself
+            logAttempt("שלב 1: בחירת אסטרטגיה", 'diagnosticPercQ1_strategySection', selection.value, selection.text, 'diagPercQ1_strategyAnswer', isCorrect, feedbackMsg, null);
+            displayFeedback(feedbackMsg, null);
+            
+            if (nextSection) {
+                setTimeout(() => { 
+                    document.getElementById('feedbackSection').classList.add('hidden');
+                    showSection(nextSection);
+                }, 2500);
+            }
+        }
+        
+        // Path A functions
+        function checkDiagnosticPercQ2a_calcDiscountAmount() {
+            const selection = getSelectedRadioValue('diagPercQ2a_discountAnswer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+
+            const isCorrect = parseFloat(selection.value) === correctDiscountAmount;
+            let feedbackMsg = "";
+            let remediation = null;
+            let nextSection = null;
+
+            if (isCorrect) {
+                feedbackMsg = "נכון! סכום ההנחה הוא 40 ש\"ח. כעת נחשב את המחיר הסופי.";
+                nextSection = 'diagnosticPercQ3a_calcFinalPriceSection';
+            } else if (selection.value === "0.2"){
+                 feedbackMsg = "זהו האחוז (20%) מבוטא כשבר עשרוני. כדי למצוא את סכום ההנחה, יש להכפיל את השבר העשרוני במחיר המקורי (200 ש\"ח). נסה שוב את השלב הזה.";
+                 remediation = "חישוב ערך האחוז";
+                 nextSection = 'diagnosticPercQ2a_calcDiscountAmountSection';
+            }
+            else {
+                feedbackMsg = "לא מדויק. כדי לחשב 20% מ-200, אפשר להמיר את האחוז לשבר. בוא נבדוק את זה.";
+                remediation = "המרת אחוז לשבר";
+                nextSection = 'diagnosticPercQ2a_sub_percentToDecimal';
+            }
+            logAttempt("שלב 2א: חישוב סכום הנחה", 'diagnosticPercQ2a_calcDiscountAmountSection', selection.value, selection.text, 'diagPercQ2a_discountAnswer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            if (nextSection && nextSection !== 'diagnosticPercQ2a_calcDiscountAmountSection' && nextSection !== 'diagnosticPercQ2a_sub_percentToDecimal') {
+                setTimeout(() => {
+                    document.getElementById('feedbackSection').classList.add('hidden');
+                    showSection(nextSection);
+                }, 2500);
+            } else if (nextSection) {
+                 setTimeout(() => {
+                    document.getElementById('feedbackSection').classList.add('hidden');
+                    showSection(nextSection);
+                }, 3500);
+            }
+        }
+
+        function checkDiagnosticPercQ2a_sub_percentToDecimal() {
+            const selection = getSelectedRadioValue('diagPercQ2a_sub_p2dAnswer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = selection.value === "0.2";
+            const feedbackMsg = isCorrect ? "נכון! 20% הם $0.2$. כעת, הכפל את זה במחיר המקורי (200 ש\"ח) כדי למצוא את סכום ההנחה. נחזור לשאלה הקודמת." : "לא מדויק. אחוז הוא חלק מ-100. לכן $20\% = \frac{20}{100} = 0.2$. נסה שוב.";
+            const remediation = isCorrect ? null : "הגדרת האחוז";
+            logAttempt("שלב 2א.1: המרת 20% לשבר", 'diagnosticPercQ2a_sub_percentToDecimal', selection.value, selection.text, 'diagPercQ2a_sub_p2dAnswer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            setTimeout(() => {
+                document.getElementById('feedbackSection').classList.add('hidden');
+                if (isCorrect) {
+                    const prevQuestionTextEl = document.getElementById('diagnosticPercQ2a_calcDiscountAmountSection').querySelector('.question-text');
+                    prevQuestionTextEl.innerHTML = `המחיר המקורי הוא 200 ש"ח וההנחה היא 20% (שהם $0.2$).<br>מהו סכום ההנחה ב-ש"ח? (כלומר, $0.2 \\times 200$?)`;
+                    queueMathJaxTypeset(prevQuestionTextEl);
+                    showSection('diagnosticPercQ2a_calcDiscountAmountSection');
+                } else {
+                    showSection('diagnosticPercQ2a_sub_percentToDecimal');
+                }
+            }, isCorrect ? 4000 : 3500);
+        }
+
+        function checkDiagnosticPercQ3a_calcFinalPrice() {
+            const selection = getSelectedRadioValue('diagPercQ3a_finalPriceAnswer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = selection.value === mainProblemCorrectAnswer;
+            let feedbackMsg = "";
+            let remediation = null;
+            let nextSection = null;
+
+            if (isCorrect) {
+                feedbackMsg = "מעולה! המחיר לאחר ההנחה הוא 160 ש\"ח. זו התשובה הסופית.";
+                nextSection = null; // End of this path
+            } else if (selection.value === "240") {
+                 feedbackMsg = "שים לב, זו הנחה, לכן יש להפחית את סכום ההנחה מהמחיר המקורי, לא להוסיף. נסה שוב.";
+                 remediation = "הבנת פעולת הנחה";
+                 nextSection = 'diagnosticPercQ3a_calcFinalPriceSection';
+            }
+             else {
+                feedbackMsg = "לא מדויק. המחיר הסופי הוא המחיר המקורי פחות סכום ההנחה: $200 - 40 = 160$. נסה שוב.";
+                remediation = "חיסור סכום ההנחה";
+                nextSection = 'diagnosticPercQ3a_calcFinalPriceSection';
+            }
+            logAttempt("שלב 3א: חישוב מחיר סופי", 'diagnosticPercQ3a_calcFinalPriceSection', selection.value, selection.text, 'diagPercQ3a_finalPriceAnswer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+            
+            if (nextSection) { // Retry
+                 setTimeout(() => {
+                    document.getElementById('feedbackSection').classList.add('hidden');
+                    showSection(nextSection);
+                }, 3500);
+            } else { // Correct or end of path
+                showSection(null);
+            }
+        }
+
+        // Path B functions
+        function checkDiagnosticPercQ2b_calcRemainingPerc() {
+            const selection = getSelectedRadioValue('diagPercQ2b_remPercAnswer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = parseFloat(selection.value) === correctRemainingPercentage;
+            const feedbackMsg = isCorrect ? "נכון! אם ההנחה היא 20%, אז נשלם 80% מהמחיר. כעת נחשב כמה זה 80% מ-200 ש\"ח." : "לא מדויק. המחיר המקורי הוא 100%. אם מקבלים הנחה של 20%, אז האחוז הנותר לתשלום הוא $100\% - 20\% = 80\%$. נסה שוב.";
+            const remediation = isCorrect ? null : "חישוב אחוז נותר";
+            logAttempt("שלב 2ב: חישוב אחוז נותר", 'diagnosticPercQ2b_calcRemainingPercSection', selection.value, selection.text, 'diagPercQ2b_remPercAnswer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            setTimeout(() => {
+                document.getElementById('feedbackSection').classList.add('hidden');
+                showSection(isCorrect ? 'diagnosticPercQ3b_calcFinalPriceFromRemPercSection' : 'diagnosticPercQ2b_calcRemainingPercSection');
+            }, isCorrect ? 3000 : 3500);
+        }
+
+        function checkDiagnosticPercQ3b_calcFinalPriceFromRemPerc() {
+            const selection = getSelectedRadioValue('diagPercQ3b_finalPriceRemAnswer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = selection.value === mainProblemCorrectAnswer;
+            let feedbackMsg = "";
+            let remediation = null;
+            let nextSection = null;
+
+            if (isCorrect) {
+                feedbackMsg = "מעולה! המחיר לאחר ההנחה הוא 160 ש\"ח. זו התשובה הסופית.";
+                nextSection = null; // End of this path
+            } else if (selection.value === "0.8") {
+                 feedbackMsg = "זהו האחוז (80%) מבוטא כשבר עשרוני. כדי למצוא את המחיר הסופי, יש להכפיל את השבר העשרוני במחיר המקורי (200 ש\"ח). נסה שוב.";
+                 remediation = "חישוב ערך האחוז";
+                 nextSection = 'diagnosticPercQ3b_calcFinalPriceFromRemPercSection';
+            }
+            else {
+                feedbackMsg = "לא מדויק. כדי לחשב 80% מ-200: $0.8 \\times 200 = 160$. נסה שוב.";
+                remediation = "חישוב ערך האחוז";
+                nextSection = 'diagnosticPercQ3b_calcFinalPriceFromRemPercSection';
+            }
+            logAttempt("שלב 3ב: חישוב מחיר סופי מאחוז נותר", 'diagnosticPercQ3b_calcFinalPriceFromRemPercSection', selection.value, selection.text, 'diagPercQ3b_finalPriceRemAnswer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            if (nextSection) { // Retry
+                 setTimeout(() => {
+                    document.getElementById('feedbackSection').classList.add('hidden');
+                    showSection(nextSection);
+                }, 3500);
+            } else { // Correct or end of path
+                showSection(null);
+            }
+        }
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>אבחון: שאלה 3 - הצעות מחיר גננים</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Assistant', sans-serif; background-color: #f1f5f9; color: #1e293b; }
+        .container-quiz { max-width: 800px; margin: 2rem auto; padding: 2rem; background-color: #ffffff; border-radius: 0.75rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .question-section { margin-bottom: 1.5rem; padding: 1.5rem; border: 1px solid #e2e8f0; border-radius: 0.5rem; background-color: #f8fafc; }
+        .problem-statement { font-size: 1.25rem; font-weight: 600; color: #0f172a; margin-bottom: 1rem; }
+        .question-text, .problem-context { font-size: 1.1rem; color: #334155; margin-bottom: 0.75rem; line-height: 1.6; }
+        .problem-context p { margin-bottom: 0.25rem; text-align: right; font-weight: 500; }
+        #priceChartContainer { width: 100%; max-width: 550px; margin: 1rem auto; }
+        label.option-label { display: block; padding: 0.75rem 1rem; margin-bottom: 0.5rem; background-color: #fff; border: 1px solid #cbd5e1; border-radius: 0.375rem; cursor: pointer; transition: background-color 0.2s, border-color 0.2s; }
+        label.option-label:hover { background-color: #f1f5f9; border-color: #94a3b8; }
+        input[type="radio"] { margin-left: 0.5rem; accent-color: #2563eb; }
+        button.submit-button { padding: 0.75rem 1.5rem; background-color: #2563eb; color: white; border: none; border-radius: 0.375rem; font-weight: 500; cursor: pointer; transition: background-color 0.2s; margin-top: 1rem; }
+        button.submit-button:hover { background-color: #1d4ed8; }
+        button.action-button { padding: 0.5rem 1rem; background-color: #475569; color: white; border: none; border-radius: 0.375rem; font-weight: 500; cursor: pointer; transition: background-color 0.2s; margin-right: 0.5rem; }
+        button.action-button:hover { background-color: #334155; }
+        .feedback-section { margin-top: 1.5rem; padding: 1.5rem; border-radius: 0.5rem; background-color: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+        .hidden { display: none; }
+        #printableReport { display: none; padding: 20px; font-family: 'Assistant', sans-serif; color: #000; direction: rtl; }
+        #printableReport h2, #printableReport h3 { font-weight: 600; margin-bottom: 1rem; border-bottom: 1px solid #ccc; padding-bottom: 0.5rem; }
+        #printableReport h2 { font-size: 1.5rem; }
+        #printableReport h3 { font-size: 1.3rem; margin-top: 1.5rem;}
+        #printableReport .report-item, #printableReport .mistake-item { margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px dotted #eee; }
+        #printableReport .report-item:last-child, #printableReport .mistake-item:last-child { border-bottom: none; }
+        #printableReport p { margin-bottom: 0.25rem; }
+        #printableReport strong { font-weight: 600; }
+        #printableReport ul { list-style-type: disc; margin-right: 20px; padding-right: 20px; }
+        #printableReport li { margin-bottom: 0.25rem; }
+        @media print {
+            body * { visibility: hidden; }
+            #printableReport, #printableReport * { visibility: visible; }
+            #priceChartContainer { display: none !important; } 
+            #printableReport { position: absolute; left: 0; top: 0; width: 100%; display: block !important; font-size: 12pt; }
+            .container-quiz > h1, .container-quiz > div:first-of-type, .question-section, .feedback-section { display: none !important; visibility: hidden !important; }
+        }
+    </style>
+    <script>
+        window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div class="container-quiz">
+        <h1 class="text-2xl font-bold text-center text-slate-700 mb-6">אבחון: שאלה 3 - הצעות מחיר גננים</h1>
+        <div class="mb-6 text-center">
+            <button class="action-button" onclick="startOverQ3()">התחל מחדש</button>
+            <button class="action-button" onclick="shareReportQ3()">שתף דוח</button>
+        </div>
+
+        <div id="q3ProblemContext" class="problem-context question-section bg-blue-50 border-blue-200">
+            <p class="problem-statement text-blue-700">נתוני השאלה:</p>
+            <p>אורן ותומר הם גננים. כל אחד מהם פרסם באתר השכונתי הצעת מחיר בעבור ייעוץ וטיפול בגינה.</p>
+            <p>ההצעה של הגנן אורן: 700 שקלים לייעוץ ועוד 20 שקלים לגינון של כל מ"ר (מטר רבוע) גינה.</p>
+            <p>ההצעה של הגנן תומר: 48 שקלים לכל מ"ר גינה (הייעוץ כלול במחיר).</p>
+            <p>לפניכם שני גרפים, I ו-II, המתארים את שתי ההצעות (הגרף מתעדכן בהתאם לנתונים):</p>
+            <div id="priceChartContainer">
+                <canvas id="priceOffersChart"></canvas>
+            </div>
+        </div>
+
+        <div id="mainQ3PartASection" class="question-section">
+            <p class="problem-statement">בעיה ראשית - סעיף א':</p>
+            <p class="question-text">בהתאם לגרף המוצג, איזה גרף (קו) מתאר את ההצעה של אורן?</p>
+            <div id="mainQ3PartAOptions">
+                <label class="option-label"><input type="radio" name="mainQ3A_Answer" value="I"> א) גרף I (הקו הכחול)</label>
+                <label class="option-label"><input type="radio" name="mainQ3A_Answer" value="II"> ב) גרף II (הקו האדום)</label>
+            </div>
+            <button class="submit-button" onclick="checkMainQ3PartAAnswer()">הגש תשובה לסעיף א'</button>
+        </div>
+
+        <div id="q3_a1_orenFixedCostSection" class="question-section hidden">
+            <p class="problem-statement">סעיף א' - שלב 1: ניתוח העלות הקבועה של אורן</p>
+            <p class="question-text">ההצעה של אורן כוללת עלות קבועה של 700 שקלים לייעוץ, גם אם שטח הגינה הוא 0 מ"ר.<br>בגרף, נקודת החיתוך עם ציר ה-Y (כאשר שטח הגינה = 0) מייצגת עלות קבועה זו.<br>איזה גרף (הכחול או האדום) מתחיל בערך של 700 שקלים על ציר ה-Y כאשר שטח הגינה הוא 0?</p>
+            <div id="q3_a1_orenFixedCostOptions">
+                <label class="option-label"><input type="radio" name="q3_a1_fixedCostAns" value="I"> א) גרף I (הקו הכחול)</label>
+                <label class="option-label"><input type="radio" name="q3_a1_fixedCostAns" value="II"> ב) גרף II (הקו האדום)</label>
+            </div>
+            <button class="submit-button" onclick="checkQ3_a1_orenFixedCost()">הגש תשובה</button>
+        </div>
+
+        <div id="mainQ3PartBSection" class="question-section hidden">
+            <p class="problem-statement">בעיה ראשית - סעיף ב':</p>
+            <p class="question-text">(1) מהו שטח הגינה שבעבורו הגננים אורן ותומר גובים את אותו המחיר?</p>
+            <p class="question-text">(2) מהו המחיר בעבור השטח הזה?</p>
+            <div id="mainQ3PartBOptions">
+                <label class="option-label"><input type="radio" name="mainQ3B_Answer" value="area25_price1200"> א) שטח: 25 מ"ר, מחיר: 1200 ש"ח</label>
+                <label class="option-label"><input type="radio" name="mainQ3B_Answer" value="area20_price1000"> ב) שטח: 20 מ"ר, מחיר: 1000 ש"ח</label>
+                <label class="option-label"><input type="radio" name="mainQ3B_Answer" value="area30_price1400"> ג) שטח: 30 מ"ר, מחיר: 1400 ש"ח</label>
+            </div>
+            <button class="submit-button" onclick="checkMainQ3PartBAnswer()">הגש תשובה לסעיף ב'</button>
+        </div>
+
+        <div id="q3_b1_intersectionPointSection" class="question-section hidden">
+            <p class="problem-statement">סעיף ב' - שלב 1: הבנת נקודת החיתוך</p>
+            <p class="question-text">הנקודה שבה שני הגרפים נחתכים מייצגת את המצב שבו שני הגננים גובים את אותו המחיר עבור אותו שטח גינה.<br>התבוננו בגרף. מהו שטח הגינה (על ציר ה-X) בנקודת החיתוך של שני הקווים?</p>
+            <div id="q3_b1_intersectionPointOptions">
+                <label class="option-label"><input type="radio" name="q3_b1_intersectAreaAns" value="25"> א) 25 מ"ר</label>
+                <label class="option-label"><input type="radio" name="q3_b1_intersectAreaAns" value="20"> ב) 20 מ"ר</label>
+                <label class="option-label"><input type="radio" name="q3_b1_intersectAreaAns" value="1200"> ג) 1200 מ"ר (זהו ערך מהציר האנכי)</label>
+            </div>
+            <button class="submit-button" onclick="checkQ3_b1_intersectionArea()">הגש תשובה</button>
+        </div>
+
+        <div id="q3_b2_intersectionPriceSection" class="question-section hidden">
+            <p class="problem-statement">סעיף ב' - שלב 2: קריאת המחיר בנקודת החיתוך</p>
+            <p class="question-text">בנקודת החיתוך, שטח הגינה הוא 25 מ"ר. מהו המחיר (על ציר ה-Y) המתאים לנקודה זו?</p>
+            <div id="q3_b2_intersectionPriceOptions">
+                <label class="option-label"><input type="radio" name="q3_b2_intersectPriceAns" value="1200"> א) 1200 ש"ח</label>
+                <label class="option-label"><input type="radio" name="q3_b2_intersectPriceAns" value="1000"> ב) 1000 ש"ח</label>
+                <label class="option-label"><input type="radio" name="q3_b2_intersectPriceAns" value="25"> ג) 25 ש"ח (זהו ערך מהציר האופקי)</label>
+            </div>
+            <button class="submit-button" onclick="checkQ3_b2_intersectionPrice()">הגש תשובה</button>
+        </div>
+        
+        <div id="q3_b3_setupEquationsSection" class="question-section hidden">
+            <p class="problem-statement">סעיף ב' - שלב 3 (דרך חלופית): בניית משוואות</p>
+            <p class="question-text">ניתן למצוא את נקודת החיתוך גם אלגברית.<br>המשוואה של אורן: $P_O = 700 + 20x$.<br>המשוואה של תומר: $P_T = 48x$.<br>כדי למצוא מתי המחירים שווים, נשווה ביניהם: $P_O = P_T$. איזו משוואה מתקבלת?</p>
+            <div id="q3_b3_setupEquationsOptions">
+                <label class="option-label"><input type="radio" name="q3_b3_setupEqAns" value="700+20x=48x"> א) $700 + 20x = 48x$</label>
+                <label class="option-label"><input type="radio" name="q3_b3_setupEqAns" value="700+20x+48x=0"> ב) $700 + 20x + 48x = 0$</label>
+                <label class="option-label"><input type="radio" name="q3_b3_setupEqAns" value="700-20x=48x"> ג) $700 - 20x = 48x$</label>
+            </div>
+            <button class="submit-button" onclick="checkQ3_b3_setupEquations()">הגש תשובה</button>
+        </div>
+
+        <div id="q3_b4_solveForXSection" class="question-section hidden">
+            <p class="problem-statement">סעיף ב' - שלב 4: פתרון המשוואה עבור $x$</p>
+            <p class="question-text">פתור את המשוואה $700 + 20x = 48x$ כדי למצוא את $x$ (שטח הגינה).</p>
+            <div id="q3_b4_solveForXOptions">
+                <label class="option-label"><input type="radio" name="q3_b4_solveXAns" value="25"> א) $x=25$</label>
+                <label class="option-label"><input type="radio" name="q3_b4_solveXAns" value="10.29"> ב) $x \approx 10.29$ ($700/68$)</label>
+                <label class="option-label"><input type="radio" name="q3_b4_solveXAns" value="28"> ג) $x=28$ (טעות חישוב)</label>
+            </div>
+            <button class="submit-button" onclick="checkQ3_b4_solveForX()">הגש תשובה</button>
+        </div>
+
+        <div id="mainQ3PartCSection" class="question-section hidden">
+            <p class="problem-statement">בעיה ראשית - סעיף ג':</p>
+            <p class="question-text">למשפחת כהן יש גינה ששטחה 17 מ"ר. משפחת כהן בחרה בגנן שהצעת המחיר שלו הייתה נמוכה יותר.<br>(1) במי משני הגננים בחרה משפחת כהן?<br>(2) מצאו בכמה שקלים הייתה גבוהה הצעת המחיר של הגנן האחר מן המחיר ששילמה משפחת כהן.</p>
+            <div id="mainQ3PartCOptions">
+                <label class="option-label"><input type="radio" name="mainQ3C_Answer" value="tomer_diff224"> א) תומר, ההפרש 224 ש"ח</label>
+                <label class="option-label"><input type="radio" name="mainQ3C_Answer" value="oren_diff224"> ב) אורן, ההפרש 224 ש"ח</label>
+                <label class="option-label"><input type="radio" name="mainQ3C_Answer" value="tomer_diff206"> ג) תומר, ההפרש 206 ש"ח</label>
+                 <label class="option-label"><input type="radio" name="mainQ3C_Answer" value="oren_diff206"> ד) אורן, ההפרש 206 ש"ח</label>
+            </div>
+            <button class="submit-button" onclick="checkMainQ3PartCAnswer()">הגש תשובה לסעיף ג'</button>
+        </div>
+        
+        <div id="q3_c1_orenPrice17Section" class="question-section hidden">
+            <p class="problem-statement">סעיף ג' - שלב 1: חישוב מחיר אורן ל-17 מ"ר</p>
+            <p class="question-text">ההצעה של אורן: $700 + 20x$. מהו המחיר של אורן עבור גינה ששטחה 17 מ"ר ($x=17$)?</p>
+            <div id="q3_c1_orenPrice17Options">
+                <label class="option-label"><input type="radio" name="q3_c1_oren17Ans" value="1040"> א) 1040 ש"ח</label>
+                <label class="option-label"><input type="radio" name="q3_c1_oren17Ans" value="340"> ב) 340 ש"ח (רק $20 \times 17$)</label>
+                <label class="option-label"><input type="radio" name="q3_c1_oren17Ans" value="720"> ג) 720 ש"ח ($700+20$)</label>
+            </div>
+            <button class="submit-button" onclick="checkQ3_c1_orenPrice17()">הגש תשובה</button>
+        </div>
+
+        <div id="q3_c2_tomerPrice17Section" class="question-section hidden">
+            <p class="problem-statement">סעיף ג' - שלב 2: חישוב מחיר תומר ל-17 מ"ר</p>
+            <p class="question-text">ההצעה של תומר: $48x$. מהו המחיר של תומר עבור גינה ששטחה 17 מ"ר ($x=17$)?</p>
+            <div id="q3_c2_tomerPrice17Options">
+                <label class="option-label"><input type="radio" name="q3_c2_tomer17Ans" value="816"> א) 816 ש"ח</label>
+                <label class="option-label"><input type="radio" name="q3_c2_tomer17Ans" value="480"> ב) 480 ש"ח ($48 \times 10$)</label>
+                <label class="option-label"><input type="radio" name="q3_c2_tomer17Ans" value="65"> ג) 65 ש"ח ($48+17$)</label>
+            </div>
+            <button class="submit-button" onclick="checkQ3_c2_tomerPrice17()">הגש תשובה</button>
+        </div>
+
+        <div id="q3_c3_compareChooseSection" class="question-section hidden">
+            <p class="problem-statement">סעיף ג' - שלב 3: השוואת מחירים ובחירת גנן</p>
+            <p class="question-text">עבור 17 מ"ר: מחיר אורן הוא 1040 ש"ח, ומחיר תומר הוא 816 ש"ח.<br>במי בחרה משפחת כהן (ההצעה הנמוכה יותר)?</p>
+            <div id="q3_c3_compareChooseOptions">
+                <label class="option-label"><input type="radio" name="q3_c3_choiceAns" value="tomer"> א) תומר</label>
+                <label class="option-label"><input type="radio" name="q3_c3_choiceAns" value="oren"> ב) אורן</label>
+            </div>
+            <button class="submit-button" onclick="checkQ3_c3_compareChoose()">הגש תשובה</button>
+        </div>
+        
+        <div id="q3_c4_priceDifferenceSection" class="question-section hidden">
+            <p class="problem-statement">סעיף ג' - שלב 4: חישוב הפרש המחירים</p>
+            <p class="question-text">מחיר אורן: 1040 ש"ח. מחיר תומר: 816 ש"ח.<br>מהו ההפרש בין המחיר הגבוה (של אורן) למחיר הנמוך (של תומר)?</p>
+            <div id="q3_c4_priceDifferenceOptions">
+                <label class="option-label"><input type="radio" name="q3_c4_diffAns" value="224"> א) 224 ש"ח</label>
+                <label class="option-label"><input type="radio" name="q3_c4_diffAns" value="1856"> ב) 1856 ש"ח (סכום המחירים)</label>
+                <label class="option-label"><input type="radio" name="q3_c4_diffAns" value="206"> ג) 206 ש"ח (טעות חישוב)</label>
+            </div>
+            <button class="submit-button" onclick="checkQ3_c4_priceDifference()">הגש תשובה</button>
+        </div>
+
+
+        <div id="feedbackQ3Section" class="feedback-section hidden">
+            <p id="feedbackQ3Text" class="text-lg"></p>
+            <p id="remediationQ3Link" class="mt-2 font-semibold"></p>
+        </div>
+        <div id="printableReport"></div>
+    </div>
+
+    <script>
+        let studentQ3Path = [];
+        // Correct answers
+        const q3_a_correct_oren_graph = "I"; // Oren's graph is I (blue in our chart)
+        const q3_b_correct_area = 25;
+        const q3_b_correct_price = 1200;
+        const q3_c_oren_price_17 = 1040; 
+        const q3_c_tomer_price_17 = 816; 
+        const q3_c_cheaper_gardener = "tomer";
+        const q3_c_price_difference = 224; 
+
+        let priceChartInstance = null; // To hold the chart instance
+
+        // --- Chart Rendering Function ---
+        function renderPriceChart() {
+            const ctx = document.getElementById('priceOffersChart').getContext('2d');
+            
+            const labels = []; // Garden area (x-axis)
+            const orenData = []; // Oren's prices (y-axis)
+            const tomerData = []; // Tomer's prices (y-axis)
+
+            for (let x = 0; x <= 50; x += 5) { // Calculate points from 0 to 50 m^2
+                labels.push(x);
+                orenData.push(700 + 20 * x);
+                tomerData.push(48 * x);
+            }
+            // Ensure the intersection point 25 is included if not already by step 5
+            if (!labels.includes(25)) {
+                 const insertIndex = labels.findIndex(label => label > 25);
+                 if (insertIndex !== -1) {
+                    labels.splice(insertIndex, 0, 25);
+                    orenData.splice(insertIndex, 0, 700 + 20 * 25);
+                    tomerData.splice(insertIndex, 0, 48 * 25);
+                 } else { 
+                    labels.push(25);
+                    orenData.push(700 + 20 * 25);
+                    tomerData.push(48 * 25);
+                 }
+            }
+
+
+            if (priceChartInstance) {
+                priceChartInstance.destroy(); 
+            }
+
+            priceChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'ההצעה של אורן (גרף I)', 
+                            data: orenData,
+                            borderColor: 'rgb(59, 130, 246)', 
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            tension: 0.1,
+                            fill: false,
+                            pointRadius: 3,
+                            pointHoverRadius: 6
+                        },
+                        {
+                            label: 'ההצעה של תומר (גרף II)', 
+                            data: tomerData,
+                            borderColor: 'rgb(239, 68, 68)', 
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            tension: 0.1,
+                            fill: false,
+                            pointRadius: 3,
+                            pointHoverRadius: 6
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'שטח הגינה (מ"ר)',
+                                font: { family: "'Assistant', sans-serif", size: 14, weight: '600' },
+                                color: '#334155'
+                            },
+                            ticks: { font: { family: "'Assistant', sans-serif" }, color: '#475569' },
+                            grid: { color: '#e2e8f0' }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'המחיר (שקלים)',
+                                font: { family: "'Assistant', sans-serif", size: 14, weight: '600' },
+                                color: '#334155'
+                            },
+                            beginAtZero: true,
+                            max: 2000, 
+                            ticks: { font: { family: "'Assistant', sans-serif" }, color: '#475569' },
+                            grid: { color: '#e2e8f0' }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                font: { family: "'Assistant', sans-serif", size: 12 },
+                                color: '#334155'
+                            }
+                        },
+                        tooltip: {
+                            titleFont: { family: "'Assistant', sans-serif" },
+                            bodyFont: { family: "'Assistant', sans-serif" },
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    return `שטח: ${tooltipItems[0].label} מ"ר`;
+                                },
+                                label: function(tooltipItem) {
+                                    let label = tooltipItem.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += `${tooltipItem.formattedValue} ש"ח`;
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                }
+            });
+        }
+
+
+        // --- Utility Functions ---
+        function queueMathJaxTypeset(element) {
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                window.MathJax.typesetPromise(element ? [element] : undefined).catch((err) => console.error('MathJax typesetting error:', err));
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            renderPriceChart(); 
+            queueMathJaxTypeset(document.getElementById('mainQ3PartASection'));
+            queueMathJaxTypeset(document.getElementById('q3ProblemContext'));
+        });
+
+        function showQ3Section(sectionId) {
+            const allSectionIds = [
+                'mainQ3PartASection', 'q3_a1_orenFixedCostSection',
+                'mainQ3PartBSection', 'q3_b1_intersectionPointSection', 'q3_b2_intersectionPriceSection', 'q3_b3_setupEquationsSection', 'q3_b4_solveForXSection',
+                'mainQ3PartCSection', 'q3_c1_orenPrice17Section', 'q3_c2_tomerPrice17Section', 'q3_c3_compareChooseSection', 'q3_c4_priceDifferenceSection'
+            ];
+            allSectionIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+            if (sectionId) {
+                const el = document.getElementById(sectionId);
+                if (el) {
+                    el.classList.remove('hidden');
+                    queueMathJaxTypeset(el);
+                }
+            }
+        }
+
+        function displayQ3Feedback(message, remediation) {
+            const feedbackTextEl = document.getElementById('feedbackQ3Text');
+            const remediationLinkEl = document.getElementById('remediationQ3Link');
+            feedbackTextEl.innerHTML = message; 
+            remediationLinkEl.innerHTML = remediation ? `<strong>מוקד מומלץ לחיזוק:</strong> ${remediation}` : '';
+            document.getElementById('feedbackQ3Section').classList.remove('hidden');
+            queueMathJaxTypeset(document.getElementById('feedbackQ3Section')); 
+        }
+        
+        function startOverQ3() {
+            studentQ3Path = []; 
+            const radioGroups = [
+                'mainQ3A_Answer', 'q3_a1_fixedCostAns',
+                'mainQ3B_Answer', 'q3_b1_intersectAreaAns', 'q3_b2_intersectPriceAns', 'q3_b3_setupEqAns', 'q3_b4_solveXAns',
+                'mainQ3C_Answer', 'q3_c1_oren17Ans', 'q3_c2_tomer17Ans', 'q3_c3_choiceAns', 'q3_c4_diffAns'
+            ];
+            radioGroups.forEach(groupName => {
+                const radios = document.getElementsByName(groupName);
+                if (radios) radios.forEach(radio => radio.checked = false);
+            });
+            document.getElementById('feedbackQ3Section').classList.add('hidden');
+            renderPriceChart(); 
+            showQ3Section('mainQ3PartASection'); 
+        }
+
+        function getSelectedRadioValueQ3(name) {
+            const radios = document.getElementsByName(name);
+            for (let i = 0; i < radios.length; i++) { if (radios[i].checked) return radios[i].value; }
+            return null;
+        }
+
+        function logQ3Attempt(stepDesc, sectionId, selectedValue, radioGroupName, isCorrect, feedbackMessage = "", remediationTopic = null) {
+            let questionReportText = document.getElementById(sectionId)?.querySelector('.question-text')?.textContent.trim() || "טקסט שאלה לא זמין";
+            if (sectionId === 'mainQ3PartBSection' || sectionId === 'mainQ3PartCSection') {
+                 const pElements = document.getElementById(sectionId).querySelectorAll('.question-text');
+                 let combinedText = "";
+                 pElements.forEach(p => combinedText += p.textContent.trim() + " ");
+                 if(combinedText.trim()) questionReportText = combinedText.trim();
+            }
+
+            const selectedOption = document.querySelector(`input[name="${radioGroupName}"]:checked`);
+            const answerText = selectedOption ? (selectedOption.parentElement.textContent || "").replace(/^[א-ד]\)\s*/, '').trim() : selectedValue;
+            
+            studentQ3Path.push({ 
+                type: 'attempt', 
+                stepDescription: stepDesc, 
+                questionText: questionReportText, 
+                selectedAnswer: selectedValue, 
+                selectedAnswerText: answerText,
+                isCorrect: isCorrect, 
+                feedbackForAttempt: isCorrect ? null : { message: feedbackMessage, remediationTopic: remediationTopic } 
+            });
+            document.getElementById('feedbackQ3Section').classList.add('hidden');
+        }
+        
+        function shareReportQ3() { 
+            const reportContainer = document.getElementById('printableReport');
+            if (!reportContainer) { return; }
+            let reportHTML = '<h2>אבחון: שאלה 3 - הצעות מחיר גננים</h2>';
+            
+            const mistakesAndLearnings = [];
+
+            if (studentQ3Path.length === 0) {
+                reportHTML += '<p>לא נרשמה התקדמות עדיין.</p>';
+            } else {
+                studentQ3Path.forEach((item) => {
+                    if (item.type === 'attempt' && !item.isCorrect && item.feedbackForAttempt) {
+                        mistakesAndLearnings.push({
+                            question: item.questionText,
+                            userAnswer: item.selectedAnswerText || item.selectedAnswer,
+                            feedback: item.feedbackForAttempt.message,
+                            remediation: item.feedbackForAttempt.remediationTopic,
+                            step: item.stepDescription
+                        });
+                    }
+                });
+            }
+
+            if (mistakesAndLearnings.length > 0) {
+                reportHTML += '<h3>ניתוח טעויות ונקודות לשיפור:</h3>';
+                mistakesAndLearnings.forEach(mistake => {
+                    reportHTML += `<div class="mistake-item">`;
+                    reportHTML += `<p><strong>בשלב:</strong> ${mistake.step}</p>`;
+                    reportHTML += `<p><strong>השאלה:</strong> ${mistake.question}</p>`;
+                    reportHTML += `<p><strong>התשובה שלך:</strong> ${mistake.userAnswer}</p>`;
+                    reportHTML += `<p><strong>המשוב שניתן:</strong> ${mistake.feedback}</p>`;
+                    if (mistake.remediation) {
+                        reportHTML += `<p><strong>מוקד לשיפור:</strong> ${mistake.remediation}</p>`;
+                    }
+                    reportHTML += `</div>`;
+                });
+            } else if (studentQ3Path.length > 0) {
+                 // Check if the student successfully completed the main parts
+                 const mainACorrect = studentQ3Path.some(item => item.stepDescription === "סעיף א': זיהוי גרף אורן" && item.isCorrect);
+                 const mainBCorrect = studentQ3Path.some(item => item.stepDescription === "סעיף ב': נקודת מחיר זהה" && item.isCorrect);
+                 const mainCCorrect = studentQ3Path.some(item => item.stepDescription === "סעיף ג': בחירת משפחת כהן והפרש" && item.isCorrect);
+
+                 if (mainACorrect && mainBCorrect && mainCCorrect) {
+                     reportHTML += '<p><strong>כל הכבוד! נראה שהבנת את כל השלבים ולא זוהו טעויות הדורשות התייחסות מיוחדת.</strong></p>';
+                 } else if (studentQ3Path.length > 0 && mistakesAndLearnings.length === 0) { // No mistakes logged, but maybe didn't finish
+                     reportHTML += '<p><strong>לא זוהו טעויות ספציפיות הדורשות התייחסות מיוחדת במהלך סשן זה, אך ייתכן שלא כל חלקי השאלה הושלמו בהצלחה.</strong></p>';
+                 }
+            } else { // No path and no mistakes (should be covered by the first if)
+                 reportHTML += '<p>לא נרשמה התקדמות עדיין.</p>';
+            }
+
+
+            reportContainer.innerHTML = reportHTML;
+            window.print(); 
+        }
+
+
+        // --- Check Answer Functions - Part A ---
+        function checkMainQ3PartAAnswer() {
+            const answer = getSelectedRadioValueQ3('mainQ3A_Answer');
+            if (!answer) { displayQ3Feedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = answer === q3_a_correct_oren_graph;
+            const feedbackMsg = isCorrect ? "נכון! גרף I (הקו הכחול) מתאר את ההצעה של אורן." : "התשובה אינה נכונה. גרף אורן מתחיל מעלות קבועה.";
+            const remediation = isCorrect ? null : "הבנת ייצוג גרפי של פונקציה לינארית (נקודת חיתוך עם ציר Y)";
+            logQ3Attempt("סעיף א': זיהוי גרף אורן", 'mainQ3PartASection', answer, 'mainQ3A_Answer', isCorrect, feedbackMsg, remediation);
+            displayQ3Feedback(feedbackMsg, remediation);
+
+            if (isCorrect) {
+                setTimeout(() => showQ3Section('mainQ3PartBSection'), 2500);
+            } else {
+                setTimeout(() => {
+                    document.getElementById('feedbackQ3Section').classList.add('hidden');
+                    showQ3Section('q3_a1_orenFixedCostSection');
+                }, 3000);
+            }
+        }
+
+        function checkQ3_a1_orenFixedCost() {
+            const answer = getSelectedRadioValueQ3('q3_a1_fixedCostAns');
+            if (!answer) { displayQ3Feedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = answer === q3_a_correct_oren_graph;
+            const feedbackMsg = isCorrect ? "נכון! גרף I (הקו הכחול) מתחיל ב-700 ש\"ח. נחזור לשאלה הראשית של סעיף א'." : "לא נכון. התבונן בגרף: איזה קו מתחיל בערך גבוה יותר על ציר ה-Y כאשר שטח הגינה (ציר X) הוא 0? נסה שוב.";
+            const remediation = isCorrect ? null : "קריאת נקודת חיתוך עם ציר Y";
+            logQ3Attempt("סעיף א' שלב 1: ניתוח עלות קבועה", 'q3_a1_orenFixedCostSection', answer, 'q3_a1_fixedCostAns', isCorrect, feedbackMsg, remediation);
+            displayQ3Feedback(feedbackMsg, remediation);
+            
+            setTimeout(() => {
+                document.getElementById('feedbackQ3Section').classList.add('hidden');
+                showQ3Section(isCorrect ? 'mainQ3PartASection' : 'q3_a1_orenFixedCostSection');
+            }, isCorrect ? 4500 : 3500);
+        }
+
+        // --- Check Answer Functions - Part B ---
+        function checkMainQ3PartBAnswer() {
+            const answer = getSelectedRadioValueQ3('mainQ3B_Answer');
+            if (!answer) { displayQ3Feedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = answer === `area${q3_b_correct_area}_price${q3_b_correct_price}`;
+            const feedbackMsg = isCorrect ? "נכון מאוד! עבור שטח של 25 מ\"ר, שני הגננים גובים 1200 ש\"ח." : "התשובה אינה נכונה. בוא נפרק את השלבים.";
+            const remediation = isCorrect ? null : "קריאת גרפים או פתרון אלגברי של מערכת משוואות";
+            logQ3Attempt("סעיף ב': נקודת מחיר זהה", 'mainQ3PartBSection', answer, 'mainQ3B_Answer', isCorrect, feedbackMsg, remediation);
+            displayQ3Feedback(feedbackMsg, remediation);
+
+            if (isCorrect) {
+                setTimeout(() => showQ3Section('mainQ3PartCSection'), 2500);
+            } else {
+                 setTimeout(() => {
+                    document.getElementById('feedbackQ3Section').classList.add('hidden');
+                    showQ3Section('q3_b1_intersectionPointSection'); 
+                }, 3000);
+            }
+        }
+
+        function checkQ3_b1_intersectionArea() {
+            const answer = getSelectedRadioValueQ3('q3_b1_intersectAreaAns');
+            if (!answer) { displayQ3Feedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = parseFloat(answer) === q3_b_correct_area;
+            const feedbackMsg = isCorrect ? "נכון! שטח הגינה בנקודת החיתוך הוא 25 מ\"ר. כעת, מהו המחיר?" : "התבונן בגרף בנקודה שבה שני הקווים מצטלבים. קרא את הערך המתאים על ציר ה-X.";
+            const remediation = isCorrect ? null : "קריאת שיעור X מנקודת חיתוך";
+            logQ3Attempt("סעיף ב' שלב 1: שטח בחיתוך", 'q3_b1_intersectionPointSection', answer, 'q3_b1_intersectAreaAns', isCorrect, feedbackMsg, remediation);
+            displayQ3Feedback(feedbackMsg, remediation);
+
+            if (isCorrect) {
+                setTimeout(() => {
+                    document.getElementById('feedbackQ3Section').classList.add('hidden');
+                    showQ3Section('q3_b2_intersectionPriceSection');
+                }, 2000);
+            } else {
+                 setTimeout(() => {
+                    displayQ3Feedback("נראה שיש קושי בקריאת הגרף. בוא ננסה למצוא את נקודת החיתוך בדרך אלגברית.", "מעבר לפתרון אלגברי");
+                    document.getElementById('feedbackQ3Section').classList.add('hidden');
+                    showQ3Section('q3_b3_setupEquationsSection');
+                }, 4000);
+            }
+        }
+        
+        function checkQ3_b2_intersectionPrice() {
+            const answer = getSelectedRadioValueQ3('q3_b2_intersectPriceAns');
+            if (!answer) { displayQ3Feedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = parseFloat(answer) === q3_b_correct_price;
+            const feedbackMsg = isCorrect ? "נכון! המחיר בנקודת החיתוך הוא 1200 ש\"ח. נחזור לשאלה הראשית של סעיף ב'." : "בנקודת החיתוך (שטח 25 מ\"ר), קרא את הערך המתאים על ציר ה-Y.";
+            const remediation = isCorrect ? null : "קריאת שיעור Y מנקודת חיתוך";
+            logQ3Attempt("סעיף ב' שלב 2: מחיר בחיתוך", 'q3_b2_intersectionPriceSection', answer, 'q3_b2_intersectPriceAns', isCorrect, feedbackMsg, remediation);
+            displayQ3Feedback(feedbackMsg, remediation);
+
+            if (isCorrect) {
+                setTimeout(() => {
+                    document.getElementById('feedbackQ3Section').classList.add('hidden');
+                    showQ3Section('mainQ3PartBSection');
+                }, 3500);
+            } else {
+                 setTimeout(() => {
+                    displayQ3Feedback("נראה שיש קושי בקריאת הגרף. בוא ננסה למצוא את נקודת החיתוך בדרך אלגברית.", "מעבר לפתרון אלגברי");
+                     document.getElementById('feedbackQ3Section').classList.add('hidden');
+                    showQ3Section('q3_b3_setupEquationsSection');
+                }, 4000);
+            }
+        }
+        
+        function checkQ3_b3_setupEquations() { 
+            const answer = getSelectedRadioValueQ3('q3_b3_setupEqAns');
+            if (!answer) { displayQ3Feedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = answer === "700+20x=48x";
+            const feedbackMsg = isCorrect ? "משוואה נכונה! כעת נפתור אותה כדי למצוא את $x$." : "כדי שהמחירים יהיו שווים, יש להשוות את הביטוי למחיר של אורן עם הביטוי למחיר של תומר. נסה שוב.";
+            const remediation = isCorrect ? null : "השוואת ביטויים אלגבריים";
+            logQ3Attempt("סעיף ב' שלב 3: בניית משוואות (אלגברי)", 'q3_b3_setupEquationsSection', answer, 'q3_b3_setupEqAns', isCorrect, feedbackMsg, remediation);
+            displayQ3Feedback(feedbackMsg, remediation);
+            
+            setTimeout(() => {
+                document.getElementById('feedbackQ3Section').classList.add('hidden');
+                showQ3Section(isCorrect ? 'q3_b4_solveForXSection' : 'q3_b3_setupEquationsSection');
+            }, isCorrect ? 2000 : 3500);
+        }
+
+        function checkQ3_b4_solveForX() {
+            const answer = getSelectedRadioValueQ3('q3_b4_solveXAns');
+            if (!answer) { displayQ3Feedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = parseFloat(answer) === q3_b_correct_area;
+            const priceAtIntersection = 48 * q3_b_correct_area; 
+            const feedbackMsg = isCorrect ? `נכון! $x=25$ מ\"ר. הצבת $x=25$ באחת ממשוואות המחיר נותנת מחיר של ${priceAtIntersection} ש\"ח. נחזור לשאלה הראשית של סעיף ב'.` : "החישוב אינו מדויק. $700 = 28x \Rightarrow x = 25$. נסה לפתור שוב.";
+            const remediation = isCorrect ? null : "פתרון משוואה לינארית";
+            logQ3Attempt("סעיף ב' שלב 4: פתרון עבור x (אלגברי)", 'q3_b4_solveForXSection', answer, 'q3_b4_solveXAns', isCorrect, feedbackMsg, remediation);
+            displayQ3Feedback(feedbackMsg, remediation);
+
+            setTimeout(() => {
+                document.getElementById('feedbackQ3Section').classList.add('hidden');
+                showQ3Section(isCorrect ? 'mainQ3PartBSection' : 'q3_b4_solveForXSection');
+            }, isCorrect ? 4500 : 4000);
+        }
+
+        // --- Check Answer Functions - Part C ---
+        function checkMainQ3PartCAnswer() {
+            const answer = getSelectedRadioValueQ3('mainQ3C_Answer');
+            if (!answer) { displayQ3Feedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = answer === `${q3_c_cheaper_gardener}_diff${q3_c_price_difference}`;
+            const feedbackMsg = isCorrect ? "נכון מאוד! משפחת כהן בחרה בתומר, וההצעה של אורן הייתה גבוהה ב-224 ש\"ח." : "התשובה אינה נכונה. בוא נפרק את השלבים.";
+            const remediation = isCorrect ? null : "השוואת ערכים וחישוב הפרש";
+            logQ3Attempt("סעיף ג': בחירת משפחת כהן והפרש", 'mainQ3PartCSection', answer, 'mainQ3C_Answer', isCorrect, feedbackMsg, remediation);
+            displayQ3Feedback(feedbackMsg, remediation);
+
+            if (isCorrect) {
+                showQ3Section(null); 
+            } else {
+                setTimeout(() => {
+                    document.getElementById('feedbackQ3Section').classList.add('hidden');
+                    showQ3Section('q3_c1_orenPrice17Section');
+                }, 3000);
+            }
+        }
+
+        function checkQ3_c1_orenPrice17() {
+            const answer = getSelectedRadioValueQ3('q3_c1_oren17Ans');
+            if (!answer) { displayQ3Feedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = parseFloat(answer) === q3_c_oren_price_17;
+            const feedbackMsg = isCorrect ? "נכון! מחיר אורן הוא 1040 ש\"ח. כעת נחשב את מחיר תומר." : "מחיר אורן: $700 + 20 \times 17 = 1040$. נסה שוב.";
+            const remediation = isCorrect ? null : "הצבה בנוסחה וחישוב";
+            logQ3Attempt("סעיף ג' שלב 1: מחיר אורן ל-17 מ\"ר", 'q3_c1_orenPrice17Section', answer, 'q3_c1_oren17Ans', isCorrect, feedbackMsg, remediation);
+            displayQ3Feedback(feedbackMsg, remediation);
+            
+            setTimeout(() => {
+                document.getElementById('feedbackQ3Section').classList.add('hidden');
+                showQ3Section(isCorrect ? 'q3_c2_tomerPrice17Section' : 'q3_c1_orenPrice17Section');
+            }, isCorrect ? 2000 : 3500);
+        }
+
+        function checkQ3_c2_tomerPrice17() {
+            const answer = getSelectedRadioValueQ3('q3_c2_tomer17Ans');
+            if (!answer) { displayQ3Feedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = parseFloat(answer) === q3_c_tomer_price_17;
+            const feedbackMsg = isCorrect ? "נכון! מחיר תומר הוא 816 ש\"ח. כעת נשווה ונבחר." : "מחיר תומר: $48 \times 17 = 816$. נסה שוב.";
+            const remediation = isCorrect ? null : "הצבה בנוסחה וחישוב";
+            logQ3Attempt("סעיף ג' שלב 2: מחיר תומר ל-17 מ\"ר", 'q3_c2_tomerPrice17Section', answer, 'q3_c2_tomer17Ans', isCorrect, feedbackMsg, remediation);
+            displayQ3Feedback(feedbackMsg, remediation);
+
+            setTimeout(() => {
+                document.getElementById('feedbackQ3Section').classList.add('hidden');
+                showQ3Section(isCorrect ? 'q3_c3_compareChooseSection' : 'q3_c2_tomerPrice17Section');
+            }, isCorrect ? 2000 : 3500);
+        }
+
+        function checkQ3_c3_compareChoose() {
+            const answer = getSelectedRadioValueQ3('q3_c3_choiceAns');
+            if (!answer) { displayQ3Feedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = answer === q3_c_cheaper_gardener;
+            const feedbackMsg = isCorrect ? "נכון! תומר זול יותר. כעת נחשב את ההפרש." : "השווה בין 1040 ש\"ח (אורן) ל-816 ש\"ח (תומר). מי זול יותר? נסה שוב.";
+            const remediation = isCorrect ? null : "השוואת מספרים";
+            logQ3Attempt("סעיף ג' שלב 3: בחירת גנן", 'q3_c3_compareChooseSection', answer, 'q3_c3_choiceAns', isCorrect, feedbackMsg, remediation);
+            displayQ3Feedback(feedbackMsg, remediation);
+
+            setTimeout(() => {
+                document.getElementById('feedbackQ3Section').classList.add('hidden');
+                showQ3Section(isCorrect ? 'q3_c4_priceDifferenceSection' : 'q3_c3_compareChooseSection');
+            }, isCorrect ? 2000 : 3500);
+        }
+
+        function checkQ3_c4_priceDifference() {
+            const answer = getSelectedRadioValueQ3('q3_c4_diffAns');
+            if (!answer) { displayQ3Feedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = parseFloat(answer) === q3_c_price_difference;
+            const feedbackMsg = isCorrect ? "נכון! ההפרש הוא 224 ש\"ח. נחזור לשאלה הראשית של סעיף ג'." : "ההפרש הוא $1040 - 816 = 224$. נסה שוב.";
+            const remediation = isCorrect ? null : "פעולת חיסור";
+            logQ3Attempt("סעיף ג' שלב 4: חישוב הפרש", 'q3_c4_priceDifferenceSection', answer, 'q3_c4_diffAns', isCorrect, feedbackMsg, remediation);
+            displayQ3Feedback(feedbackMsg, remediation);
+
+            setTimeout(() => {
+                document.getElementById('feedbackQ3Section').classList.add('hidden');
+                showQ3Section(isCorrect ? 'mainQ3PartCSection' : 'q3_c4_priceDifferenceSection');
+            }, isCorrect ? 2500 : 3500);
+        }
+
+    </script>
+</body>
+</html>
+```

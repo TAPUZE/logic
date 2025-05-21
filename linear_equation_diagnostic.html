@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מבחן אבחון אינטראקטיבי במתמטיקה</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Assistant', sans-serif; 
+            background-color: #f1f5f9; 
+            color: #1e293b; 
+        }
+        .container-quiz { 
+            max-width: 700px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: #ffffff;
+            border-radius: 0.75rem;  
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .question-section {
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            border: 1px solid #e2e8f0; 
+            border-radius: 0.5rem;
+            background-color: #f8fafc; 
+        }
+        .problem-statement {
+            font-size: 1.25rem; 
+            font-weight: 600;
+            color: #0f172a; 
+            margin-bottom: 1rem;
+        }
+        .question-text {
+            font-size: 1.1rem; 
+            color: #334155; 
+            margin-bottom: 0.75rem;
+        }
+        label.option-label { 
+            display: block;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            background-color: #fff;
+            border: 1px solid #cbd5e1; 
+            border-radius: 0.375rem; 
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        label.option-label:hover {
+            background-color: #f1f5f9; 
+            border-color: #94a3b8; 
+        }
+        input[type="radio"] {
+            margin-left: 0.5rem; 
+            accent-color: #2563eb; 
+        }
+        button.submit-button { 
+            padding: 0.75rem 1.5rem;
+            background-color: #2563eb; 
+            color: white;
+            border: none;
+            border-radius: 0.375rem; 
+            font-weight: 500; 
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 1rem;
+        }
+        button.submit-button:hover {
+            background-color: #1d4ed8; 
+        }
+        button.action-button { 
+            padding: 0.5rem 1rem;
+            background-color: #475569; 
+            color: white;
+            border: none;
+            border-radius: 0.375rem; 
+            font-weight: 500; 
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-right: 0.5rem; 
+        }
+        button.action-button:hover {
+            background-color: #334155; 
+        }
+        .feedback-section {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            background-color: #eff6ff; 
+            color: #1e40af; 
+            border: 1px solid #bfdbfe; 
+        }
+        .hidden {
+            display: none;
+        }
+        
+        #printableReport {
+            display: none; 
+            padding: 20px;
+            font-family: 'Assistant', sans-serif;
+            color: #000; 
+            direction: rtl; 
+        }
+        #printableReport h2, #printableReport h3 {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 0.5rem;
+        }
+        #printableReport h2 { font-size: 1.5rem; }
+        #printableReport h3 { font-size: 1.3rem; margin-top: 1.5rem;}
+
+        #printableReport .mistake-item { /* Changed from .report-item */
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px dotted #eee;
+        }
+         #printableReport .mistake-item:last-child {
+            border-bottom: none;
+        }
+        #printableReport p {
+            margin-bottom: 0.25rem;
+        }
+        #printableReport strong {
+            font-weight: 600;
+        }
+        #printableReport ul {
+            list-style-type: disc;
+            margin-right: 20px; 
+            padding-right: 20px;
+        }
+        #printableReport li {
+            margin-bottom: 0.25rem;
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #printableReport, #printableReport * {
+                visibility: visible;
+            }
+            #printableReport {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                display: block !important;
+                font-size: 12pt;
+            }
+             .container-quiz > h1, 
+             .container-quiz > div:first-of-type, 
+             .question-section, 
+             .feedback-section {
+                display: none !important;
+                visibility: hidden !important;
+            }
+        }
+    </style>
+    <script>
+        window.MathJax = {
+          tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']]
+          },
+          svg: {
+            fontCache: 'global'
+          }
+        };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
+</head>
+<body class="bg-slate-100 text-slate-800">
+
+    <div class="container-quiz">
+        <h1 class="text-2xl font-bold text-center text-slate-700 mb-6">מבחן אבחון אינטראקטיבי במתמטיקה</h1>
+
+        <div class="mb-6 text-center">
+            <button class="action-button" onclick="startOver()">התחל מחדש</button>
+            <button class="action-button" onclick="shareReport()">שתף דוח</button>
+        </div>
+
+        <div id="mainProblemSection" class="question-section">
+            <p class="problem-statement">בעיה ראשית:</p>
+            <p class="question-text">פתור את המשוואה הבאה עבור $x$: $3(x-2) + 5 = 2x - 1$</p>
+            <p class="text-sm text-slate-500 mb-3">אנא פתור זאת במחברתך תחילה, ולאחר מכן בחר את תשובתך הסופית למטה.</p>
+            
+            <div id="mainProblemOptions">
+                <label class="option-label"><input type="radio" name="mainAnswer" value="0"> א) $x = 0$</label>
+                <label class="option-label"><input type="radio" name="mainAnswer" value="-4"> ב) $x = -4$</label>
+                <label class="option-label"><input type="radio" name="mainAnswer" value="2"> ג) $x = 2$</label>
+                <label class="option-label"><input type="radio" name="mainAnswer" value="6"> ד) $x = 6$</label>
+            </div>
+            <button class="submit-button" onclick="checkMainAnswer()">הגש תשובה</button>
+        </div>
+
+        <div id="diagnosticQ1Section" class="question-section hidden">
+            <p class="problem-statement">בוא נפרק את זה. שלב 1: פתיחת סוגריים (חוק הפילוג)</p>
+            <p class="question-text">התבונן בחלק $3(x-2)$ מהמשוואה המקורית. למה ביטוי זה שווה לאחר פתיחת סוגריים?</p>
+            <div id="diagnosticQ1Options">
+                <label class="option-label"><input type="radio" name="diagQ1Answer" value="3x-6"> א) $3x - 6$</label>
+                <label class="option-label"><input type="radio" name="diagQ1Answer" value="3x-2"> ב) $3x - 2$</label>
+                <label class="option-label"><input type="radio" name="diagQ1Answer" value="3x+6"> ג) $3x + 6$</label>
+                <label class="option-label"><input type="radio" name="diagQ1Answer" value="x-6"> ד) $x - 6$</label>
+            </div>
+            <button class="submit-button" onclick="checkDiagnosticQ1()">הגש תשובה לשלב 1</button>
+        </div>
+
+        <div id="diagnosticQ2Section" class="question-section hidden">
+            <p class="problem-statement">שלב 2: כינוס איברים באגף אחד</p>
+            <p class="question-text">אם $3(x-2)$ אכן שווה ל-$3x-6$, אז האגף השמאלי של המשוואה המקורית הופך ל-$3x-6+5$. למה שווה הביטוי $3x-6+5$ לאחר כינוס איברים?</p>
+            <div id="diagnosticQ2Options">
+                <label class="option-label"><input type="radio" name="diagQ2Answer" value="3x-1"> א) $3x - 1$</label>
+                <label class="option-label"><input type="radio" name="diagQ2Answer" value="3x+11"> ב) $3x + 11$</label>
+                <label class="option-label"><input type="radio" name="diagQ2Answer" value="2x"> ג) $2x$</label> 
+                <label class="option-label"><input type="radio" name="diagQ2Answer" value="3x+1"> ד) $3x + 1$</label>
+            </div>
+            <button class="submit-button" onclick="checkDiagnosticQ2()">הגש תשובה לשלב 2</button>
+        </div>
+
+        <div id="diagnosticQ3Section" class="question-section hidden">
+            <p class="problem-statement">שלב 3: העברת אגפים - משתנים</p>
+            <p class="question-text">עד כה, יש לנו $3x-1 = 2x-1$. כדי לרכז את האיברים עם $x$ באגף אחד, מה התוצאה של חיסור $2x$ משני אגפי המשוואה?</p>
+             <div id="diagnosticQ3Options">
+                <label class="option-label"><input type="radio" name="diagQ3Answer" value="x-1 = -1"> א) $x - 1 = -1$</label>
+                <label class="option-label"><input type="radio" name="diagQ3Answer" value="5x-1 = -1"> ב) $5x - 1 = -1$</label>
+                <label class="option-label"><input type="radio" name="diagQ3Answer" value="x-1 = 2x-1-2x"> ג) $x-1 = 2x-1-2x$ (פישוט לא נכון של אגף ימין)</label>
+            </div>
+            <button class="submit-button" onclick="checkDiagnosticQ3()">הגש תשובה לשלב 3</button>
+        </div>
+
+        <div id="diagnosticQ4Section" class="question-section hidden">
+            <p class="problem-statement">שלב 4: בידוד המשתנה</p>
+            <p class="question-text">יש לנו $x-1 = -1$. כדי לפתור עבור $x$, מה התוצאה של הוספת 1 לשני אגפי המשוואה?</p>
+             <div id="diagnosticQ4Options">
+                <label class="option-label"><input type="radio" name="diagQ4Answer" value="x = 0"> א) $x = 0$</label>
+                <label class="option-label"><input type="radio" name="diagQ4Answer" value="x = -2"> ב) $x = -2$</label>
+                <label class="option-label"><input type="radio" name="diagQ4Answer" value="x = 1"> ג) $x = 1$</label>
+            </div>
+            <button class="submit-button" onclick="checkDiagnosticQ4()">הגש תשובה לשלב 4</button>
+        </div>
+
+        <div id="feedbackSection" class="feedback-section hidden">
+            <p id="feedbackText" class="text-lg"></p>
+            <p id="remediationLink" class="mt-2 font-semibold"></p>
+        </div>
+
+        <div id="printableReport">
+            </div>
+    </div>
+
+    <script>
+        let studentPath = []; 
+        const mainProblemCorrectAnswer = "0"; // x = 0
+
+        function queueMathJaxTypeset(element) {
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                window.MathJax.typesetPromise(element ? [element] : undefined).catch((err) => console.error('MathJax typesetting error:', err));
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            queueMathJaxTypeset(document.getElementById('mainProblemSection'));
+        });
+
+        function showSection(sectionId) {
+            ['mainProblemSection', 'diagnosticQ1Section', 'diagnosticQ2Section', 'diagnosticQ3Section', 'diagnosticQ4Section'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+            
+            if (sectionId) {
+                const el = document.getElementById(sectionId);
+                if (el) {
+                    el.classList.remove('hidden');
+                    queueMathJaxTypeset(el); 
+                }
+            }
+        }
+
+        function displayFeedback(message, remediation) {
+            const feedbackTextEl = document.getElementById('feedbackText');
+            const remediationLinkEl = document.getElementById('remediationLink');
+            
+            feedbackTextEl.innerHTML = message; 
+            remediationLinkEl.innerHTML = remediation ? `<strong>מוקד מומלץ לחיזוק:</strong> ${remediation}` : '';
+            
+            const feedbackSectionEl = document.getElementById('feedbackSection');
+            feedbackSectionEl.classList.remove('hidden');
+            queueMathJaxTypeset(feedbackSectionEl); 
+
+            const plainMessage = (feedbackTextEl.textContent || feedbackTextEl.innerText || "").trim();
+            studentPath.push({ type: 'feedback', message: plainMessage, remediationTopic: remediation || null });
+        }
+        
+        function startOver() {
+            studentPath = []; 
+            
+            const radioGroups = ['mainAnswer', 'diagQ1Answer', 'diagQ2Answer', 'diagQ3Answer', 'diagQ4Answer'];
+            radioGroups.forEach(groupName => {
+                const radios = document.getElementsByName(groupName);
+                radios.forEach(radio => radio.checked = false);
+            });
+            
+            document.getElementById('feedbackSection').classList.add('hidden');
+            showSection('mainProblemSection'); 
+        }
+
+        function shareReport() {
+            const reportContainer = document.getElementById('printableReport');
+            if (!reportContainer) {
+                console.error("מיכל הדוח להדפסה לא נמצא.");
+                return;
+            }
+
+            let reportHTML = '<h2>דוח אבחון: פתרון משוואה לינארית</h2>';
+            const mistakesAndLearnings = [];
+            let lastAttempt = null;
+
+            studentPath.forEach(item => {
+                if (item.type === 'attempt') {
+                    lastAttempt = item; // Store the last attempt
+                } else if (item.type === 'feedback' && lastAttempt && item.remediationTopic) {
+                    // This feedback is for the lastAttempt, and it's a mistake
+                    mistakesAndLearnings.push({
+                        question: lastAttempt.questionText,
+                        userAnswer: lastAttempt.selectedAnswerText || lastAttempt.selectedAnswer, // Use selectedAnswerText if available
+                        feedback: item.message,
+                        remediation: item.remediationTopic,
+                        step: lastAttempt.stepDescription
+                    });
+                    lastAttempt = null; // Reset lastAttempt after processing its feedback
+                } else if (item.type === 'feedback' && lastAttempt && !item.remediationTopic) {
+                    // This is feedback for a correct answer or general feedback, reset lastAttempt
+                    lastAttempt = null;
+                }
+            });
+            
+            if (mistakesAndLearnings.length > 0) {
+                reportHTML += '<h3>ניתוח טעויות ונקודות לשיפור:</h3>';
+                mistakesAndLearnings.forEach(mistake => {
+                    reportHTML += `<div class="mistake-item">`;
+                    reportHTML += `<p><strong>בשלב:</strong> ${mistake.step}</p>`;
+                    reportHTML += `<p><strong>השאלה:</strong> ${mistake.question}</p>`;
+                    reportHTML += `<p><strong>התשובה שלך:</strong> ${mistake.userAnswer}</p>`;
+                    reportHTML += `<p><strong>המשוב שניתן:</strong> ${mistake.feedback}</p>`;
+                    if (mistake.remediation) {
+                        reportHTML += `<p><strong>מוקד לשיפור:</strong> ${mistake.remediation}</p>`;
+                    }
+                    reportHTML += `</div>`;
+                });
+            } else if (studentPath.length > 0) {
+                 // Check if the main problem was answered correctly as the last relevant attempt
+                let mainProblemCorrect = false;
+                for (let i = studentPath.length - 1; i >= 0; i--) {
+                    if (studentPath[i].type === 'attempt' && studentPath[i].stepDescription === "בעיה ראשית") {
+                        if (studentPath[i].selectedAnswer === mainProblemCorrectAnswer) {
+                            // Check if the next item is feedback *without* a remediation topic
+                            if (i + 1 < studentPath.length && studentPath[i+1].type === 'feedback' && !studentPath[i+1].remediationTopic) {
+                                mainProblemCorrect = true;
+                            } else if (i === studentPath.length - 1) { // If it's the very last item
+                                mainProblemCorrect = true;
+                            }
+                        }
+                        break; 
+                    }
+                }
+                if (mainProblemCorrect) {
+                     reportHTML += '<p><strong>כל הכבוד! נראה שהבנת את כל השלבים ולא זוהו טעויות הדורשות התייחסות מיוחדת.</strong></p>';
+                } else {
+                     reportHTML += '<p>לא זוהו טעויות ספציפיות הדורשות התייחסות מיוחדת, אך ייתכן שלא כל חלקי השאלה הושלמו בהצלחה.</p>';
+                }
+            } else {
+                 reportHTML += '<p>לא נרשמה התקדמות עדיין.</p>';
+            }
+            
+            // Save mistakes to localStorage for the main report
+            const currentFileName = "linear_equation_diagnostic.html"; 
+            if (mistakesAndLearnings.length > 0) {
+                localStorage.setItem(`diagnosticReportData_${currentFileName}`, JSON.stringify(mistakesAndLearnings));
+            } else {
+                localStorage.removeItem(`diagnosticReportData_${currentFileName}`); 
+            }
+
+            reportContainer.innerHTML = reportHTML;
+            window.print(); 
+        }
+
+
+        function getSelectedRadioValue(name) {
+            const radios = document.getElementsByName(name);
+            for (let i = 0; i < radios.length; i++) {
+                if (radios[i].checked) {
+                    return { value: radios[i].value, text: radios[i].parentElement.textContent.replace(/^[א-ד]\)\s*/, '').trim() };
+                }
+            }
+            return null;
+        }
+        
+        function getQuestionTextForReport(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                const questionTextEl = section.querySelector('.question-text');
+                if (questionTextEl) {
+                    // Attempt to get innerHTML to preserve MathJax, then fallback to textContent
+                    return (questionTextEl.innerHTML || questionTextEl.textContent || "").trim().replace(/\s+/g, ' ');
+                }
+            }
+            return "טקסט שאלה לא נמצא";
+        }
+
+        function logAttempt(stepDesc, sectionId, selectedValue, selectedAnswerText, radioGroupName) {
+             const questionReportText = getQuestionTextForReport(sectionId);
+             studentPath.push({ 
+                type: 'attempt', 
+                stepDescription: stepDesc, 
+                questionText: questionReportText, 
+                selectedAnswer: selectedValue,
+                selectedAnswerText: selectedAnswerText // Store the human-readable text
+            });
+            document.getElementById('feedbackSection').classList.add('hidden'); // Hide previous feedback
+        }
+
+
+        function checkMainAnswer() {
+            const selection = getSelectedRadioValue('mainAnswer');
+            if (!selection) {
+                displayFeedback("אנא בחר תשובה.", null);
+                return;
+            }
+            logAttempt("בעיה ראשית", 'mainProblemSection', selection.value, selection.text, 'mainAnswer');
+
+            if (selection.value === mainProblemCorrectAnswer) {
+                displayFeedback("מעולה! תשובתך הסופית נכונה: $x = 0$.", null);
+                showSection(null); 
+            } else {
+                displayFeedback("זה לא בדיוק נכון. בוא ננסה למצוא היכן הטעות עשויה להיות.", "שלבים כלליים לפתרון משוואה לינארית");
+                showSection('diagnosticQ1Section');
+            }
+        }
+
+        function checkDiagnosticQ1() {
+            const selection = getSelectedRadioValue('diagQ1Answer');
+            if (!selection) {
+                displayFeedback("אנא בחר תשובה לשלב 1.", null);
+                return;
+            }
+            logAttempt("שלב 1: פתיחת סוגריים", 'diagnosticQ1Section', selection.value, selection.text, 'diagQ1Answer');
+            
+            let feedbackMsg = "";
+            let remediation = null;
+            let nextSection = null;
+
+            if (selection.value === "3x-6") { 
+                feedbackMsg = "נכון! $3(x-2) = 3x-6$. ממשיכים לשלב הבא.";
+                nextSection = 'diagnosticQ2Section';
+            } else if (selection.value === "3x-2") { 
+                feedbackMsg = "נראה שיש טעות בפתיחת הסוגריים (חוק הפילוג). <br>זכור לכפול את המספר שמחוץ לסוגריים ב*כל* איבר שבפנים. לדוגמה, $3 \\times x$ זה $3x$, ו-$3 \\times -2$ זה $-6$. לכן, $3(x-2)$ אמור להיות $3x - 6$.";
+                remediation = "חוק הפילוג";
+                nextSection = 'diagnosticQ1Section'; // Retry current step
+            } else if (selection.value === "3x+6") { 
+                feedbackMsg = "שים לב לסימנים! כאשר מכפילים $3$ ב-$-2$, התוצאה היא $-6$. לכן, $3(x-2)$ הופך ל-$3x - 6$.";
+                remediation = "כפל מספרים שלמים (סימנים)";
+                nextSection = 'diagnosticQ1Section';
+            } else if (selection.value === "x-6") { 
+                feedbackMsg = "נראה שהכפלת נכון $3$ ב-$-2$ וקיבלת $-6$, אך אל תשכח לכפול גם $3$ ב-$x$. לכן, $3(x-2)$ הופך ל-$3x - 6$.";
+                remediation = "חוק הפילוג (כפל המשתנה)";
+                nextSection = 'diagnosticQ1Section';
+            }
+            displayFeedback(feedbackMsg, remediation);
+            if (nextSection && nextSection !== 'diagnosticQ1Section') { // Only auto-advance if correct
+                 setTimeout(() => {
+                    document.getElementById('feedbackSection').classList.add('hidden');
+                    showSection(nextSection);
+                }, 2500);
+            } else if (nextSection === 'diagnosticQ1Section' && selection.value !== "3x-6"){
+                setTimeout(() => {
+                    document.getElementById('feedbackSection').classList.add('hidden');
+                    showSection(nextSection); // Re-show current for retry
+                }, 3500);
+            } else if (!nextSection) { // If a mistake leads to stopping
+                 showSection(null);
+            }
+        }
+
+        function checkDiagnosticQ2() {
+            const selection = getSelectedRadioValue('diagQ2Answer');
+            if (!selection) {
+                displayFeedback("אנא בחר תשובה לשלב 2.", null);
+                return;
+            }
+            logAttempt("שלב 2: כינוס איברים", 'diagnosticQ2Section', selection.value, selection.text, 'diagQ2Answer');
+            
+            let feedbackMsg = "";
+            let remediation = null;
+            let nextSection = null;
+
+            if (selection.value === "3x-1") { 
+                feedbackMsg = "נכון! $3x-6+5 = 3x-1$. ממשיכים.";
+                nextSection = 'diagnosticQ3Section';
+            } else if (selection.value === "3x+11") { 
+                feedbackMsg = "נראה שיש טעות קטנה בחיבור המספרים. זכור, $-6 + 5$ שווה ל-$-1$. לכן, $3x - 6 + 5$ מתכנס ל-$3x - 1$.";
+                remediation = "חיבור/חיסור מספרים שלמים";
+                nextSection = 'diagnosticQ2Section';
+            } else if (selection.value === "2x") { 
+                feedbackMsg = "שים לב! ניתן לחבר רק 'איברים דומים'. כלומר, מחברים מספרים עם מספרים, ואיברים עם $x$ עם איברים אחרים עם $x$. לא ניתן לחבר ישירות $3x$ ו-$-1$. לכן, $3x - 6 + 5$ מתכנס ל-$3x - 1$.";
+                remediation = "זיהוי וכינוס איברים דומים";
+                nextSection = 'diagnosticQ2Section';
+            } else if (selection.value === "3x+1") { 
+                feedbackMsg = "כמעט! בדוק את הסימנים בעת חיבור $-6$ ו-$+5$. התוצאה היא $-1$. לכן, $3x - 6 + 5$ מתכנס ל-$3x - 1$.";
+                remediation = "חיבור/חיסור מספרים שלמים (סימנים)";
+                nextSection = 'diagnosticQ2Section';
+            }
+            displayFeedback(feedbackMsg, remediation);
+             if (nextSection && nextSection !== 'diagnosticQ2Section') {
+                 setTimeout(() => {
+                    document.getElementById('feedbackSection').classList.add('hidden');
+                    showSection(nextSection);
+                }, 2500);
+            } else if (nextSection === 'diagnosticQ2Section' && selection.value !== "3x-1"){
+                setTimeout(() => {
+                    document.getElementById('feedbackSection').classList.add('hidden');
+                    showSection(nextSection); 
+                }, 3500);
+            } else if (!nextSection) {
+                 showSection(null);
+            }
+        }
+
+        function checkDiagnosticQ3() {
+            const selection = getSelectedRadioValue('diagQ3Answer');
+            if (!selection) {
+                displayFeedback("אנא בחר תשובה לשלב 3.", null);
+                return;
+            }
+            logAttempt("שלב 3: העברת אגפים - משתנים", 'diagnosticQ3Section', selection.value, selection.text, 'diagQ3Answer');
+            
+            let feedbackMsg = "";
+            let remediation = null;
+            let nextSection = null;
+            
+            if (selection.value === "x-1 = -1") { 
+                feedbackMsg = "נכון! $3x-1-2x = -1 \Rightarrow x-1=-1$. ממשיכים.";
+                nextSection = 'diagnosticQ4Section';
+            } else if (selection.value === "5x-1 = -1") { 
+                 feedbackMsg = "נראה שאולי חיברת $2x$ ל-$3x$ במקום לחסר, או שקרתה טעות בסימנים. זכור, $3x - 2x = x$. לכן, $3x-1 = 2x-1$ הופך ל-$x-1 = -1$.";
+                remediation = "חיסור איברים עם משתנים";
+                nextSection = 'diagnosticQ3Section';
+            } else if (selection.value === "x-1 = 2x-1-2x") { 
+                 feedbackMsg = "חיסרת נכון $2x$ מ-$3x-1$ וקיבלת $x-1$. כעת, למה שווה הביטוי $2x-1-2x$ באגף ימין? הוא שווה ל-$-1$. לכן המשוואה היא $x-1 = -1$.";
+                remediation = "פישוט שני אגפי המשוואה";
+                nextSection = 'diagnosticQ3Section';
+            }
+            displayFeedback(feedbackMsg, remediation);
+            if (nextSection && nextSection !== 'diagnosticQ3Section') {
+                 setTimeout(() => {
+                    document.getElementById('feedbackSection').classList.add('hidden');
+                    showSection(nextSection);
+                }, 2500);
+            } else if (nextSection === 'diagnosticQ3Section' && selection.value !== "x-1 = -1"){
+                setTimeout(() => {
+                    document.getElementById('feedbackSection').classList.add('hidden');
+                    showSection(nextSection); 
+                }, 3500);
+            } else if (!nextSection) {
+                 showSection(null);
+            }
+        }
+
+        function checkDiagnosticQ4() {
+            const selection = getSelectedRadioValue('diagQ4Answer');
+            if (!selection) {
+                displayFeedback("אנא בחר תשובה לשלב 4.", null);
+                return;
+            }
+            logAttempt("שלב 4: בידוד המשתנה", 'diagnosticQ4Section', selection.value, selection.text, 'diagQ4Answer');
+
+            let feedbackMsg = "";
+            let remediation = null;
+            let nextSection = null;
+
+            if (selection.value === "x = 0") { 
+                feedbackMsg = "מעולה! הוספת 1 לשני אגפי המשוואה $x-1 = -1$ נותנת $x = 0$. זה אומר שאם כל השלבים הקודמים היו נכונים, זהו הפתרון. אם תשובתך הראשית הייתה שונה, בדוק שוב במחברת היכן החישוב הסתעף!";
+                nextSection = null; // End of diagnostic path for incorrect main answer
+            } else if (selection.value === "x = -2") { 
+                feedbackMsg = "שים לב לחשבון או לפעולה. כאשר יש לנו $x-1 = -1$ ואנו מוסיפים 1 לשני האגפים: $x - 1 + 1 = -1 + 1$. זה מתכנס ל-$x = 0$.";
+                remediation = "פתרון משוואות צעד אחד (חיבור/חיסור)";
+                nextSection = 'diagnosticQ4Section';
+            } else if (selection.value === "x = 1") { 
+                feedbackMsg = "כמעט! זכור ש-$-1 + 1 = 0$. לכן, אם $x-1 = -1$, הוספת 1 לשני האגפים נותנת $x=0$.";
+                remediation = "חיבור מספרים שלמים (זוגות אפס)";
+                nextSection = 'diagnosticQ4Section';
+            }
+            displayFeedback(feedbackMsg, remediation);
+            if (nextSection === 'diagnosticQ4Section' && selection.value !== "x = 0"){ // Retry if mistake on this step
+                setTimeout(() => {
+                    document.getElementById('feedbackSection').classList.add('hidden');
+                    showSection(nextSection); 
+                }, 3500);
+            } else { // If correct (x=0) or other unhandled case, just show feedback and stop.
+                 showSection(null);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>אבחון: שאלה 4 - גיאומטריה אנליטית</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+    <style>
+        body { font-family: 'Assistant', sans-serif; background-color: #f1f5f9; color: #1e293b; }
+        .container-quiz { max-width: 800px; margin: 2rem auto; padding: 2rem; background-color: #ffffff; border-radius: 0.75rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .question-section { margin-bottom: 1.5rem; padding: 1.5rem; border: 1px solid #e2e8f0; border-radius: 0.5rem; background-color: #f8fafc; }
+        .problem-statement { font-size: 1.25rem; font-weight: 600; color: #0f172a; margin-bottom: 1rem; }
+        .question-text, .problem-context { font-size: 1.1rem; color: #334155; margin-bottom: 0.75rem; line-height: 1.6; }
+        .problem-context p { margin-bottom: 0.25rem; text-align: right; font-weight: 500; }
+        #geometryQ4ChartContainer { width: 100%; max-width: 480px; height: 400px; margin: 1rem auto; border: 1px solid #d1d5db; border-radius: 0.5rem; padding: 0.5rem; background-color: #fff; }
+        label.option-label { display: block; padding: 0.75rem 1rem; margin-bottom: 0.5rem; background-color: #fff; border: 1px solid #cbd5e1; border-radius: 0.375rem; cursor: pointer; transition: background-color 0.2s, border-color 0.2s; }
+        label.option-label:hover { background-color: #f1f5f9; border-color: #94a3b8; }
+        input[type="radio"] { margin-left: 0.5rem; accent-color: #2563eb; }
+        button.submit-button { padding: 0.75rem 1.5rem; background-color: #2563eb; color: white; border: none; border-radius: 0.375rem; font-weight: 500; cursor: pointer; transition: background-color 0.2s; margin-top: 1rem; }
+        button.submit-button:hover { background-color: #1d4ed8; }
+        button.action-button { padding: 0.5rem 1rem; background-color: #475569; color: white; border: none; border-radius: 0.375rem; font-weight: 500; cursor: pointer; transition: background-color 0.2s; margin-right: 0.5rem; }
+        button.action-button:hover { background-color: #334155; }
+        .feedback-section { margin-top: 1.5rem; padding: 1.5rem; border-radius: 0.5rem; background-color: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+        .hidden { display: none; }
+        #printableReport { display: none; padding: 20px; font-family: 'Assistant', sans-serif; color: #000; direction: rtl; }
+        #printableReport h2, #printableReport h3 { font-weight: 600; margin-bottom: 1rem; border-bottom: 1px solid #ccc; padding-bottom: 0.5rem; }
+        #printableReport h2 { font-size: 1.5rem; }
+        #printableReport h3 { font-size: 1.3rem; margin-top: 1.5rem;}
+        #printableReport .mistake-item { margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px dotted #eee; }
+        #printableReport .mistake-item:last-child { border-bottom: none; }
+        #printableReport p { margin-bottom: 0.25rem; }
+        #printableReport strong { font-weight: 600; }
+        @media print {
+            body * { visibility: hidden; }
+            #printableReport, #printableReport * { visibility: visible; }
+            #geometryQ4ChartContainer { display: none !important; } 
+            #printableReport { position: absolute; left: 0; top: 0; width: 100%; display: block !important; font-size: 12pt; }
+            .container-quiz > h1, .container-quiz > div:first-of-type, .question-section, .feedback-section { display: none !important; visibility: hidden !important; }
+        }
+    </style>
+    <script>
+        window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div class="container-quiz">
+        <h1 class="text-2xl font-bold text-center text-slate-700 mb-6">אבחון: שאלה 4 - גיאומטריה אנליטית</h1>
+        <div class="mb-6 text-center">
+            <button class="action-button" onclick="startOverQ4()">התחל מחדש</button>
+            <button class="action-button" onclick="shareReportQ4()">שתף דוח</button>
+        </div>
+
+        <div id="q4ProblemContext" class="problem-context question-section bg-blue-50 border-blue-200">
+            <p class="problem-statement text-blue-700">נתוני השאלה:</p>
+            <p>במשולש ABC הקודקודים A ו-C נמצאים על ציר ה-X.</p>
+            <p>הנקודה E היא נקודת החיתוך של הצלע AB עם ציר ה-Y.</p>
+            <p>נתון: משוואת הישר AB היא $y = 2x + 6$.</p>
+            <p>נתון: הנקודה E היא אמצע הצלע AB.</p>
+            <p>נתון: שיפוע הישר BC הוא 3-.</p>
+            <div id="geometryQ4ChartContainer">
+                <canvas id="geometryQ4Chart"></canvas>
+            </div>
+        </div>
+
+        <div id="mainQ4PartASection" class="question-section">
+            <p class="problem-statement">בעיה ראשית - סעיף א':</p>
+            <p class="question-text">מצאו את שיעורי הנקודות A ו-E.</p>
+            <div id="mainQ4PartAOptions">
+                <label class="option-label"><input type="radio" name="mainQ4A_Answer" value="A(-3,0)_E(0,6)"> א) $A(-3,0)$, $E(0,6)$</label>
+                <label class="option-label"><input type="radio" name="mainQ4A_Answer" value="A(0,-3)_E(6,0)"> ב) $A(0,-3)$, $E(6,0)$</label>
+                <label class="option-label"><input type="radio" name="mainQ4A_Answer" value="A(-3,0)_E(0,-6)"> ג) $A(-3,0)$, $E(0,-6)$</label>
+                <label class="option-label"><input type="radio" name="mainQ4A_Answer" value="A(3,0)_E(0,6)"> ד) $A(3,0)$, $E(0,6)$</label>
+            </div>
+            <button class="submit-button" onclick="checkMainQ4PartAAnswer()">הגש תשובה לסעיף א'</button>
+        </div>
+
+        <div id="q4_a1_findASection" class="question-section hidden">
+            <p class="problem-statement">סעיף א' - שלב 1: מציאת שיעורי הנקודה A</p>
+            <p class="question-text">נתון שהנקודה A נמצאת על ציר ה-X וגם על הישר AB שמשוואתו $y=2x+6$.<br>מה מאפיין נקודה שנמצאת על ציר ה-X?</p>
+            <div id="q4_a1_findAOptions1">
+                <label class="option-label"><input type="radio" name="q4_a1_propXAxisAns" value="y_is_0"> א) שיעור ה-Y שלה הוא 0.</label>
+                <label class="option-label"><input type="radio" name="q4_a1_propXAxisAns" value="x_is_0"> ב) שיעור ה-X שלה הוא 0.</label>
+                <label class="option-label"><input type="radio" name="q4_a1_propXAxisAns" value="x_equals_y"> ג) שיעור ה-X שווה לשיעור ה-Y.</label>
+            </div>
+            <button class="submit-button" onclick="checkQ4_a1_propXAxis()">הגש תשובה</button>
+        </div>
+        <div id="q4_a1_solveForX_A_Section" class="question-section hidden">
+            <p class="problem-statement">סעיף א' - שלב 1 (המשך): חישוב שיעור X של A</p>
+            <p class="question-text">אם שיעור ה-Y של A הוא 0, הצב $y=0$ במשוואת הישר $y=2x+6$ ופתור עבור $x$.</p>
+            <div id="q4_a1_solveForX_A_Options">
+                 <label class="option-label"><input type="radio" name="q4_a1_solveX_A_Ans" value="-3"> א) $x = -3$</label>
+                 <label class="option-label"><input type="radio" name="q4_a1_solveX_A_Ans" value="3"> ב) $x = 3$</label>
+                 <label class="option-label"><input type="radio" name="q4_a1_solveX_A_Ans" value="-6"> ג) $x = -6$</label>
+            </div>
+            <button class="submit-button" onclick="checkQ4_a1_solveForX_A()">הגש תשובה</button>
+        </div>
+
+        <div id="q4_a2_findESection" class="question-section hidden">
+            <p class="problem-statement">סעיף א' - שלב 2: מציאת שיעורי הנקודה E</p>
+            <p class="question-text">נתון שהנקודה E היא נקודת החיתוך של הישר AB ($y=2x+6$) עם ציר ה-Y.<br>מה מאפיין נקודה שנמצאת על ציר ה-Y?</p>
+            <div id="q4_a2_findEOptions1">
+                <label class="option-label"><input type="radio" name="q4_a2_propYAxisAns" value="x_is_0"> א) שיעור ה-X שלה הוא 0.</label>
+                <label class="option-label"><input type="radio" name="q4_a2_propYAxisAns" value="y_is_0"> ב) שיעור ה-Y שלה הוא 0.</label>
+            </div>
+            <button class="submit-button" onclick="checkQ4_a2_propYAxis()">הגש תשובה</button>
+        </div>
+        <div id="q4_a2_solveForY_E_Section" class="question-section hidden">
+            <p class="problem-statement">סעיף א' - שלב 2 (המשך): חישוב שיעור Y של E</p>
+            <p class="question-text">אם שיעור ה-X של E הוא 0, הצב $x=0$ במשוואת הישר $y=2x+6$ ופתור עבור $y$.</p>
+            <div id="q4_a2_solveForY_E_Options">
+                 <label class="option-label"><input type="radio" name="q4_a2_solveY_E_Ans" value="6"> א) $y = 6$</label>
+                 <label class="option-label"><input type="radio" name="q4_a2_solveY_E_Ans" value="-3"> ב) $y = -3$</label>
+                 <label class="option-label"><input type="radio" name="q4_a2_solveY_E_Ans" value="0"> ג) $y = 0$</label>
+            </div>
+            <button class="submit-button" onclick="checkQ4_a2_solveForY_E()">הגש תשובה</button>
+        </div>
+
+        <div id="mainQ4PartBSection" class="question-section hidden">
+            <p class="problem-statement">בעיה ראשית - סעיף ב':</p>
+            <p class="question-text">נתון: הנקודה E היא אמצע הצלע AB. מצאו את שיעורי הקודקוד B.</p>
+            <p class="problem-context">ידוע: $A(-3,0)$, $E(0,6)$.</p>
+            <div id="mainQ4PartBOptions">
+                <label class="option-label"><input type="radio" name="mainQ4B_Answer" value="B(3,12)"> א) $B(3,12)$</label>
+                <label class="option-label"><input type="radio" name="mainQ4B_Answer" value="B(-1.5,3)"> ב) $B(-1.5,3)$</label>
+                <label class="option-label"><input type="radio" name="mainQ4B_Answer" value="B(3,6)"> ג) $B(3,6)$</label>
+            </div>
+            <button class="submit-button" onclick="checkMainQ4PartBAnswer()">הגש תשובה לסעיף ב'</button>
+        </div>
+        
+        <div id="q4_b1_midpointXSetupSection" class="question-section hidden">
+            <p class="problem-statement">סעיף ב' - שלב 1: שימוש בנוסחת אמצע קטע (שיעור X)</p>
+            <p class="question-text">נוסחת אמצע קטע לשיעור ה-X היא $x_E = \frac{x_A + x_B}{2}$.<br>ידוע $x_A=-3$ ו-$x_E=0$. הצב את הערכים ובנה משוואה למציאת $x_B$.</p>
+            <div id="q4_b1_midpointXSetupOptions">
+                <label class="option-label"><input type="radio" name="q4_b1_midXSetupAns" value="0=(-3+xB)/2"> א) $0 = \frac{-3 + x_B}{2}$</label>
+                <label class="option-label"><input type="radio" name="q4_b1_midXSetupAns" value="xB=(-3+0)/2"> ב) $x_B = \frac{-3 + 0}{2}$</label>
+            </div>
+            <button class="submit-button" onclick="checkQ4_b1_midpointXSetup()">הגש תשובה</button>
+        </div>
+        <div id="q4_b2_solveForXBSection" class="question-section hidden">
+            <p class="problem-statement">סעיף ב' - שלב 2: פתרון עבור $x_B$</p>
+            <p class="question-text">פתור את המשוואה $0 = \frac{-3 + x_B}{2}$ עבור $x_B$.</p>
+            <div id="q4_b2_solveForXBOptions">
+                <label class="option-label"><input type="radio" name="q4_b2_solveXBAns" value="3"> א) $x_B = 3$</label>
+                <label class="option-label"><input type="radio" name="q4_b2_solveXBAns" value="-3"> ב) $x_B = -3$</label>
+                 <label class="option-label"><input type="radio" name="q4_b2_solveXBAns" value="-1.5"> ג) $x_B = -1.5$</label>
+            </div>
+            <button class="submit-button" onclick="checkQ4_b2_solveForXB()">הגש תשובה</button>
+        </div>
+        <div id="q4_b3_midpointYSetupSection" class="question-section hidden">
+            <p class="problem-statement">סעיף ב' - שלב 3: שימוש בנוסחת אמצע קטע (שיעור Y)</p>
+            <p class="question-text">נוסחת אמצע קטע לשיעור ה-Y היא $y_E = \frac{y_A + y_B}{2}$.<br>ידוע $y_A=0$ ו-$y_E=6$. הצב את הערכים ובנה משוואה למציאת $y_B$.</p>
+            <div id="q4_b3_midpointYSetupOptions">
+                <label class="option-label"><input type="radio" name="q4_b3_midYSetupAns" value="6=(0+yB)/2"> א) $6 = \frac{0 + y_B}{2}$</label>
+                <label class="option-label"><input type="radio" name="q4_b3_midYSetupAns" value="yB=(0+6)/2"> ב) $y_B = \frac{0 + 6}{2}$</label>
+            </div>
+            <button class="submit-button" onclick="checkQ4_b3_midpointYSetup()">הגש תשובה</button>
+        </div>
+        <div id="q4_b4_solveForYBSection" class="question-section hidden">
+            <p class="problem-statement">סעיף ב' - שלב 4: פתרון עבור $y_B$</p>
+            <p class="question-text">פתור את המשוואה $6 = \frac{0 + y_B}{2}$ עבור $y_B$.</p>
+            <div id="q4_b4_solveForYBOptions">
+                <label class="option-label"><input type="radio" name="q4_b4_solveYBAns" value="12"> א) $y_B = 12$</label>
+                <label class="option-label"><input type="radio" name="q4_b4_solveYBAns" value="3"> ב) $y_B = 3$</label>
+                 <label class="option-label"><input type="radio" name="q4_b4_solveYBAns" value="6"> ג) $y_B = 6$</label>
+            </div>
+            <button class="submit-button" onclick="checkQ4_b4_solveForYB()">הגש תשובה</button>
+        </div>
+
+        <div id="mainQ4PartC1Section" class="question-section hidden">
+            <p class="problem-statement">בעיה ראשית - סעיף ג' (1):</p>
+            <p class="question-text">נתון: שיפוע הישר BC הוא 3-. מצאו את משוואת הישר BC.</p>
+            <p class="problem-context">ידוע: $B(3,12)$, שיפוע $m_{BC}=-3$.</p>
+            <div id="mainQ4PartC1Options">
+                <label class="option-label"><input type="radio" name="mainQ4C1_Answer" value="y=-3x+21"> א) $y = -3x + 21$</label>
+                <label class="option-label"><input type="radio" name="mainQ4C1_Answer" value="y=-3x+3"> ב) $y = -3x + 3$</label>
+                <label class="option-label"><input type="radio" name="mainQ4C1_Answer" value="y=3x+3"> ג) $y = 3x + 3$</label>
+            </div>
+            <button class="submit-button" onclick="checkMainQ4PartC1Answer()">הגש תשובה לסעיף ג(1)</button>
+        </div>
+        
+        <div id="q4_c1_1_pointSlopeSection" class="question-section hidden">
+            <p class="problem-statement">סעיף ג(1) - שלב 1: משוואת ישר על פי נקודה ושיפוע</p>
+            <p class="question-text">הנוסחה למציאת משוואת ישר היא $y - y_1 = m(x - x_1)$.<br>נתונה נקודה $B(3,12)$ (כלומר $x_1=3, y_1=12$) ושיפוע $m=-3$.<br>הצב את הערכים בנוסחה.</p>
+            <div id="q4_c1_1_pointSlopeOptions">
+                <label class="option-label"><input type="radio" name="q4_c1_1_psAns" value="y-12=-3(x-3)"> א) $y - 12 = -3(x - 3)$</label>
+                <label class="option-label"><input type="radio" name="q4_c1_1_psAns" value="y-3=-3(x-12)"> ב) $y - 3 = -3(x - 12)$</label>
+            </div>
+            <button class="submit-button" onclick="checkQ4_c1_1_pointSlope()">הגש תשובה</button>
+        </div>
+        <div id="q4_c1_2_simplifyLineEqSection" class="question-section hidden">
+            <p class="problem-statement">סעיף ג(1) - שלב 2: פישוט המשוואה</p>
+            <p class="question-text">פשט את המשוואה $y - 12 = -3(x - 3)$ לצורה $y=mx+c$.</p>
+            <div id="q4_c1_2_simplifyOptions">
+                <label class="option-label"><input type="radio" name="q4_c1_2_simpAns" value="y=-3x+21"> א) $y = -3x + 21$</label>
+                <label class="option-label"><input type="radio" name="q4_c1_2_simpAns" value="y=-3x+9"> ב) $y = -3x + 9$ (שכחת להוסיף 12)</label>
+                <label class="option-label"><input type="radio" name="q4_c1_2_simpAns" value="y=-3x-3"> ג) $y = -3x - 3$ (טעות בחישוב $-3 \times -3$ או בהעברת 12)</label>
+            </div>
+            <button class="submit-button" onclick="checkQ4_c1_2_simplifyLineEq()">הגש תשובה</button>
+        </div>
+
+
+        <div id="mainQ4PartC2Section" class="question-section hidden">
+            <p class="problem-statement">בעיה ראשית - סעיף ג' (2):</p>
+            <p class="question-text">מצאו את שיעורי הקודקוד C.</p>
+            <p class="problem-context">ידוע: C על ציר ה-X, משוואת BC היא $y = -3x + 21$.</p>
+            <div id="mainQ4PartC2Options">
+                <label class="option-label"><input type="radio" name="mainQ4C2_Answer" value="C(7,0)"> א) $C(7,0)$</label>
+                <label class="option-label"><input type="radio" name="mainQ4C2_Answer" value="C(0,21)"> ב) $C(0,21)$</label>
+                <label class="option-label"><input type="radio" name="mainQ4C2_Answer" value="C(21,0)"> ג) $C(21,0)$</label>
+            </div>
+            <button class="submit-button" onclick="checkMainQ4PartC2Answer()">הגש תשובה לסעיף ג(2)</button>
+        </div>
+
+        <div id="q4_c2_1_findCSection" class="question-section hidden">
+            <p class="problem-statement">סעיף ג(2) - שלב 1: מציאת שיעורי C</p>
+            <p class="question-text">הנקודה C נמצאת על ציר ה-X (כלומר $y_C=0$) וגם על הישר BC שמשוואתו $y = -3x + 21$.<br>הצב $y=0$ במשוואת הישר BC ופתור עבור $x_C$.</p>
+             <div id="q4_c2_1_findCOptions">
+                <label class="option-label"><input type="radio" name="q4_c2_1_findCAns" value="7"> א) $x_C = 7$</label>
+                <label class="option-label"><input type="radio" name="q4_c2_1_findCAns" value="-7"> ב) $x_C = -7$</label>
+                <label class="option-label"><input type="radio" name="q4_c2_1_findCAns" value="21"> ג) $x_C = 21$</label>
+            </div>
+            <button class="submit-button" onclick="checkQ4_c2_1_findC()">הגש תשובה</button>
+        </div>
+
+        <div id="mainQ4PartDSection" class="question-section hidden">
+            <p class="problem-statement">בעיה ראשית - סעיף ד':</p>
+            <p class="question-text">חשבו את שטח המשולש AEC.</p>
+            <p class="problem-context">ידוע: $A(-3,0)$, $E(0,6)$, $C(7,0)$.</p>
+            <div id="mainQ4PartDOptions">
+                <label class="option-label"><input type="radio" name="mainQ4D_Answer" value="30"> א) 30 יחידות שטח</label>
+                <label class="option-label"><input type="radio" name="mainQ4D_Answer" value="60"> ב) 60 יחידות שטח</label>
+                <label class="option-label"><input type="radio" name="mainQ4D_Answer" value="15"> ג) 15 יחידות שטח</label>
+            </div>
+            <button class="submit-button" onclick="checkMainQ4PartDAnswer()">הגש תשובה לסעיף ד'</button>
+        </div>
+
+        <div id="q4_d1_baseAECSection" class="question-section hidden">
+            <p class="problem-statement">סעיף ד' - שלב 1: מציאת אורך הבסיס AC</p>
+            <p class="question-text">הנקודות A ו-C נמצאות על ציר ה-X. הקטע AC יכול לשמש כבסיס המשולש AEC.<br>נתון $A(-3,0)$ ו-$C(7,0)$. מהו אורך הקטע AC?</p>
+            <div id="q4_d1_baseAECOptions">
+                <label class="option-label"><input type="radio" name="q4_d1_baseAns" value="10"> א) 10 יחידות</label>
+                <label class="option-label"><input type="radio" name="q4_d1_baseAns" value="4"> ב) 4 יחידות ($7-3$)</label>
+                <label class="option-label"><input type="radio" name="q4_d1_baseAns" value="-10"> ג) -10 יחידות (אורך הוא תמיד חיובי)</label>
+            </div>
+            <button class="submit-button" onclick="checkQ4_d1_baseAEC()">הגש תשובה</button>
+        </div>
+        <div id="q4_d2_heightAECSection" class="question-section hidden">
+            <p class="problem-statement">סעיף ד' - שלב 2: מציאת גובה המשולש AEC</p>
+            <p class="question-text">הבסיס AC נמצא על ציר ה-X. הגובה לבסיס זה יורד מהקודקוד E אל ציר ה-X.<br>נתון $E(0,6)$. מהו אורך הגובה הזה?</p>
+            <div id="q4_d2_heightAECOptions">
+                <label class="option-label"><input type="radio" name="q4_d2_heightAns" value="6"> א) 6 יחידות</label>
+                <label class="option-label"><input type="radio" name="q4_d2_heightAns" value="0"> ב) 0 יחידות</label>
+            </div>
+            <button class="submit-button" onclick="checkQ4_d2_heightAEC()">הגש תשובה</button>
+        </div>
+        <div id="q4_d3_areaCalcSection" class="question-section hidden">
+            <p class="problem-statement">סעיף ד' - שלב 3: חישוב שטח המשולש AEC</p>
+            <p class="question-text">שטח משולש הוא $\frac{1}{2} \times \text{בסיס} \times \text{גובה}$.<br>אורך הבסיס AC הוא 10, ואורך הגובה מ-E לבסיס הוא 6.<br>מהו שטח המשולש AEC?</p>
+            <div id="q4_d3_areaCalcOptions">
+                <label class="option-label"><input type="radio" name="q4_d3_areaAns" value="30"> א) 30 יחידות שטח</label>
+                <label class="option-label"><input type="radio" name="q4_d3_areaAns" value="60"> ב) 60 יחידות שטח (שכחת לחלק ב-2)</label>
+                <label class="option-label"><input type="radio" name="q4_d3_areaAns" value="16"> ג) 16 יחידות שטח ($10+6$)</label>
+            </div>
+            <button class="submit-button" onclick="checkQ4_d3_areaCalc()">הגש תשובה</button>
+        </div>
+
+
+        <div id="feedbackQ4Section" class="feedback-section hidden">
+            <p id="feedbackQ4Text" class="text-lg"></p>
+            <p id="remediationQ4Link" class="mt-2 font-semibold"></p>
+        </div>
+        <div id="printableReport"></div>
+    </div>
+
+    <script>
+        let studentQ4Path = [];
+        // Correct answers 
+        const q4_A_coords = { x: -3, y: 0 };
+        const q4_E_coords = { x: 0, y: 6 };
+        const q4_B_coords = { x: 3, y: 12 };
+        const q4_BC_equation_slope = -3; 
+        const q4_BC_equation_intercept = 21;
+        const q4_C_coords = { x: 7, y: 0 };
+        const q4_AEC_area = 30;
+
+        let geometryQ4ChartInstance = null; 
+        Chart.register(ChartDataLabels); 
+
+        // --- Chart Rendering Function ---
+        function renderGeometryQ4Chart(initialFullView = false) { 
+            const ctx = document.getElementById('geometryQ4Chart').getContext('2d');
+            
+            const datasets = [];
+            const pointsForChart = []; 
+            
+            let pA, pE, pB, pC;
+
+            if (initialFullView) {
+                pA = q4_A_coords;
+                pE = q4_E_coords;
+                pB = q4_B_coords;
+                pC = q4_C_coords;
+            } else {
+                const pA_str = sessionStorage.getItem('q4_A_coords');
+                const pE_str = sessionStorage.getItem('q4_E_coords');
+                const pB_str = sessionStorage.getItem('q4_B_coords');
+                const pC_str = sessionStorage.getItem('q4_C_coords');
+                pA = pA_str ? JSON.parse(pA_str) : null;
+                pE = pE_str ? JSON.parse(pE_str) : null;
+                pB = pB_str ? JSON.parse(pB_str) : null;
+                pC = pC_str ? JSON.parse(pC_str) : null;
+            }
+
+            let allX = [-4, 8], allY = [-2, 14]; 
+
+            if (pA) { pointsForChart.push({x: pA.x, y: pA.y, label: 'A'}); allX.push(pA.x); allY.push(pA.y); }
+            if (pE) { pointsForChart.push({x: pE.x, y: pE.y, label: 'E'}); allX.push(pE.x); allY.push(pE.y); }
+            if (pB) { pointsForChart.push({x: pB.x, y: pB.y, label: 'B'}); allX.push(pB.x); allY.push(pB.y); }
+            if (pC) { pointsForChart.push({x: pC.x, y: pC.y, label: 'C'}); allX.push(pC.x); allY.push(pC.y); }
+
+            const xMin = Math.floor(Math.min(...allX) - 1.5); 
+            const xMax = Math.ceil(Math.max(...allX) + 1.5);  
+            let yMinCalc = Math.floor(Math.min(...allY) - 1.5);
+            let yMaxCalc = Math.ceil(Math.max(...allY) + 1.5);
+
+            if (yMinCalc % 2 !== 0) yMinCalc -=1;
+            if (yMaxCalc % 2 !== 0) yMaxCalc +=1;
+            if (yMaxCalc <= yMinCalc + 2) yMaxCalc = yMinCalc + 4; // Ensure a decent range, at least 4 units for step 2
+
+            const yMin = yMinCalc;
+            const yMax = yMaxCalc;
+
+
+            // Line AB: y = 2x + 6
+            const lineAB_data_points = [];
+            for(let x = xMin; x <= xMax; x += 0.5){
+                lineAB_data_points.push({x: x, y: 2 * x + 6});
+            }
+            datasets.push({
+                label: 'ישר AB (y=2x+6)',
+                data: lineAB_data_points,
+                borderColor: 'rgba(59, 130, 246, 0.7)', 
+                borderWidth: 2,
+                type: 'line',
+                fill: false,
+                pointRadius: 0,
+                tension: 0.1,
+                datalabels: { display: false } 
+            });
+
+            const bcEqKnown = sessionStorage.getItem('q4_BC_eq') || initialFullView; 
+            if (bcEqKnown) { 
+                const lineBC_data_points = [];
+                for(let x = xMin; x <= xMax; x += 0.5){
+                    lineBC_data_points.push({x: x, y: -3 * x + 21});
+                }
+                datasets.push({
+                    label: 'ישר BC (y=-3x+21)',
+                    data: lineBC_data_points,
+                    borderColor: 'rgba(16, 185, 129, 0.7)', 
+                    borderWidth: 2,
+                    type: 'line',
+                    fill: false,
+                    pointRadius: 0,
+                    tension: 0.1,
+                    datalabels: { display: false }
+                });
+            }
+            
+            if (pA && pB && pC) {
+                datasets.push({
+                    label: 'משולש ABC',
+                    data: [pA, pB, pC, pA], 
+                    borderColor: 'rgb(55, 65, 81)', 
+                    borderWidth: 2.5, 
+                    type: 'line',
+                    fill: 'rgba(107, 114, 128, 0.15)', 
+                    pointRadius: 0, 
+                    tension: 0, 
+                    datalabels: { display: false }
+                });
+            }
+            
+            if (pE && pC) {
+                datasets.push({
+                    label: 'קו עזר EC',
+                    data: [pE, pC],
+                    borderColor: 'rgba(245, 158, 11, 0.6)', 
+                    borderWidth: 1.5,
+                    borderDash: [4, 4], 
+                    fill: false,
+                    showLine: true,
+                    pointRadius: 0,
+                    type: 'line',
+                    datalabels: { display: false }
+                });
+            }
+            
+             if (pointsForChart.length > 0) {
+                datasets.push({
+                    label: 'קודקודים ונקודות',
+                    data: pointsForChart,
+                    backgroundColor: 'rgb(220, 38, 38)', 
+                    pointRadius: 6, 
+                    pointHoverRadius: 8,
+                    type: 'scatter', 
+                    datalabels: {
+                        align: 'top', 
+                        anchor: 'end',
+                        offset: 8, 
+                        formatter: (value, context) => value.label, 
+                        font: {
+                            weight: 'bold',
+                            size: 13,
+                            family: "'Assistant', sans-serif"
+                        },
+                        color: '#111827' 
+                    }
+                });
+            }
+
+
+            if (geometryQ4ChartInstance) {
+                geometryQ4ChartInstance.destroy(); 
+            }
+
+            geometryQ4ChartInstance = new Chart(ctx, {
+                data: { datasets: datasets },
+                plugins: [ChartDataLabels], 
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false, 
+                    scales: {
+                        x: {
+                            type: 'linear', position: 'bottom',
+                            title: { display: true, text: 'ציר X', font: { family: "'Assistant', sans-serif", weight: 'bold', size:14 }, color: '#1f2937' },
+                            min: xMin, max: xMax,
+                            grid: { 
+                                drawBorder: true, 
+                                borderColor: '#111827', 
+                                color: (context) => context.tick.value === 0 ? '#111827' : 'rgba(209, 213, 219, 0.3)', 
+                                lineWidth: (context) => context.tick.value === 0 ? 2.5 : 0.8, 
+                            }, 
+                            ticks: { font: { family: "'Assistant', sans-serif", size: 12 }, stepSize: 1, color: '#1f2937', precision: 0 }
+                        },
+                        y: {
+                            type: 'linear',
+                            title: { display: true, text: 'ציר Y', font: { family: "'Assistant', sans-serif", weight: 'bold', size:14 }, color: '#1f2937' },
+                            min: yMin, max: yMax,
+                            grid: { 
+                                drawBorder: true, 
+                                borderColor: '#111827', 
+                                color: (context) => context.tick.value === 0 ? '#111827' : 'rgba(209, 213, 219, 0.3)', 
+                                lineWidth: (context) => context.tick.value === 0 ? 2.5 : 0.8, 
+                            },
+                            ticks: { font: { family: "'Assistant', sans-serif", size: 12 }, stepSize: 2, color: '#1f2937', precision: 0 } 
+                        }
+                    },
+                    plugins: {
+                        datalabels: { 
+                             display: function(context) { 
+                                return context.dataset.type === 'scatter';
+                            },
+                            color: '#111827'
+                        },
+                        legend: { 
+                            position: 'bottom',
+                            labels: { font: { family: "'Assistant', sans-serif" }, color: '#1f2937' }
+                        },
+                        tooltip: {
+                            titleFont: { family: "'Assistant', sans-serif" },
+                            bodyFont: { family: "'Assistant', sans-serif" },
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (context.raw && context.raw.label) {
+                                        label = context.raw.label + ': ';
+                                    } else if (label) { 
+                                        label += ': ';
+                                    }
+                                    
+                                    if (context.parsed.x !== undefined && context.parsed.y !== undefined) {
+                                        label += `(${context.parsed.x.toFixed(1)}, ${context.parsed.y.toFixed(1)})`;
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+
+        // --- Utility Functions ---
+        function queueMathJaxTypeset(element) {
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                window.MathJax.typesetPromise(element ? [element] : undefined).catch((err) => console.error('MathJax typesetting error:', err));
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            renderGeometryQ4Chart(true); 
+            queueMathJaxTypeset(document.getElementById('mainQ4PartASection'));
+            queueMathJaxTypeset(document.getElementById('q4ProblemContext'));
+        });
+
+        function showQ4Section(sectionId) {
+            const allSectionIds = [
+                'mainQ4PartASection', 'q4_a1_findASection', 'q4_a1_solveForX_A_Section', 'q4_a2_findESection', 'q4_a2_solveForY_E_Section',
+                'mainQ4PartBSection', 'q4_b1_midpointXSetupSection', 'q4_b2_solveForXBSection', 'q4_b3_midpointYSetupSection', 'q4_b4_solveForYBSection',
+                'mainQ4PartC1Section', 'q4_c1_1_pointSlopeSection', 'q4_c1_2_simplifyLineEqSection',
+                'mainQ4PartC2Section', 'q4_c2_1_findCSection',
+                'mainQ4PartDSection', 'q4_d1_baseAECSection', 'q4_d2_heightAECSection', 'q4_d3_areaCalcSection'
+            ];
+            allSectionIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+            if (sectionId) {
+                const el = document.getElementById(sectionId);
+                if (el) {
+                    el.classList.remove('hidden');
+                    queueMathJaxTypeset(el);
+                }
+            }
+            if (sectionId === 'mainQ4PartASection' && studentQ4Path.length === 0) {
+                 renderGeometryQ4Chart(true);
+            } else {
+                 renderGeometryQ4Chart(false);
+            }
+        }
+
+        function displayQ4Feedback(message, remediation) {
+            const feedbackTextEl = document.getElementById('feedbackQ4Text');
+            const remediationLinkEl = document.getElementById('remediationQ4Link');
+            feedbackTextEl.innerHTML = message; 
+            remediationLinkEl.innerHTML = remediation ? `<strong>מוקד מומלץ לחיזוק:</strong> ${remediation}` : '';
+            document.getElementById('feedbackQ4Section').classList.remove('hidden');
+            queueMathJaxTypeset(document.getElementById('feedbackQ4Section')); 
+        }
+        
+        function startOverQ4() {
+            studentQ4Path = []; 
+            const radioGroups = [
+                'mainQ4A_Answer', 'q4_a1_propXAxisAns', 'q4_a1_solveX_A_Ans', 'q4_a2_propYAxisAns', 'q4_a2_solveY_E_Ans',
+                'mainQ4B_Answer', 'q4_b1_midXSetupAns', 'q4_b2_solveXBAns', 'q4_b3_midYSetupAns', 'q4_b4_solveYBAns',
+                'mainQ4C1_Answer', 'q4_c1_1_psAns', 'q4_c1_2_simpAns',
+                'mainQ4C2_Answer', 'q4_c2_1_findCAns',
+                'mainQ4D_Answer', 'q4_d1_baseAns', 'q4_d2_heightAns', 'q4_d3_areaAns'
+            ];
+            radioGroups.forEach(groupName => {
+                const radios = document.getElementsByName(groupName);
+                if (radios) radios.forEach(radio => radio.checked = false);
+            });
+            sessionStorage.removeItem('q4_A_coords');
+            sessionStorage.removeItem('q4_E_coords');
+            sessionStorage.removeItem('q4_B_coords');
+            sessionStorage.removeItem('q4_C_coords');
+            sessionStorage.removeItem('q4_BC_eq');
+
+            document.getElementById('feedbackQ4Section').classList.add('hidden');
+            renderGeometryQ4Chart(true); 
+            showQ4Section('mainQ4PartASection'); 
+        }
+
+        function getSelectedRadioValueQ4(name) {
+            const radios = document.getElementsByName(name);
+            for (let i = 0; i < radios.length; i++) { if (radios[i].checked) return radios[i].value; }
+            return null;
+        }
+
+        function logQ4Attempt(stepDesc, sectionId, selectedValue, radioGroupName, isCorrect, feedbackMessage = "", remediationTopic = null) {
+            let questionReportText = document.getElementById(sectionId)?.querySelector('.question-text')?.textContent.trim() || "טקסט שאלה לא זמין";
+            const pContext = document.getElementById(sectionId)?.querySelector('.problem-context p'); 
+            if(pContext && sectionId !== 'mainQ4PartASection' && sectionId !== 'mainQ4PartBSection' && sectionId !== 'mainQ4PartC1Section' && sectionId !== 'mainQ4PartC2Section' && sectionId !== 'mainQ4PartDSection') {
+                // Avoid prepending general context to specific sub-questions if not needed
+            } else if (pContext) {
+                 questionReportText = pContext.textContent.trim() + " " + questionReportText;
+            }
+
+
+            const selectedOption = document.querySelector(`input[name="${radioGroupName}"]:checked`);
+            const answerText = selectedOption ? (selectedOption.parentElement.textContent || "").replace(/^[א-ד]\)\s*/, '').trim() : selectedValue;
+            
+            studentQ4Path.push({ 
+                type: 'attempt', 
+                stepDescription: stepDesc, 
+                questionText: questionReportText, 
+                selectedAnswer: selectedValue, 
+                selectedAnswerText: answerText,
+                isCorrect: isCorrect, 
+                feedbackForAttempt: isCorrect ? null : { message: feedbackMessage, remediationTopic: remediationTopic } 
+            });
+            document.getElementById('feedbackQ4Section').classList.add('hidden');
+        }
+        
+        function shareReportQ4() { 
+            const reportContainer = document.getElementById('printableReport');
+            if (!reportContainer) { return; }
+            let reportHTML = '<h2>אבחון: שאלה 4 - גיאומטריה אנליטית</h2>';
+            
+            const mistakesAndLearnings = [];
+
+            if (studentQ4Path.length === 0) {
+                reportHTML += '<p>לא נרשמה התקדמות עדיין.</p>';
+            } else {
+                studentQ4Path.forEach((item) => {
+                    if (item.type === 'attempt' && !item.isCorrect && item.feedbackForAttempt) {
+                        mistakesAndLearnings.push({
+                            question: item.questionText,
+                            userAnswer: item.selectedAnswerText || item.selectedAnswer,
+                            feedback: item.feedbackForAttempt.message,
+                            remediation: item.feedbackForAttempt.remediationTopic,
+                            step: item.stepDescription
+                        });
+                    }
+                });
+            }
+
+            if (mistakesAndLearnings.length > 0) {
+                reportHTML += '<h3>ניתוח טעויות ונקודות לשיפור:</h3>';
+                mistakesAndLearnings.forEach(mistake => {
+                    reportHTML += `<div class="mistake-item">`;
+                    reportHTML += `<p><strong>בשלב:</strong> ${mistake.step}</p>`;
+                    reportHTML += `<p><strong>השאלה:</strong> ${mistake.question}</p>`;
+                    reportHTML += `<p><strong>התשובה שלך:</strong> ${mistake.userAnswer}</p>`;
+                    reportHTML += `<p><strong>המשוב שניתן:</strong> ${mistake.feedback}</p>`;
+                    if (mistake.remediation) {
+                        reportHTML += `<p><strong>מוקד לשיפור:</strong> ${mistake.remediation}</p>`;
+                    }
+                    reportHTML += `</div>`;
+                });
+            } else if (studentQ4Path.length > 0) {
+                 const mainDCorrect = studentQ4Path.some(item => item.stepDescription === "סעיף ד': שטח משולש AEC" && item.isCorrect);
+                 if (mainDCorrect) { 
+                     reportHTML += '<p><strong>כל הכבוד! נראה שהבנת את כל השלבים ולא זוהו טעויות הדורשות התייחסות מיוחדת.</strong></p>';
+                 } else {
+                     reportHTML += '<p><strong>לא זוהו טעויות ספציפיות הדורשות התייחסות מיוחדת במהלך סשן זה, אך ייתכן שלא כל חלקי השאלה הושלמו בהצלחה.</strong></p>';
+                 }
+            } else { 
+                 reportHTML += '<p>לא נרשמה התקדמות עדיין.</p>';
+            }
+            reportContainer.innerHTML = reportHTML;
+            window.print(); 
+        }
+
+        // --- Check Answer Functions ---
+        // Part A
+        function checkMainQ4PartAAnswer() {
+            const answer = getSelectedRadioValueQ4('mainQ4A_Answer');
+            if (!answer) { displayQ4Feedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = answer === `A(${q4_A_coords.x},${q4_A_coords.y})_E(${q4_E_coords.x},${q4_E_coords.y})`;
+            const feedbackMsg = isCorrect ? `נכון! $A(${q4_A_coords.x},${q4_A_coords.y})$ ו-$E(${q4_E_coords.x},${q4_E_coords.y})$.` : "התשובה אינה נכונה. בוא נפרק את השלבים.";
+            const remediation = isCorrect ? null : "מציאת נקודות חיתוך עם הצירים";
+            logQ4Attempt("סעיף א': שיעורי A ו-E", 'mainQ4PartASection', answer, 'mainQ4A_Answer', isCorrect, feedbackMsg, remediation);
+            displayQ4Feedback(feedbackMsg, remediation);
+
+            if (isCorrect) {
+                sessionStorage.setItem('q4_A_coords', JSON.stringify(q4_A_coords));
+                sessionStorage.setItem('q4_E_coords', JSON.stringify(q4_E_coords));
+                document.querySelector('#mainQ4PartBSection .problem-context').innerHTML = `<p>ידוע: $A(${q4_A_coords.x},${q4_A_coords.y})$, $E(${q4_E_coords.x},${q4_E_coords.y})$.</p>`;
+                queueMathJaxTypeset(document.querySelector('#mainQ4PartBSection .problem-context'));
+                renderGeometryQ4Chart(false); 
+                setTimeout(() => showQ4Section('mainQ4PartBSection'), 2500);
+            } else {
+                setTimeout(() => {
+                    document.getElementById('feedbackQ4Section').classList.add('hidden');
+                    showQ4Section('q4_a1_findASection');
+                }, 3000);
+            }
+        }
+
+        function checkQ4_a1_propXAxis() {
+            const answer = getSelectedRadioValueQ4('q4_a1_propXAxisAns');
+            if (!answer) { displayQ4Feedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = answer === "y_is_0";
+            const feedbackMsg = isCorrect ? "נכון. שיעור ה-Y של נקודה על ציר ה-X הוא 0. כעת הצב זאת במשוואת הישר." : "לא נכון. נקודה על ציר ה-X מאופיינת בכך ששיעור ה-Y שלה הוא 0.";
+            const remediation = isCorrect ? null : "תכונות נקודה על ציר ה-X";
+            logQ4Attempt("סעיף א' שלב 1.1: תכונת נקודה על ציר X", 'q4_a1_findASection', answer, 'q4_a1_propXAxisAns', isCorrect, feedbackMsg, remediation);
+            displayQ4Feedback(feedbackMsg, remediation);
+            
+            setTimeout(() => {
+                document.getElementById('feedbackQ4Section').classList.add('hidden');
+                showQ4Section(isCorrect ? 'q4_a1_solveForX_A_Section' : 'q4_a1_findASection');
+            }, isCorrect ? 2000: 3500);
+        }
+
+        function checkQ4_a1_solveForX_A() {
+            const answer = getSelectedRadioValueQ4('q4_a1_solveX_A_Ans');
+            if (!answer) { displayQ4Feedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = parseFloat(answer) === q4_A_coords.x;
+            const feedbackMsg = isCorrect ? `נכון! $x_A = ${q4_A_coords.x}$. לכן $A(${q4_A_coords.x},0)$. כעת נמצא את E.` : "לא נכון. $0 = 2x+6 \Rightarrow -6 = 2x \Rightarrow x = -3$.";
+            const remediation = isCorrect ? null : "פתרון משוואה לינארית";
+            logQ4Attempt("סעיף א' שלב 1.2: חישוב X של A", 'q4_a1_solveForX_A_Section', answer, 'q4_a1_solveX_A_Ans', isCorrect, feedbackMsg, remediation);
+            displayQ4Feedback(feedbackMsg, remediation);
+
+            if (isCorrect) {
+                sessionStorage.setItem('q4_A_coords', JSON.stringify(q4_A_coords));
+                renderGeometryQ4Chart(false); 
+            }
+            setTimeout(() => {
+                document.getElementById('feedbackQ4Section').classList.add('hidden');
+                showQ4Section(isCorrect ? 'q4_a2_findESection' : 'q4_a1_solveForX_A_Section');
+            }, isCorrect ? 2000: 3500);
+        }
+        
+        function checkQ4_a2_propYAxis() {
+            const answer = getSelectedRadioValueQ4('q4_a2_propYAxisAns');
+            if (!answer) { displayQ4Feedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = answer === "x_is_0";
+            const feedbackMsg = isCorrect ? "נכון. שיעור ה-X של נקודה על ציר ה-Y הוא 0. כעת הצב זאת במשוואת הישר." : "לא נכון. נקודה על ציר ה-Y מאופיינת בכך ששיעור ה-X שלה הוא 0.";
+            const remediation = isCorrect ? null : "תכונות נקודה על ציר ה-Y";
+            logQ4Attempt("סעיף א' שלב 2.1: תכונת נקודה על ציר Y", 'q4_a2_findESection', answer, 'q4_a2_propYAxisAns', isCorrect, feedbackMsg, remediation);
+            displayQ4Feedback(feedbackMsg, remediation);
+            
+            setTimeout(() => {
+                document.getElementById('feedbackQ4Section').classList.add('hidden');
+                showQ4Section(isCorrect ? 'q4_a2_solveForY_E_Section' : 'q4_a2_findESection');
+            }, isCorrect ? 2000: 3500);
+        }
+
+        function checkQ4_a2_solveForY_E() {
+            const answer = getSelectedRadioValueQ4('q4_a2_solveY_E_Ans');
+            if (!answer) { displayQ4Feedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = parseFloat(answer) === q4_E_coords.y;
+            const feedbackMsg = isCorrect ? `נכון! $y_E = ${q4_E_coords.y}$. לכן $E(0,${q4_E_coords.y})$. נחזור לשאלה הראשית של סעיף א'.` : "לא נכון. $y = 2(0)+6 \Rightarrow y = 6$.";
+            const remediation = isCorrect ? null : "הצבה במשוואת ישר";
+            logQ4Attempt("סעיף א' שלב 2.2: חישוב Y של E", 'q4_a2_solveForY_E_Section', answer, 'q4_a2_solveY_E_Ans', isCorrect, feedbackMsg, remediation);
+            displayQ4Feedback(feedbackMsg, remediation);
+
+            if (isCorrect) {
+                sessionStorage.setItem('q4_E_coords', JSON.stringify(q4_E_coords));
+                renderGeometryQ4Chart(false); 
+            }
+             setTimeout(() => {
+                document.getElementById('feedbackQ4Section').classList.add('hidden');
+                showQ4Section(isCorrect ? 'mainQ4PartASection' : 'q4_a2_solveForY_E_Section');
+            }, isCorrect ? 2000: 3500);
+        }
+
+        // Part B
+        function checkMainQ4PartBAnswer() {
+            const answer = getSelectedRadioValueQ4('mainQ4B_Answer');
+            if (!answer) { displayQ4Feedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = answer === `B(${q4_B_coords.x},${q4_B_coords.y})`;
+            const feedbackMsg = isCorrect ? `נכון! $B(${q4_B_coords.x},${q4_B_coords.y})$.` : "התשובה אינה נכונה. בוא נשתמש בנוסחת אמצע קטע.";
+            const remediation = isCorrect ? null : "נוסחת אמצע קטע";
+            logQ4Attempt("סעיף ב': שיעורי B", 'mainQ4PartBSection', answer, 'mainQ4B_Answer', isCorrect, feedbackMsg, remediation);
+            displayQ4Feedback(feedbackMsg, remediation);
+
+            if (isCorrect) {
+                sessionStorage.setItem('q4_B_coords', JSON.stringify(q4_B_coords));
+                 document.querySelector('#mainQ4PartC1Section .problem-context').innerHTML = `<p>ידוע: $B(${q4_B_coords.x},${q4_B_coords.y})$, שיפוע $m_{BC}=-3$.</p>`;
+                 queueMathJaxTypeset(document.querySelector('#mainQ4PartC1Section .problem-context'));
+                 renderGeometryQ4Chart(false); 
+                setTimeout(() => showQ4Section('mainQ4PartC1Section'), 2500);
+            } else {
+                setTimeout(() => {
+                    document.getElementById('feedbackQ4Section').classList.add('hidden');
+                    showQ4Section('q4_b1_midpointXSetupSection');
+                }, 3000);
+            }
+        }
+        
+        function checkQ4_b1_midpointXSetup() {
+            const answer = getSelectedRadioValueQ4('q4_b1_midXSetupAns');
+            if (!answer) { displayQ4Feedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = answer === "0=(-3+xB)/2";
+            const feedbackMsg = isCorrect ? "הצבה נכונה בנוסחת אמצע קטע לשיעור X. כעת פתור עבור $x_B$." : "טעות בהצבה. $x_E=0, x_A=-3$.";
+            const remediation = isCorrect ? null : "הצבה בנוסחת אמצע קטע";
+            logQ4Attempt("סעיף ב' שלב 1: הצבה ל-xB", 'q4_b1_midpointXSetupSection', answer, 'q4_b1_midXSetupAns', isCorrect, feedbackMsg, remediation);
+            displayQ4Feedback(feedbackMsg, remediation);
+            setTimeout(() => {
+                document.getElementById('feedbackQ4Section').classList.add('hidden');
+                showQ4Section(isCorrect ? 'q4_b2_solveForXBSection' : 'q4_b1_midpointXSetupSection');
+            }, isCorrect ? 2000: 3500);
+        }
+
+        function checkQ4_b2_solveForXB() {
+            const answer = getSelectedRadioValueQ4('q4_b2_solveXBAns');
+            if (!answer) { displayQ4Feedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = parseFloat(answer) === q4_B_coords.x;
+            const feedbackMsg = isCorrect ? `נכון! $x_B = ${q4_B_coords.x}$. כעת נמצא את $y_B$.` : "לא נכון. $0 = (-3+x_B)/2 \Rightarrow 0 = -3+x_B \Rightarrow x_B=3$.";
+            const remediation = isCorrect ? null : "פתרון משוואה לינארית";
+            logQ4Attempt("סעיף ב' שלב 2: חישוב xB", 'q4_b2_solveForXBSection', answer, 'q4_b2_solveXBAns', isCorrect, feedbackMsg, remediation);
+            displayQ4Feedback(feedbackMsg, remediation);
+            setTimeout(() => {
+                document.getElementById('feedbackQ4Section').classList.add('hidden');
+                showQ4Section(isCorrect ? 'q4_b3_midpointYSetupSection' : 'q4_b2_solveForXBSection');
+            }, isCorrect ? 2000: 3500);
+        }
+        
+        function checkQ4_b3_midpointYSetup() {
+            const answer = getSelectedRadioValueQ4('q4_b3_midYSetupAns');
+            if (!answer) { displayQ4Feedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = answer === "6=(0+yB)/2";
+            const feedbackMsg = isCorrect ? "הצבה נכונה בנוסחת אמצע קטע לשיעור Y. כעת פתור עבור $y_B$." : "טעות בהצבה. $y_E=6, y_A=0$.";
+            const remediation = isCorrect ? null : "הצבה בנוסחת אמצע קטע";
+            logQ4Attempt("סעיף ב' שלב 3: הצבה ל-yB", 'q4_b3_midpointYSetupSection', answer, 'q4_b3_midYSetupAns', isCorrect, feedbackMsg, remediation);
+            displayQ4Feedback(feedbackMsg, remediation);
+            setTimeout(() => {
+                document.getElementById('feedbackQ4Section').classList.add('hidden');
+                showQ4Section(isCorrect ? 'q4_b4_solveForYBSection' : 'q4_b3_midpointYSetupSection');
+            }, isCorrect ? 2000: 3500);
+        }
+
+        function checkQ4_b4_solveForYB() {
+            const answer = getSelectedRadioValueQ4('q4_b4_solveYBAns');
+            if (!answer) { displayQ4Feedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = parseFloat(answer) === q4_B_coords.y;
+            const feedbackMsg = isCorrect ? `נכון! $y_B = ${q4_B_coords.y}$. לכן $B(${q4_B_coords.x},${q4_B_coords.y})$. נחזור לשאלה הראשית של סעיף ב'.` : "לא נכון. $6 = (0+y_B)/2 \Rightarrow 12 = 0+y_B \Rightarrow y_B=12$.";
+            const remediation = isCorrect ? null : "פתרון משוואה לינארית";
+            logQ4Attempt("סעיף ב' שלב 4: חישוב yB", 'q4_b4_solveForYBSection', answer, 'q4_b4_solveYBAns', isCorrect, feedbackMsg, remediation);
+            displayQ4Feedback(feedbackMsg, remediation);
+            
+            if(isCorrect) {
+                 sessionStorage.setItem('q4_B_coords', JSON.stringify(q4_B_coords));
+                 document.querySelector('#mainQ4PartC1Section .problem-context').innerHTML = `<p>ידוע: $B(${q4_B_coords.x},${q4_B_coords.y})$, שיפוע $m_{BC}=-3$.</p>`;
+                 queueMathJaxTypeset(document.querySelector('#mainQ4PartC1Section .problem-context'));
+                 renderGeometryQ4Chart(false); 
+            }
+            setTimeout(() => {
+                document.getElementById('feedbackQ4Section').classList.add('hidden');
+                showQ4Section(isCorrect ? 'mainQ4PartBSection' : 'q4_b4_solveForYBSection');
+            }, isCorrect ? 2000: 3500);
+        }
+        
+        // Part C.1
+        function checkMainQ4PartC1Answer() {
+            const answer = getSelectedRadioValueQ4('mainQ4C1_Answer');
+            if (!answer) { displayQ4Feedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = answer === `y=${q4_BC_equation_slope}x+${q4_BC_equation_intercept}`;
+            const feedbackMsg = isCorrect ? `נכון! משוואת הישר BC היא $y=${q4_BC_equation_slope}x+${q4_BC_equation_intercept}$.` : "התשובה אינה נכונה. בוא נשתמש בנוסחה למציאת משוואת ישר.";
+            const remediation = isCorrect ? null : "מציאת משוואת ישר על פי נקודה ושיפוע";
+            logQ4Attempt("סעיף ג(1): משוואת BC", 'mainQ4PartC1Section', answer, 'mainQ4C1_Answer', isCorrect, feedbackMsg, remediation);
+            displayQ4Feedback(feedbackMsg, remediation);
+
+            if (isCorrect) {
+                sessionStorage.setItem('q4_BC_eq', `y=${q4_BC_equation_slope}x+${q4_BC_equation_intercept}`);
+                document.querySelector('#mainQ4PartC2Section .problem-context').innerHTML = `<p>ידוע: C על ציר ה-X, משוואת BC היא $y = ${q4_BC_equation_slope}x + ${q4_BC_equation_intercept}$.</p>`;
+                queueMathJaxTypeset(document.querySelector('#mainQ4PartC2Section .problem-context'));
+                renderGeometryQ4Chart(false); 
+                setTimeout(() => showQ4Section('mainQ4PartC2Section'), 2500);
+            } else {
+                setTimeout(() => {
+                    document.getElementById('feedbackQ4Section').classList.add('hidden');
+                    showQ4Section('q4_c1_1_pointSlopeSection');
+                }, 3000);
+            }
+        }
+
+        function checkQ4_c1_1_pointSlope() {
+            const answer = getSelectedRadioValueQ4('q4_c1_1_psAns');
+            if (!answer) { displayQ4Feedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = answer === `y-${q4_B_coords.y}=${q4_BC_equation_slope}(x-${q4_B_coords.x})`;
+            const feedbackMsg = isCorrect ? "הצבה נכונה! כעת פשט את המשוואה." : "טעות בהצבה. $y_1=12, x_1=3, m=-3$.";
+            const remediation = isCorrect ? null : "הצבה בנוסחת משוואת ישר";
+            logQ4Attempt("סעיף ג(1) שלב 1: הצבה בנוסחה", 'q4_c1_1_pointSlopeSection', answer, 'q4_c1_1_psAns', isCorrect, feedbackMsg, remediation);
+            displayQ4Feedback(feedbackMsg, remediation);
+            setTimeout(() => {
+                document.getElementById('feedbackQ4Section').classList.add('hidden');
+                showQ4Section(isCorrect ? 'q4_c1_2_simplifyLineEqSection' : 'q4_c1_1_pointSlopeSection');
+            }, isCorrect ? 2000: 3500);
+        }
+
+        function checkQ4_c1_2_simplifyLineEq() {
+            const answer = getSelectedRadioValueQ4('q4_c1_2_simpAns');
+            if (!answer) { displayQ4Feedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = answer === `y=${q4_BC_equation_slope}x+${q4_BC_equation_intercept}`;
+            const feedbackMsg = isCorrect ? `נכון! משוואת הישר BC היא $y=${q4_BC_equation_slope}x+${q4_BC_equation_intercept}$. נחזור לשאלה הראשית של סעיף ג(1).` : "לא נכון. $y-12 = -3x + 9 \Rightarrow y = -3x + 9 + 12 \Rightarrow y = -3x+21$.";
+            const remediation = isCorrect ? null : "פישוט משוואת ישר";
+            logQ4Attempt("סעיף ג(1) שלב 2: פישוט משוואה", 'q4_c1_2_simplifyLineEqSection', answer, 'q4_c1_2_simpAns', isCorrect, feedbackMsg, remediation);
+            displayQ4Feedback(feedbackMsg, remediation);
+            
+            if(isCorrect){
+                sessionStorage.setItem('q4_BC_eq', `y=${q4_BC_equation_slope}x+${q4_BC_equation_intercept}`);
+                document.querySelector('#mainQ4PartC2Section .problem-context').innerHTML = `<p>ידוע: C על ציר ה-X, משוואת BC היא $y = ${q4_BC_equation_slope}x + ${q4_BC_equation_intercept}$.</p>`;
+                queueMathJaxTypeset(document.querySelector('#mainQ4PartC2Section .problem-context'));
+                renderGeometryQ4Chart(false);
+            }
+            setTimeout(() => {
+                document.getElementById('feedbackQ4Section').classList.add('hidden');
+                showQ4Section(isCorrect ? 'mainQ4PartC1Section' : 'q4_c1_2_simplifyLineEqSection');
+            }, isCorrect ? 2000: 3500);
+        }
+
+        // Part C.2
+        function checkMainQ4PartC2Answer() {
+            const answer = getSelectedRadioValueQ4('mainQ4C2_Answer');
+            if (!answer) { displayQ4Feedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = answer === `C(${q4_C_coords.x},${q4_C_coords.y})`;
+            const feedbackMsg = isCorrect ? `נכון! $C(${q4_C_coords.x},${q4_C_coords.y})$.` : "התשובה אינה נכונה. בוא נפרק את השלבים.";
+            const remediation = isCorrect ? null : "מציאת נקודת חיתוך עם ציר X";
+            logQ4Attempt("סעיף ג(2): שיעורי C", 'mainQ4PartC2Section', answer, 'mainQ4C2_Answer', isCorrect, feedbackMsg, remediation);
+            displayQ4Feedback(feedbackMsg, remediation);
+
+            if (isCorrect) {
+                sessionStorage.setItem('q4_C_coords', JSON.stringify(q4_C_coords));
+                const aCoords = JSON.parse(sessionStorage.getItem('q4_A_coords')) || q4_A_coords; 
+                const eCoords = JSON.parse(sessionStorage.getItem('q4_E_coords')) || q4_E_coords; 
+                document.querySelector('#mainQ4PartDSection .problem-context').innerHTML = `<p>ידוע: $A(${aCoords.x},${aCoords.y})$, $E(${eCoords.x},${eCoords.y})$, $C(${q4_C_coords.x},${q4_C_coords.y})$.</p>`;
+                queueMathJaxTypeset(document.querySelector('#mainQ4PartDSection .problem-context'));
+                renderGeometryQ4Chart(false); 
+                setTimeout(() => showQ4Section('mainQ4PartDSection'), 2500);
+            } else {
+                setTimeout(() => {
+                    document.getElementById('feedbackQ4Section').classList.add('hidden');
+                    showQ4Section('q4_c2_1_findCSection');
+                }, 3000);
+            }
+        }
+        
+        function checkQ4_c2_1_findC() {
+            const answer = getSelectedRadioValueQ4('q4_c2_1_findCAns');
+            if (!answer) { displayQ4Feedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = parseFloat(answer) === q4_C_coords.x;
+            const feedbackMsg = isCorrect ? `נכון! $x_C = ${q4_C_coords.x}$. לכן $C(${q4_C_coords.x},0)$. נחזור לשאלה הראשית של סעיף ג(2).` : "לא נכון. $0 = -3x + 21 \Rightarrow 3x = 21 \Rightarrow x=7$.";
+            const remediation = isCorrect ? null : "פתרון משוואה לינארית";
+            logQ4Attempt("סעיף ג(2) שלב 1: חישוב xC", 'q4_c2_1_findCSection', answer, 'q4_c2_1_findCAns', isCorrect, feedbackMsg, remediation);
+            displayQ4Feedback(feedbackMsg, remediation);
+            
+            if(isCorrect){
+                 sessionStorage.setItem('q4_C_coords', JSON.stringify(q4_C_coords));
+                 const aCoords = JSON.parse(sessionStorage.getItem('q4_A_coords')) || q4_A_coords; 
+                 const eCoords = JSON.parse(sessionStorage.getItem('q4_E_coords')) || q4_E_coords; 
+                 document.querySelector('#mainQ4PartDSection .problem-context').innerHTML = `<p>ידוע: $A(${aCoords.x},${aCoords.y})$, $E(${eCoords.x},${eCoords.y})$, $C(${q4_C_coords.x},${q4_C_coords.y})$.</p>`;
+                 queueMathJaxTypeset(document.querySelector('#mainQ4PartDSection .problem-context'));
+                 renderGeometryQ4Chart(false);
+            }
+            setTimeout(() => {
+                document.getElementById('feedbackQ4Section').classList.add('hidden');
+                showQ4Section(isCorrect ? 'mainQ4PartC2Section' : 'q4_c2_1_findCSection');
+            }, isCorrect ? 2000: 3500);
+        }
+
+        // Part D
+        function checkMainQ4PartDAnswer() {
+            const answer = getSelectedRadioValueQ4('mainQ4D_Answer');
+            if (!answer) { displayQ4Feedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = parseFloat(answer) === q4_AEC_area;
+            const feedbackMsg = isCorrect ? `נכון! שטח המשולש AEC הוא ${q4_AEC_area} יחידות שטח.` : "התשובה אינה נכונה. בוא נפרק את השלבים לחישוב השטח.";
+            const remediation = isCorrect ? null : "חישוב שטח משולש";
+            logQ4Attempt("סעיף ד': שטח משולש AEC", 'mainQ4PartDSection', answer, 'mainQ4D_Answer', isCorrect, feedbackMsg, remediation);
+            displayQ4Feedback(feedbackMsg, remediation);
+
+            if (isCorrect) {
+                showQ4Section(null);
+            } else {
+                setTimeout(() => {
+                    document.getElementById('feedbackQ4Section').classList.add('hidden');
+                    showQ4Section('q4_d1_baseAECSection');
+                }, 3000);
+            }
+        }
+
+        function checkQ4_d1_baseAEC() {
+            const answer = getSelectedRadioValueQ4('q4_d1_baseAns');
+            if (!answer) { displayQ4Feedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = parseFloat(answer) === 10; 
+            const feedbackMsg = isCorrect ? "נכון! אורך הבסיס AC הוא 10. כעת נמצא את הגובה." : "לא נכון. אורך קטע על ציר ה-X הוא הפרש מוחלט של שיעורי ה-X: $|x_C - x_A| = |7 - (-3)| = |7+3|=10$.";
+            const remediation = isCorrect ? null : "חישוב מרחק בין שתי נקודות על ציר";
+            logQ4Attempt("סעיף ד' שלב 1: אורך בסיס AC", 'q4_d1_baseAECSection', answer, 'q4_d1_baseAns', isCorrect, feedbackMsg, remediation);
+            displayQ4Feedback(feedbackMsg, remediation);
+            setTimeout(() => {
+                document.getElementById('feedbackQ4Section').classList.add('hidden');
+                showQ4Section(isCorrect ? 'q4_d2_heightAECSection' : 'q4_d1_baseAECSection');
+            }, isCorrect ? 2000: 3500);
+        }
+
+        function checkQ4_d2_heightAEC() {
+            const answer = getSelectedRadioValueQ4('q4_d2_heightAns');
+            if (!answer) { displayQ4Feedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = parseFloat(answer) === q4_E_coords.y;
+            const feedbackMsg = isCorrect ? `נכון! הגובה מ-E לבסיס AC הוא ${q4_E_coords.y}. כעת נחשב את השטח.` : `לא נכון. הגובה הוא המרחק האנכי מ-E לציר ה-X, שהוא שיעור ה-Y של E.`;
+            const remediation = isCorrect ? null : "הבנת גובה במשולש במערכת צירים";
+            logQ4Attempt("סעיף ד' שלב 2: גובה מ-E", 'q4_d2_heightAECSection', answer, 'q4_d2_heightAns', isCorrect, feedbackMsg, remediation);
+            displayQ4Feedback(feedbackMsg, remediation);
+            setTimeout(() => {
+                document.getElementById('feedbackQ4Section').classList.add('hidden');
+                showQ4Section(isCorrect ? 'q4_d3_areaCalcSection' : 'q4_d2_heightAECSection');
+            }, isCorrect ? 2000: 3500);
+        }
+
+        function checkQ4_d3_areaCalc() {
+            const answer = getSelectedRadioValueQ4('q4_d3_areaAns');
+            if (!answer) { displayQ4Feedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = parseFloat(answer) === q4_AEC_area;
+            const feedbackMsg = isCorrect ? `נכון! שטח המשולש AEC הוא ${q4_AEC_area} יח\"ש. נחזור לשאלה הראשית של סעיף ד'.` : "לא נכון. שטח = $\frac{1}{2} \times 10 \times 6 = 30$.";
+            const remediation = isCorrect ? null : "נוסחת שטח משולש";
+            logQ4Attempt("סעיף ד' שלב 3: חישוב שטח", 'q4_d3_areaCalcSection', answer, 'q4_d3_areaAns', isCorrect, feedbackMsg, remediation);
+            displayQ4Feedback(feedbackMsg, remediation);
+             setTimeout(() => {
+                document.getElementById('feedbackQ4Section').classList.add('hidden');
+                showQ4Section(isCorrect ? 'mainQ4PartDSection' : 'q4_d3_areaCalcSection');
+            }, isCorrect ? 2000: 3500);
+        }
+
+    </script>
+</body>
+</html>
+```

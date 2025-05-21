@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>אבחון: בעיית מלבן (שטח ומידות)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Assistant', sans-serif;
+            background-color: #f1f5f9;
+            color: #1e293b;
+        }
+        .container-quiz {
+            max-width: 750px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: #ffffff;
+            border-radius: 0.75rem; 
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .question-section {
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            background-color: #f8fafc;
+        }
+        .problem-statement {
+            font-size: 1.25rem; 
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 1rem;
+        }
+        .question-text, .problem-context {
+            font-size: 1.1rem; 
+            color: #334155;
+            margin-bottom: 0.75rem;
+            line-height: 1.6;
+        }
+        .problem-context p { margin-bottom: 0.25rem; text-align: right; font-weight: 500;}
+        label.option-label {
+            display: block;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            background-color: #fff;
+            border: 1px solid #cbd5e1;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        label.option-label:hover {
+            background-color: #f1f5f9;
+            border-color: #94a3b8;
+        }
+        input[type="radio"] {
+            margin-left: 0.5rem;
+            accent-color: #2563eb;
+        }
+        button.submit-button {
+            padding: 0.75rem 1.5rem;
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 1rem;
+        }
+        button.submit-button:hover {
+            background-color: #1d4ed8;
+        }
+        button.action-button {
+            padding: 0.5rem 1rem;
+            background-color: #475569;
+            color: white;
+            border: none;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-right: 0.5rem;
+        }
+        button.action-button:hover {
+            background-color: #334155;
+        }
+        .feedback-section {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            background-color: #eff6ff;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+        }
+        .hidden {
+            display: none;
+        }
+        #printableReport { display: none; padding: 20px; font-family: 'Assistant', sans-serif; color: #000; direction: rtl; }
+        #printableReport h2, #printableReport h3 { font-weight: 600; margin-bottom: 1rem; border-bottom: 1px solid #ccc; padding-bottom: 0.5rem; }
+        #printableReport h2 { font-size: 1.5rem; }
+        #printableReport h3 { font-size: 1.3rem; margin-top: 1.5rem;}
+        #printableReport .mistake-item { margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px dotted #eee; }
+        #printableReport .mistake-item:last-child { border-bottom: none; }
+        #printableReport p { margin-bottom: 0.25rem; }
+        #printableReport strong { font-weight: 600; }
+        @media print {
+            body * { visibility: hidden; }
+            #printableReport, #printableReport * { visibility: visible; }
+            #printableReport { position: absolute; left: 0; top: 0; width: 100%; display: block !important; font-size: 12pt; }
+            .container-quiz > h1, .container-quiz > div:first-of-type, .question-section, .feedback-section { display: none !important; visibility: hidden !important; }
+        }
+    </style>
+    <script>
+        window.MathJax = {
+          tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']]
+          },
+          svg: {
+            fontCache: 'global'
+          }
+        };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
+</head>
+<body class="bg-slate-100 text-slate-800">
+
+    <div class="container-quiz">
+        <h1 class="text-2xl font-bold text-center text-slate-700 mb-6">אבחון: בעיית מלבן (שטח ומידות)</h1>
+
+        <div class="mb-6 text-center">
+            <button class="action-button" onclick="startOver()">התחל מחדש</button>
+            <button class="action-button" onclick="shareReport()">שתף דוח</button>
+        </div>
+
+        <div id="mainGeometryProblemSection" class="question-section">
+            <p class="problem-statement">בעיה ראשית:</p>
+            <div class="problem-context">
+                <p>אורכו של מלבן גדול ב-2 ס"מ מרוחבו.</p>
+                <p>שטח המלבן הוא 24 סמ"ר.</p>
+            </div>
+            <p class="question-text">מצא את מידות המלבן (אורכו ורוחבו).</p>
+            <p class="text-sm text-slate-500 mb-3">אנא פתור זאת במחברתך תחילה, ולאחר מכן בחר את תשובתך הסופית למטה.</p>
+            
+            <div id="mainGeometryProblemOptions">
+                <label class="option-label"><input type="radio" name="mainGeomAnswer" value="w4_l6"> א) רוחב: 4 ס"מ, אורך: 6 ס"מ</label>
+                <label class="option-label"><input type="radio" name="mainGeomAnswer" value="w6_l4"> ב) רוחב: 6 ס"מ, אורך: 4 ס"מ</label>
+                <label class="option-label"><input type="radio" name="mainGeomAnswer" value="w3_l8"> ג) רוחב: 3 ס"מ, אורך: 8 ס"מ</label>
+                <label class="option-label"><input type="radio" name="mainGeomAnswer" value="w2_l12"> ד) רוחב: 2 ס"מ, אורך: 12 ס"מ</label>
+            </div>
+            <button class="submit-button" onclick="checkMainGeometryAnswer()">הגש תשובה</button>
+        </div>
+
+        <div id="geoQ1_defineVarsSection" class="question-section hidden">
+            <p class="problem-statement">שלב 1: הגדרת משתנים</p>
+            <p class="question-text">נתון: "אורכו של מלבן גדול ב-2 ס"מ מרוחבו".<br>אם נסמן את רוחב המלבן ב-$x$ ס"מ, כיצד נבטא את אורך המלבן באמצעות $x$?</p>
+            <div id="geoQ1_defineVarsOptions">
+                <label class="option-label"><input type="radio" name="geoQ1_varsAnswer" value="x+2"> א) $x+2$</label>
+                <label class="option-label"><input type="radio" name="geoQ1_varsAnswer" value="x-2"> ב) $x-2$</label>
+                <label class="option-label"><input type="radio" name="geoQ1_varsAnswer" value="2x"> ג) $2x$</label>
+                <label class="option-label"><input type="radio" name="geoQ1_varsAnswer" value="x/2"> ד) $x/2$</label>
+            </div>
+            <button class="submit-button" onclick="checkGeoQ1_defineVars()">הגש תשובה לשלב 1</button>
+        </div>
+
+        <div id="geoQ1_sub_greaterBySection" class="question-section hidden">
+            <p class="problem-statement">פירוק שלב 1: הבנת "גדול ב-"</p>
+            <p class="question-text">המשפט "אורכו גדול ב-2 ס"מ מרוחבו ($x$)" אומר שעלינו לקחת את הרוחב ($x$) ולהוסיף לו 2 ס"מ כדי לקבל את האורך.<br>איזו פעולה מתמטית מייצגת "להוסיף 2"?</p>
+            <div id="geoQ1_sub_greaterByOptions">
+                <label class="option-label"><input type="radio" name="geoQ1_sub_gbAnswer" value="addition"> א) חיבור (+)</label>
+                <label class="option-label"><input type="radio" name="geoQ1_sub_gbAnswer" value="subtraction"> ב) חיסור (-)</label>
+                <label class="option-label"><input type="radio" name="geoQ1_sub_gbAnswer" value="multiplication"> ג) כפל (×)</label>
+            </div>
+            <button class="submit-button" onclick="checkGeoQ1_sub_greaterBy()">הגש תשובה</button>
+        </div>
+
+        <div id="geoQ2_areaEquationSection" class="question-section hidden">
+            <p class="problem-statement">שלב 2: יצירת משוואת השטח</p>
+            <p class="question-text">שטח מלבן מחושב על ידי: אורך $\times$ רוחב.<br>הרוחב הוא $x$, והאורך הוא $x+2$. שטח המלבן הנתון הוא 24 סמ"ר.<br>איזו משוואה מייצגת נתונים אלו?</p>
+            <div id="geoQ2_areaEquationOptions">
+                <label class="option-label"><input type="radio" name="geoQ2_areaEqAnswer" value="x(x+2)=24"> א) $x(x+2) = 24$</label>
+                <label class="option-label"><input type="radio" name="geoQ2_areaEqAnswer" value="x+(x+2)=24"> ב) $x + (x+2) = 24$ (זו משוואת היקף חלקי, לא שטח)</label>
+                <label class="option-label"><input type="radio" name="geoQ2_areaEqAnswer" value="2x+2(x+2)=24"> ג) $2x + 2(x+2) = 24$ (זו משוואת היקף)</label>
+                <label class="option-label"><input type="radio" name="geoQ2_areaEqAnswer" value="x(x+2)+24=0"> ד) $x(x+2) + 24 = 0$</label>
+            </div>
+            <button class="submit-button" onclick="checkGeoQ2_areaEquation()">הגש תשובה לשלב 2</button>
+        </div>
+
+        <div id="geoQ3_expandQuadraticSection" class="question-section hidden">
+            <p class="problem-statement">שלב 3: פתיחת סוגריים וסידור למשוואה ריבועית</p>
+            <p class="question-text">נתונה המשוואה: $x(x+2) = 24$.<br>לאחר פתיחת סוגריים והעברת כל האיברים לאגף אחד (כך שבאגף השני יהיה 0), איזו משוואה ריבועית מתקבלת?</p>
+            <div id="geoQ3_expandQuadraticOptions">
+                <label class="option-label"><input type="radio" name="geoQ3_expandAnswer" value="x^2+2x-24=0"> א) $x^2 + 2x - 24 = 0$</label>
+                <label class="option-label"><input type="radio" name="geoQ3_expandAnswer" value="x^2+2x+24=0"> ב) $x^2 + 2x + 24 = 0$ (טעות בסימן של הקבוע)</label>
+                <label class="option-label"><input type="radio" name="geoQ3_expandAnswer" value="x^2+2=24"> ג) $x^2 + 2 = 24$ (שכחת לכפול $x$ ב-2)</label>
+                <label class="option-label"><input type="radio" name="geoQ3_expandAnswer" value="2x+2-24=0"> ד) $2x + 2 - 24 = 0$ (לא בוצעה הכפלה ליצירת $x^2$)</label>
+            </div>
+            <button class="submit-button" onclick="checkGeoQ3_expandQuadratic()">הגש תשובה לשלב 3</button>
+        </div>
+        
+        <div id="geoQ3_sub_distributiveSection" class="question-section hidden">
+            <p class="problem-statement">פירוק שלב 3: פתיחת סוגריים (חוק הפילוג)</p>
+            <p class="question-text">למה שווה הביטוי $x(x+2)$ לאחר פתיחת סוגריים?</p>
+            <div id="geoQ3_sub_distributiveOptions">
+                <label class="option-label"><input type="radio" name="geoQ3_sub_distAnswer" value="x^2+2x"> א) $x^2 + 2x$</label>
+                <label class="option-label"><input type="radio" name="geoQ3_sub_distAnswer" value="x^2+2"> ב) $x^2 + 2$</label>
+                <label class="option-label"><input type="radio" name="geoQ3_sub_distAnswer" value="2x+2"> ג) $2x+2$</label>
+            </div>
+            <button class="submit-button" onclick="checkGeoQ3_sub_distributive()">הגש תשובה</button>
+        </div>
+
+         <div id="geoQ3_sub_moveConstantSection" class="question-section hidden">
+            <p class="problem-statement">פירוק שלב 3: העברת אגף</p>
+            <p class="question-text">אם יש לנו $x^2+2x = 24$, וכדי לסדר למשוואה ריבועית אנו רוצים להעביר את 24 לאגף השמאלי, מה תהיה הפעולה ומה יהיה הסימן של 24 באגף השמאלי?</p>
+            <div id="geoQ3_sub_moveConstantOptions">
+                <label class="option-label"><input type="radio" name="geoQ3_sub_mcAnswer" value="subtract_24_becomes_-24"> א) נחסר 24 משני האגפים, והוא יהפוך ל- $(-24)$ באגף שמאל.</label>
+                <label class="option-label"><input type="radio" name="geoQ3_sub_mcAnswer" value="add_24_becomes_+24"> ב) נוסיף 24 לשני האגפים, והוא יהפוך ל- $(+24)$ באגף שמאל.</label>
+            </div>
+            <button class="submit-button" onclick="checkGeoQ3_sub_moveConstant()">הגש תשובה</button>
+        </div>
+
+
+        <div id="geoQ4_coeffsSection" class="question-section hidden">
+            <p class="problem-statement">שלב 4: זיהוי מקדמים $a, b, c$</p>
+            <p class="question-text">במשוואה הריבועית $x^2 + 2x - 24 = 0$, מהם ערכי המקדמים $a, b, c$?</p>
+            <div id="geoQ4_coeffsOptions">
+                <label class="option-label"><input type="radio" name="geoQ4_coeffsAnswer" value="a=1,b=2,c=-24"> א) $a=1, b=2, c=-24$</label>
+                <label class="option-label"><input type="radio" name="geoQ4_coeffsAnswer" value="a=1,b=2,c=24"> ב) $a=1, b=2, c=24$ (טעות בסימן של $c$)</label>
+                <label class="option-label"><input type="radio" name="geoQ4_coeffsAnswer" value="a=0,b=2,c=-24"> ג) $a=0, b=2, c=-24$ (טעות בזיהוי $a$)</label>
+            </div>
+            <button class="submit-button" onclick="checkGeoQ4_coeffs()">הגש תשובה לשלב 4</button>
+        </div>
+
+        <div id="geoQ5_discriminantSection" class="question-section hidden">
+            <p class="problem-statement">שלב 5: חישוב הדיסקרימיננטה ($\Delta$)</p>
+            <p class="question-text">נשתמש בנוסחה $\Delta = b^2 - 4ac$.<br>עם $a=1, b=2, c=-24$, מהו ערך הדיסקרימיננטה?</p>
+            <div id="geoQ5_discriminantOptions">
+                <label class="option-label"><input type="radio" name="geoQ5_discAnswer" value="100"> א) $100$</label>
+                <label class="option-label"><input type="radio" name="geoQ5_discAnswer" value="-92"> ב) $-92$ (אולי טעות בסימן של $4ac$ או בחישוב)</label>
+                <label class="option-label"><input type="radio" name="geoQ5_discAnswer" value="4"> ג) $4$ (אולי שכחת את החלק של $-4ac$)</label>
+                <label class="option-label"><input type="radio" name="geoQ5_discAnswer" value="96"> ד) $96$ (אולי טעות בחישוב $4ac$)</label>
+            </div>
+            <button class="submit-button" onclick="checkGeoQ5_discriminant()">הגש תשובה לשלב 5</button>
+        </div>
+        
+        <div id="geoQ5_sub_bSquaredSection" class="question-section hidden">
+            <p class="problem-statement">פירוק שלב 5: חישוב $b^2$</p>
+            <p class="question-text">אם $b=2$, למה שווה $b^2$?</p>
+            <div id="geoQ5_sub_bSquaredOptions">
+                <label class="option-label"><input type="radio" name="geoQ5_sub_bSqAnswer" value="4"> א) $4$</label>
+                <label class="option-label"><input type="radio" name="geoQ5_sub_bSqAnswer" value="2"> ב) $2$</label>
+            </div>
+            <button class="submit-button" onclick="checkGeoQ5_sub_bSquared()">הגש תשובה</button>
+        </div>
+
+        <div id="geoQ5_sub_4acSection" class="question-section hidden">
+            <p class="problem-statement">פירוק שלב 5: חישוב $4ac$</p>
+            <p class="question-text">אם $a=1$ ו-$c=-24$, למה שווה $4ac$?</p>
+            <div id="geoQ5_sub_4acOptions">
+                <label class="option-label"><input type="radio" name="geoQ5_sub_4acAnswer" value="-96"> א) $-96$</label>
+                <label class="option-label"><input type="radio" name="geoQ5_sub_4acAnswer" value="96"> ב) $96$</label>
+                <label class="option-label"><input type="radio" name="geoQ5_sub_4acAnswer" value="-20"> ג) $-20$ ($4+1-24$)</label>
+            </div>
+            <button class="submit-button" onclick="checkGeoQ5_sub_4ac()">הגש תשובה</button>
+        </div>
+        
+        <div id="geoQ5_sub_finalDiscCalcSection" class="question-section hidden">
+            <p class="problem-statement">פירוק שלב 5: חישוב $\Delta = b^2 - 4ac$</p>
+            <p class="question-text">מצאנו ש-$b^2=4$ וש-$4ac=-96$.<br>למה שווה $b^2 - (4ac)$? כלומר, $4 - (-96)$?</p>
+            <div id="geoQ5_sub_finalDiscCalcOptions">
+                <label class="option-label"><input type="radio" name="geoQ5_sub_fdcAnswer" value="100"> א) $100$</label>
+                <label class="option-label"><input type="radio" name="geoQ5_sub_fdcAnswer" value="-92"> ב) $-92$</label>
+                <label class="option-label"><input type="radio" name="geoQ5_sub_fdcAnswer" value="92"> ג) $92$</label>
+            </div>
+            <button class="submit-button" onclick="checkGeoQ5_sub_finalDiscCalc()">הגש תשובה</button>
+        </div>
+
+
+        <div id="geoQ6_sqrtDiscriminantSection" class="question-section hidden">
+            <p class="problem-statement">שלב 6: חישוב שורש הדיסקרימיננטה ($\sqrt{\Delta}$)</p>
+            <p class="question-text">אם $\Delta = 100$, מהו $\sqrt{100}$?</p>
+            <div id="geoQ6_sqrtDiscriminantOptions">
+                <label class="option-label"><input type="radio" name="geoQ6_sqrtDiscAnswer" value="10"> א) $10$</label>
+                <label class="option-label"><input type="radio" name="geoQ6_sqrtDiscAnswer" value="50"> ב) $50$</label>
+                <label class="option-label"><input type="radio" name="geoQ6_sqrtDiscAnswer" value="10000"> ג) $10000$ ($100^2$)</label>
+            </div>
+            <button class="submit-button" onclick="checkGeoQ6_sqrtDiscriminant()">הגש תשובה לשלב 6</button>
+        </div>
+
+        <div id="geoQ7_formulaXSection" class="question-section hidden">
+            <p class="problem-statement">שלב 7: חישוב ערכי $x$ באמצעות נוסחת השורשים</p>
+            <p class="question-text">נוסחת השורשים: $x = \frac{-b \pm \sqrt{\Delta}}{2a}$.<br>עם $a=1, b=2, \sqrt{\Delta}=10$, מהם שני ערכי $x$ האפשריים?</p>
+            <div id="geoQ7_formulaXOptions">
+                <label class="option-label"><input type="radio" name="geoQ7_formulaXAnswer" value="x=4_x=-6"> א) $x_1 = 4, x_2 = -6$ (או להיפך)</label>
+                <label class="option-label"><input type="radio" name="geoQ7_formulaXAnswer" value="x=-4_x=6"> ב) $x_1 = -4, x_2 = 6$ (טעות בסימן של $-b$ או בחישוב)</label>
+                <label class="option-label"><input type="radio" name="geoQ7_formulaXAnswer" value="x=8_x=-12"> ג) $x_1 = 8, x_2 = -12$ (שכחת לחלק ב-$2a$)</label>
+            </div>
+            <button class="submit-button" onclick="checkGeoQ7_formulaX()">הגש תשובה לשלב 7</button>
+        </div>
+        
+        <div id="geoQ7_sub_calcX1Section" class="question-section hidden">
+            <p class="problem-statement">פירוק שלב 7: חישוב $x_1 = \frac{-b + \sqrt{\Delta}}{2a}$</p>
+            <p class="question-text">עם $b=2, \sqrt{\Delta}=10, a=1$.<br>$-b = -2$. $2a = 2$.<br>אז $x_1 = \frac{-2 + 10}{2}$. למה זה שווה?</p>
+            <div id="geoQ7_sub_calcX1Options">
+                <label class="option-label"><input type="radio" name="geoQ7_sub_x1Answer" value="4"> א) $4$</label>
+                <label class="option-label"><input type="radio" name="geoQ7_sub_x1Answer" value="8"> ב) $8$ (שכחת לחלק ב-2)</label>
+                <label class="option-label"><input type="radio" name="geoQ7_sub_x1Answer" value="6"> ג) $6$ (טעות בחישוב $-2+10$)</label>
+            </div>
+            <button class="submit-button" onclick="checkGeoQ7_sub_calcX1()">הגש תשובה</button>
+        </div>
+        
+        <div id="geoQ7_sub_calcX2Section" class="question-section hidden">
+            <p class="problem-statement">פירוק שלב 7: חישוב $x_2 = \frac{-b - \sqrt{\Delta}}{2a}$</p>
+            <p class="question-text">עם $b=2, \sqrt{\Delta}=10, a=1$.<br>$-b = -2$. $2a = 2$.<br>אז $x_2 = \frac{-2 - 10}{2}$. למה זה שווה?</p>
+            <div id="geoQ7_sub_calcX2Options">
+                <label class="option-label"><input type="radio" name="geoQ7_sub_x2Answer" value="-6"> א) $-6$</label>
+                <label class="option-label"><input type="radio" name="geoQ7_sub_x2Answer" value="-12"> ב) $-12$ (שכחת לחלק ב-2)</label>
+                <label class="option-label"><input type="radio" name="geoQ7_sub_x2Answer" value="-4"> ג) $-4$ (טעות בחישוב $-2-10$)</label>
+            </div>
+            <button class="submit-button" onclick="checkGeoQ7_sub_calcX2()">הגש תשובה</button>
+        </div>
+
+
+        <div id="geoQ8_interpretXSection" class="question-section hidden">
+            <p class="problem-statement">שלב 8: בחירת ערך $x$ מתאים לרוחב</p>
+            <p class="question-text">מצאנו שני פתרונות אפשריים ל-$x$: $4$ ו-$-6$.<br>מכיוון ש-$x$ מייצג את רוחב המלבן, איזה ערך מתאים בהקשר של הבעיה?</p>
+            <div id="geoQ8_interpretXOptions">
+                <label class="option-label"><input type="radio" name="geoQ8_interpretXAnswer" value="4"> א) $x=4$, כי מידה גאומטרית חייבת להיות חיובית.</label>
+                <label class="option-label"><input type="radio" name="geoQ8_interpretXAnswer" value="-6"> ב) $x=-6$, כי זה אחד הפתרונות של המשוואה.</label>
+                <label class="option-label"><input type="radio" name="geoQ8_interpretXAnswer" value="both"> ג) שני הערכים מתאימים.</label>
+            </div>
+            <button class="submit-button" onclick="checkGeoQ8_interpretX()">הגש תשובה לשלב 8</button>
+        </div>
+
+        <div id="geoQ9_calculateLengthSection" class="question-section hidden">
+            <p class="problem-statement">שלב 9: חישוב האורך</p>
+            <p class="question-text">אם רוחב המלבן ($x$) הוא 4 ס"מ, והאורך גדול מהרוחב ב-2 ס"מ (כלומר, $x+2$), מהו אורך המלבן?</p>
+            <div id="geoQ9_calculateLengthOptions">
+                <label class="option-label"><input type="radio" name="geoQ9_calcLAnswer" value="6"> א) 6 ס"מ</label>
+                <label class="option-label"><input type="radio" name="geoQ9_calcLAnswer" value="2"> ב) 2 ס"מ</label>
+                <label class="option-label"><input type="radio" name="geoQ9_calcLAnswer" value="8"> ג) 8 ס"מ</label>
+            </div>
+            <button class="submit-button" onclick="checkGeoQ9_calculateLength()">הגש תשובה לשלב 9</button>
+        </div>
+
+        <div id="feedbackSection" class="feedback-section hidden">
+            <p id="feedbackText" class="text-lg"></p>
+            <p id="remediationLink" class="mt-2 font-semibold"></p>
+        </div>
+
+        <div id="printableReport"></div>
+    </div>
+
+    <script>
+        let studentPath = []; // Renamed from studentGeometryPath
+        const mainProblemCorrectAnswer = "w4_l6"; // Renamed from mainGeometryCorrectAnswer
+        const correctWidthExpression = "x+2";
+        const correctAreaEquation = "x(x+2)=24";
+        const correctQuadraticForm = "x^2+2x-24=0";
+        const correctCoeffsGeo = { a: 1, b: 2, c: -24 };
+        const correctDiscriminantGeo = 100;
+        const correctSqrtDiscriminantGeo = 10;
+        const correctXSolutionsGeo = { x1: 4, x2: -6 }; 
+        const correctFinalWidth = 4;
+        const correctFinalLength = 6;
+
+
+        function queueMathJaxTypeset(element) {
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                window.MathJax.typesetPromise(element ? [element] : undefined).catch((err) => console.error('MathJax typesetting error:', err));
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            queueMathJaxTypeset(document.getElementById('mainGeometryProblemSection'));
+        });
+
+        function showSection(sectionId) { // Renamed from showGeometrySection
+            const allSectionIds = [
+                'mainGeometryProblemSection', 
+                'geoQ1_defineVarsSection', 'geoQ1_sub_greaterBySection',
+                'geoQ2_areaEquationSection',
+                'geoQ3_expandQuadraticSection', 'geoQ3_sub_distributiveSection', 'geoQ3_sub_moveConstantSection',
+                'geoQ4_coeffsSection',
+                'geoQ5_discriminantSection', 'geoQ5_sub_bSquaredSection', 'geoQ5_sub_4acSection', 'geoQ5_sub_finalDiscCalcSection',
+                'geoQ6_sqrtDiscriminantSection',
+                'geoQ7_formulaXSection', 'geoQ7_sub_calcX1Section', 'geoQ7_sub_calcX2Section',
+                'geoQ8_interpretXSection',
+                'geoQ9_calculateLengthSection'
+            ];
+
+            allSectionIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+            
+            if (sectionId) {
+                const el = document.getElementById(sectionId);
+                if (el) {
+                    el.classList.remove('hidden');
+                    queueMathJaxTypeset(el);
+                } else {
+                    console.error("Attempted to show non-existent section:", sectionId);
+                }
+            }
+        }
+
+        function displayFeedback(message, remediation) { // Renamed from displayGeometryFeedback
+            const feedbackTextEl = document.getElementById('feedbackText');
+            const remediationLinkEl = document.getElementById('remediationLink');
+            
+            feedbackTextEl.innerHTML = message; 
+            remediationLinkEl.innerHTML = remediation ? `<strong>מוקד מומלץ לחיזוק:</strong> ${remediation}` : '';
+            
+            const feedbackSectionEl = document.getElementById('feedbackSection');
+            feedbackSectionEl.classList.remove('hidden');
+            queueMathJaxTypeset(feedbackSectionEl); 
+        }
+        
+        function startOver() { // Renamed from startOverGeometry
+            studentPath = []; 
+            const radioGroups = [
+                'mainGeomAnswer', 
+                'geoQ1_varsAnswer', 'geoQ1_sub_gbAnswer',
+                'geoQ2_areaEqAnswer',
+                'geoQ3_expandAnswer', 'geoQ3_sub_distAnswer', 'geoQ3_sub_mcAnswer',
+                'geoQ4_coeffsAnswer',
+                'geoQ5_discAnswer', 'geoQ5_sub_bSqAnswer', 'geoQ5_sub_4acAnswer', 'geoQ5_sub_fdcAnswer',
+                'geoQ6_sqrtDiscAnswer',
+                'geoQ7_formulaXAnswer', 'geoQ7_sub_x1Answer', 'geoQ7_sub_x2Answer',
+                'geoQ8_interpretXAnswer',
+                'geoQ9_calcLAnswer'
+            ];
+            radioGroups.forEach(groupName => {
+                const radios = document.getElementsByName(groupName);
+                if (radios) radios.forEach(radio => radio.checked = false);
+            });
+            
+            document.getElementById('feedbackSection').classList.add('hidden');
+            showSection('mainGeometryProblemSection'); 
+        }
+
+        function getSelectedRadioValue(name) { // Renamed from getSelectedRadioValueGeometry
+            const radios = document.getElementsByName(name);
+            for (let i = 0; i < radios.length; i++) {
+                if (radios[i].checked) {
+                    return { value: radios[i].value, text: radios[i].parentElement.textContent.replace(/^[א-ד]\)\s*/, '').trim() };
+                }
+            }
+            return null;
+        }
+
+        function getQuestionTextForReport(sectionId) { // Renamed from getQuestionTextForReportGeometry
+            const section = document.getElementById(sectionId);
+            if (section) {
+                const problemStatementEl = section.querySelector('.problem-statement');
+                const problemContextEl = section.querySelector('.problem-context');
+                const questionTextEl = section.querySelector('.question-text');
+                let fullQuestionText = "";
+
+                if (problemStatementEl) fullQuestionText += (problemStatementEl.textContent || "").trim();
+                if (problemContextEl) fullQuestionText += (fullQuestionText ? "<br>" : "") + (problemContextEl.innerHTML || "").replace(/\s\s+/g, ' ').trim();
+                if (questionTextEl) fullQuestionText += (fullQuestionText ? "<br>" : "") + (questionTextEl.innerHTML || "").trim();
+                
+                return fullQuestionText.replace(/\s\s+/g, ' ').trim() || "טקסט שאלה לא נמצא";
+            }
+            return "טקסט שאלה לא נמצא";
+        }
+        
+        function logAttempt(stepDesc, sectionId, selectedValue, selectedAnswerText, radioGroupName, isCorrect, feedbackMessage = "", remediationTopic = null) {
+            const questionReportText = getQuestionTextForReport(sectionId);
+            studentPath.push({ 
+                type: 'attempt', 
+                stepDescription: stepDesc, 
+                questionText: questionReportText, 
+                selectedAnswer: selectedValue, 
+                selectedAnswerText: selectedAnswerText,
+                isCorrect: isCorrect, 
+                feedbackForAttempt: isCorrect ? null : { message: feedbackMessage, remediationTopic: remediationTopic } 
+            });
+            document.getElementById('feedbackSection').classList.add('hidden');
+        }
+
+        function shareReport() { // Renamed from shareReportGeometry
+            const reportContainer = document.getElementById('printableReport');
+            if (!reportContainer) { return; }
+            let reportHTML = '<h2>אבחון: בעיית מלבן (שטח ומידות)</h2>';
+            
+            const mistakesAndLearnings = [];
+
+            studentPath.forEach((item) => {
+                if (item.type === 'attempt' && !item.isCorrect && item.feedbackForAttempt) {
+                    mistakesAndLearnings.push({
+                        question: item.questionText,
+                        userAnswer: item.selectedAnswerText || item.selectedAnswer,
+                        feedback: item.feedbackForAttempt.message,
+                        remediation: item.feedbackForAttempt.remediationTopic,
+                        step: item.stepDescription
+                    });
+                }
+            });
+            
+            if (mistakesAndLearnings.length > 0) {
+                reportHTML += '<h3>ניתוח טעויות ונקודות לשיפור:</h3>';
+                mistakesAndLearnings.forEach(mistake => {
+                    reportHTML += `<div class="mistake-item">`;
+                    reportHTML += `<p><strong>בשלב:</strong> ${mistake.step}</p>`;
+                    reportHTML += `<p><strong>השאלה:</strong> ${mistake.question}</p>`;
+                    reportHTML += `<p><strong>התשובה שלך:</strong> ${mistake.userAnswer}</p>`;
+                    reportHTML += `<p><strong>המשוב שניתן:</strong> ${mistake.feedback}</p>`;
+                    if (mistake.remediation) {
+                        reportHTML += `<p><strong>מוקד לשיפור:</strong> ${mistake.remediation}</p>`;
+                    }
+                    reportHTML += `</div>`;
+                });
+            } else if (studentPath.length > 0) {
+                 const lastAttempt = studentPath.filter(item => item.type === 'attempt').pop();
+                 let mainProblemSolvedCorrectly = false;
+                 if (lastAttempt && lastAttempt.stepDescription === "בעיה ראשית" && lastAttempt.selectedAnswer === mainProblemCorrectAnswer && lastAttempt.isCorrect) {
+                    mainProblemSolvedCorrectly = true;
+                 } else {
+                    const finalDiagnosticStep = studentPath.find(item => item.stepDescription === "שלב 9: חישוב האורך" && item.isCorrect);
+                    if(finalDiagnosticStep) mainProblemSolvedCorrectly = true;
+                 }
+
+                if (mainProblemSolvedCorrectly) {
+                     reportHTML += '<p><strong>כל הכבוד! נראה שהבנת את כל השלבים ולא זוהו טעויות הדורשות התייחסות מיוחדת.</strong></p>';
+                } else {
+                     reportHTML += '<p>לא זוהו טעויות ספציפיות הדורשות התייחסות מיוחדת, אך ייתכן שלא כל חלקי השאלה הושלמו בהצלחה.</p>';
+                }
+            } else {
+                 reportHTML += '<p>לא נרשמה התקדמות עדיין.</p>';
+            }
+
+            const currentFileName = "geometry_word_problem_diagnostic.html"; 
+            if (mistakesAndLearnings.length > 0) {
+                localStorage.setItem(`diagnosticReportData_${currentFileName}`, JSON.stringify(mistakesAndLearnings));
+            } else {
+                localStorage.removeItem(`diagnosticReportData_${currentFileName}`); 
+            }
+
+            reportContainer.innerHTML = reportHTML;
+            window.print(); 
+        }
+
+        // --- Check Answer Functions ---
+
+        function checkMainGeometryAnswer() {
+            const selection = getSelectedRadioValue('mainGeomAnswer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            
+            const isCorrect = selection.value === mainProblemCorrectAnswer;
+            const feedbackMsg = isCorrect ? "מעולה! מידות המלבן הן רוחב 4 ס\"מ ואורך 6 ס\"מ." : "התשובה אינה מדויקת. בוא נפרק את השלבים.";
+            const remediation = isCorrect ? null : "פתרון בעיות גאומטריות מילוליות";
+            logAttempt("בעיה ראשית", 'mainGeometryProblemSection', selection.value, selection.text, 'mainGeomAnswer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            if (isCorrect) {
+                showSection(null); 
+            } else {
+                setTimeout(() => {
+                    document.getElementById('feedbackSection').classList.add('hidden');
+                    showSection('geoQ1_defineVarsSection');
+                }, 3000);
+            }
+        }
+
+        function checkGeoQ1_defineVars() {
+            const selection = getSelectedRadioValue('geoQ1_varsAnswer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = selection.value === correctWidthExpression;
+            const feedbackMsg = isCorrect ? "נכון! אם הרוחב הוא $x$, האורך הוא $x+2$." : "לא בדיוק. נחשוב על משמעות הביטוי 'גדול ב-'.";
+            const remediation = isCorrect ? null : "תרגום מילולי לביטוי אלגברי";
+            logAttempt("שלב 1: הגדרת משתנים", 'geoQ1_defineVarsSection', selection.value, selection.text, 'geoQ1_varsAnswer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            if (isCorrect) {
+                setTimeout(() => {
+                    document.getElementById('feedbackSection').classList.add('hidden');
+                    showSection('geoQ2_areaEquationSection');
+                }, 2000);
+            } else {
+                setTimeout(() => {
+                    document.getElementById('feedbackSection').classList.add('hidden');
+                    showSection('geoQ1_sub_greaterBySection');
+                }, 3000);
+            }
+        }
+
+        function checkGeoQ1_sub_greaterBy() {
+            const selection = getSelectedRadioValue('geoQ1_sub_gbAnswer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = selection.value === "addition";
+            const feedbackMsg = isCorrect ? "נכון! 'גדול ב-2' פירושו להוסיף 2. לכן, אם הרוחב $x$, האורך הוא $x+2$. נחזור לשאלה הקודמת." : "הפעולה הנכונה ל'גדול ב-' היא חיבור. נסה שוב.";
+            const remediation = isCorrect ? null : "פעולות חשבון בסיסיות";
+            logAttempt("שלב 1.1: הבנת 'גדול ב-'", 'geoQ1_sub_greaterBySection', selection.value, selection.text, 'geoQ1_sub_gbAnswer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+            
+            setTimeout(() => {
+                document.getElementById('feedbackSection').classList.add('hidden');
+                showSection(isCorrect ? 'geoQ1_defineVarsSection' : 'geoQ1_sub_greaterBySection');
+            }, 3000);
+        }
+
+        function checkGeoQ2_areaEquation() {
+            const selection = getSelectedRadioValue('geoQ2_areaEqAnswer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = selection.value === correctAreaEquation;
+            const feedbackMsg = isCorrect ? "משוואה נכונה! $x(x+2)=24$. כעת נפתח סוגריים ונסדר." : "שים לב להבדל בין שטח להיקף, וכיצד הנתונים משתלבים בנוסחת השטח. נסה שוב.";
+            const remediation = isCorrect ? null : "נוסחת שטח מלבן";
+            logAttempt("שלב 2: יצירת משוואת שטח", 'geoQ2_areaEquationSection', selection.value, selection.text, 'geoQ2_areaEqAnswer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            setTimeout(() => {
+                document.getElementById('feedbackSection').classList.add('hidden');
+                showSection(isCorrect ? 'geoQ3_expandQuadraticSection' : 'geoQ2_areaEquationSection');
+            }, isCorrect ? 2000 : 3500);
+        }
+
+        function checkGeoQ3_expandQuadratic() {
+            const selection = getSelectedRadioValue('geoQ3_expandAnswer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = selection.value === correctQuadraticForm;
+            let feedbackMsg = "";
+            let remediation = null;
+            let nextSection = null;
+
+            if (isCorrect) {
+                feedbackMsg = "מעולה! המשוואה היא $x^2+2x-24=0$.";
+                nextSection = 'geoQ4_coeffsSection';
+            } else if (selection.value === "x^2+2=24" || selection.value === "2x+2-24=0") { 
+                feedbackMsg = "יש טעות בפתיחת הסוגריים. בוא נבדוק את חוק הפילוג.";
+                remediation = "חוק הפילוג";
+                nextSection = 'geoQ3_sub_distributiveSection';
+            } else { 
+                feedbackMsg = "נראה שיש טעות בהעברת הקבוע $24$ לאגף השני. בוא נבדוק זאת.";
+                remediation = "העברת אגפים";
+                nextSection = 'geoQ3_sub_moveConstantSection';
+            }
+            logAttempt("שלב 3: פתיחה וסידור", 'geoQ3_expandQuadraticSection', selection.value, selection.text, 'geoQ3_expandAnswer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            if (nextSection && nextSection !== 'geoQ3_expandQuadraticSection' && !nextSection.includes('_sub_')) {
+                setTimeout(() => {
+                    document.getElementById('feedbackSection').classList.add('hidden');
+                    showSection(nextSection);
+                }, 2000);
+            } else if (nextSection) {
+                 setTimeout(() => {
+                    document.getElementById('feedbackSection').classList.add('hidden');
+                    showSection(nextSection);
+                }, 3500);
+            }
+        }
+        
+        function checkGeoQ3_sub_distributive() {
+            const selection = getSelectedRadioValue('geoQ3_sub_distAnswer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = selection.value === "x^2+2x";
+            const feedbackMsg = isCorrect ? "נכון! $x(x+2) = x^2+2x$. לכן המשוואה היא $x^2+2x=24$. כעת, איך נעביר את 24?" : "בחוק הפילוג, $x(x+2) = x \\cdot x + x \\cdot 2 = x^2+2x$. נסה שוב.";
+            const remediation = isCorrect ? null : "חוק הפילוג";
+            logAttempt("שלב 3.1: חוק הפילוג", 'geoQ3_sub_distributiveSection', selection.value, selection.text, 'geoQ3_sub_distAnswer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            setTimeout(() => {
+                document.getElementById('feedbackSection').classList.add('hidden');
+                showSection(isCorrect ? 'geoQ3_sub_moveConstantSection' : 'geoQ3_sub_distributiveSection');
+            }, isCorrect ? 3000 : 3500);
+        }
+
+        function checkGeoQ3_sub_moveConstant() {
+            const selection = getSelectedRadioValue('geoQ3_sub_mcAnswer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+             const isCorrect = selection.value === "subtract_24_becomes_-24";
+            const feedbackMsg = isCorrect ? "נכון! מחסרים 24, והמשוואה הופכת ל- $x^2+2x-24=0$. נחזור לשאלה על סידור המשוואה." : "כדי להעביר איבר מאגף לאגף, מבצעים פעולה הפוכה. כדי להעביר $+24$, נחסר $24$ משני האגפים. נסה שוב.";
+            const remediation = isCorrect ? null : "העברת אגפים";
+            logAttempt("שלב 3.2: העברת אגף", 'geoQ3_sub_moveConstantSection', selection.value, selection.text, 'geoQ3_sub_mcAnswer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            setTimeout(() => {
+                document.getElementById('feedbackSection').classList.add('hidden');
+                showSection(isCorrect ? 'geoQ3_expandQuadraticSection' : 'geoQ3_sub_moveConstantSection');
+            }, 3500);
+        }
+
+
+        function checkGeoQ4_coeffs() {
+            const selection = getSelectedRadioValue('geoQ4_coeffsAnswer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = selection.value === `a=${correctCoeffsGeo.a},b=${correctCoeffsGeo.b},c=${correctCoeffsGeo.c}`;
+            const feedbackMsg = isCorrect ? "מקדמים זוהו נכון! $a=1, b=2, c=-24$." : "טעות בזיהוי. עבור $x^2+2x-24=0$: $a=1, b=2, c=-24$. נסה שוב.";
+            const remediation = isCorrect ? null : "זיהוי מקדמי משוואה ריבועית";
+            logAttempt("שלב 4: זיהוי מקדמים", 'geoQ4_coeffsSection', selection.value, selection.text, 'geoQ4_coeffsAnswer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            setTimeout(() => {
+                document.getElementById('feedbackSection').classList.add('hidden');
+                showSection(isCorrect ? 'geoQ5_discriminantSection' : 'geoQ4_coeffsSection');
+            }, isCorrect ? 2000 : 3500);
+        }
+
+        function checkGeoQ5_discriminant() {
+            const selection = getSelectedRadioValue('geoQ5_discAnswer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = parseInt(selection.value) === correctDiscriminantGeo;
+            const feedbackMsg = isCorrect ? "נכון! $\Delta = 100$." : "החישוב לא מדויק. בוא נפרק: ראשית, $b^2$.";
+            const remediation = isCorrect ? null : "חישוב דיסקרימיננטה";
+            logAttempt("שלב 5: חישוב דיסקרימיננטה", 'geoQ5_discriminantSection', selection.value, selection.text, 'geoQ5_discAnswer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            if (isCorrect) {
+                setTimeout(() => {
+                    document.getElementById('feedbackSection').classList.add('hidden');
+                    showSection('geoQ6_sqrtDiscriminantSection');
+                }, 2000);
+            } else {
+                 setTimeout(() => {
+                    document.getElementById('feedbackSection').classList.add('hidden');
+                    showSection('geoQ5_sub_bSquaredSection');
+                }, 3000);
+            }
+        }
+        
+        function checkGeoQ5_sub_bSquared() {
+            const selection = getSelectedRadioValue('geoQ5_sub_bSqAnswer');
+             if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = parseInt(selection.value) === 4;
+            const feedbackMsg = isCorrect ? "נכון, $b^2 = 2^2 = 4$. כעת, נחשב את $4ac$." : "$b=2$, לכן $b^2 = 2 \times 2 = 4$. נסה שוב.";
+            const remediation = isCorrect ? null : "חישוב חזקה פשוטה";
+            logAttempt("שלב 5.1: חישוב b^2", 'geoQ5_sub_bSquaredSection', selection.value, selection.text, 'geoQ5_sub_bSqAnswer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            setTimeout(() => {
+                document.getElementById('feedbackSection').classList.add('hidden');
+                showSection(isCorrect ? 'geoQ5_sub_4acSection' : 'geoQ5_sub_bSquaredSection');
+            }, isCorrect ? 2000 : 3500);
+        }
+
+        function checkGeoQ5_sub_4ac() {
+            const selection = getSelectedRadioValue('geoQ5_sub_4acAnswer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = parseInt(selection.value) === -96;
+            const feedbackMsg = isCorrect ? "נכון, $4ac = 4(1)(-24) = -96$. כעת נחשב $\Delta = b^2 - 4ac$." : "$a=1, c=-24$. לכן $4ac = 4 \\times 1 \\times (-24) = -96$. נסה שוב.";
+            const remediation = isCorrect ? null : "כפל מספרים מכוונים";
+            logAttempt("שלב 5.2: חישוב 4ac", 'geoQ5_sub_4acSection', selection.value, selection.text, 'geoQ5_sub_4acAnswer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            setTimeout(() => {
+                document.getElementById('feedbackSection').classList.add('hidden');
+                showSection(isCorrect ? 'geoQ5_sub_finalDiscCalcSection' : 'geoQ5_sub_4acSection');
+            }, isCorrect ? 2500 : 3500);
+        }
+
+        function checkGeoQ5_sub_finalDiscCalc() {
+            const selection = getSelectedRadioValue('geoQ5_sub_fdcAnswer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = parseInt(selection.value) === 100;
+            const feedbackMsg = isCorrect ? "נכון! $\Delta = 4 - (-96) = 4 + 96 = 100$. נחזור לשאלה על הדיסקרימיננטה." : "זכור: $4 - (-96)$ זה כמו $4 + 96$. התוצאה היא $100$. נסה שוב.";
+            const remediation = isCorrect ? null : "חיסור מספר שלילי";
+            logAttempt("שלב 5.3: חישוב סופי של דלתא", 'geoQ5_sub_finalDiscCalcSection', selection.value, selection.text, 'geoQ5_sub_fdcAnswer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            setTimeout(() => {
+                document.getElementById('feedbackSection').classList.add('hidden');
+                showSection(isCorrect ? 'geoQ5_discriminantSection' : 'geoQ5_sub_finalDiscCalcSection');
+            }, 3000);
+        }
+
+
+        function checkGeoQ6_sqrtDiscriminant() {
+            const selection = getSelectedRadioValue('geoQ6_sqrtDiscAnswer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = parseInt(selection.value) === correctSqrtDiscriminantGeo;
+            const feedbackMsg = isCorrect ? "נכון! $\sqrt{100}=10$." : "$\sqrt{100}$ הוא המספר שכאשר כופלים אותו בעצמו מקבלים 100. המספר הוא 10. נסה שוב.";
+            const remediation = isCorrect ? null : "הבנת שורש ריבועי";
+            logAttempt("שלב 6: שורש דלתא", 'geoQ6_sqrtDiscriminantSection', selection.value, selection.text, 'geoQ6_sqrtDiscAnswer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            setTimeout(() => {
+                document.getElementById('feedbackSection').classList.add('hidden');
+                showSection(isCorrect ? 'geoQ7_formulaXSection' : 'geoQ6_sqrtDiscriminantSection');
+            }, isCorrect ? 2000 : 3500);
+        }
+
+        function checkGeoQ7_formulaX() {
+            const selection = getSelectedRadioValue('geoQ7_formulaXAnswer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            
+            const parts = selection.value.split('_').map(s => parseFloat(s.split('=')[1]));
+            const xVal1 = parts[0];
+            const xVal2 = parts[1];
+            const isCorrect = ((xVal1 === correctXSolutionsGeo.x1 && xVal2 === correctXSolutionsGeo.x2) || 
+                               (xVal1 === correctXSolutionsGeo.x2 && xVal2 === correctXSolutionsGeo.x1));
+            
+            const feedbackMsg = isCorrect ? "ערכי $x$ חושבו נכון: $x=4, x=-6$." : "החישוב לא מדויק. בוא נפרק את החישוב לכל $x$.";
+            const remediation = isCorrect ? null : "נוסחת השורשים";
+            logAttempt("שלב 7: חישוב ערכי x", 'geoQ7_formulaXSection', selection.value, selection.text, 'geoQ7_formulaXAnswer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            if (isCorrect) {
+                setTimeout(() => {
+                    document.getElementById('feedbackSection').classList.add('hidden');
+                    showSection('geoQ8_interpretXSection');
+                }, 2000);
+            } else {
+                 setTimeout(() => {
+                    document.getElementById('feedbackSection').classList.add('hidden');
+                    showSection('geoQ7_sub_calcX1Section');
+                }, 3000);
+            }
+        }
+        
+        function checkGeoQ7_sub_calcX1() { 
+            const selection = getSelectedRadioValue('geoQ7_sub_x1Answer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = parseFloat(selection.value) === correctXSolutionsGeo.x1; // 4
+            const feedbackMsg = isCorrect ? "נכון, $x_1 = 4$. כעת נחשב את $x_2$." : "$\frac{-2+10}{2} = \frac{8}{2} = 4$. נסה שוב.";
+            const remediation = isCorrect ? null : "סדר פעולות חשבון";
+            logAttempt("שלב 7.1: חישוב x1", 'geoQ7_sub_calcX1Section', selection.value, selection.text, 'geoQ7_sub_x1Answer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            setTimeout(() => {
+                document.getElementById('feedbackSection').classList.add('hidden');
+                showSection(isCorrect ? 'geoQ7_sub_calcX2Section' : 'geoQ7_sub_calcX1Section');
+            }, isCorrect ? 2000 : 3500);
+        }
+
+        function checkGeoQ7_sub_calcX2() { 
+            const selection = getSelectedRadioValue('geoQ7_sub_x2Answer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = parseFloat(selection.value) === correctXSolutionsGeo.x2; // -6
+            const feedbackMsg = isCorrect ? "נכון, $x_2 = -6$. כעת, נחזור לשאלה על שני ערכי $x$." : "$\frac{-2-10}{2} = \frac{-12}{2} = -6$. נסה שוב.";
+            const remediation = isCorrect ? null : "סדר פעולות חשבון עם שליליים";
+            logAttempt("שלב 7.2: חישוב x2", 'geoQ7_sub_calcX2Section', selection.value, selection.text, 'geoQ7_sub_x2Answer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            setTimeout(() => {
+                document.getElementById('feedbackSection').classList.add('hidden');
+                showSection(isCorrect ? 'geoQ7_formulaXSection' : 'geoQ7_sub_calcX2Section');
+            }, isCorrect ? 2500 : 3500);
+        }
+
+        function checkGeoQ8_interpretX() {
+            const selection = getSelectedRadioValue('geoQ8_interpretXAnswer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = selection.value === String(correctFinalWidth); 
+            const feedbackMsg = isCorrect ? "נכון! רוחב חייב להיות חיובי, לכן $x=4$ ס\"מ." : "רוחב של מלבן (או כל מידה גאומטרית) לא יכול להיות שלילי. נסה שוב.";
+            const remediation = isCorrect ? null : "הבנת ההקשר של בעיה מילולית";
+            logAttempt("שלב 8: בחירת x מתאים", 'geoQ8_interpretXSection', selection.value, selection.text, 'geoQ8_interpretXAnswer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            setTimeout(() => {
+                document.getElementById('feedbackSection').classList.add('hidden');
+                showSection(isCorrect ? 'geoQ9_calculateLengthSection' : 'geoQ8_interpretXSection');
+            }, isCorrect ? 2000 : 3500);
+        }
+
+        function checkGeoQ9_calculateLength() {
+            const selection = getSelectedRadioValue('geoQ9_calcLAnswer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = parseInt(selection.value) === correctFinalLength;
+            const feedbackMsg = isCorrect ? "מעולה! מידות המלבן הן רוחב 4 ס\"מ ואורך 6 ס\"מ. זו התשובה הסופית." : "אם הרוחב $x=4$ והאורך הוא $x+2$, אז האורך הוא $4+2=6$ ס\"מ. נסה שוב.";
+            const remediation = isCorrect ? null : "הצבה וחיבור פשוט";
+            logAttempt("שלב 9: חישוב אורך", 'geoQ9_calculateLengthSection', selection.value, selection.text, 'geoQ9_calcLAnswer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            if (isCorrect) {
+                 setTimeout(() => {
+                    document.getElementById('feedbackSection').classList.add('hidden');
+                    showSection('mainGeometryProblemSection'); 
+                }, 3500);
+            } else {
+                setTimeout(() => {
+                    document.getElementById('feedbackSection').classList.add('hidden');
+                    showSection('geoQ9_calculateLengthSection');
+                }, 3500);
+            }
+        }
+
+    </script>
+</body>
+</html>

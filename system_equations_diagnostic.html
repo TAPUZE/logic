@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מבחן אבחון: מערכת משוואות עם שני נעלמים</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Assistant', sans-serif;
+            background-color: #f1f5f9; /* slate-100 */
+            color: #1e293b; /* slate-800 */
+        }
+        .container-quiz {
+            max-width: 700px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: #ffffff;
+            border-radius: 0.75rem; 
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .question-section {
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            border: 1px solid #e2e8f0; /* slate-200 */
+            border-radius: 0.5rem;
+            background-color: #f8fafc; /* slate-50 */
+        }
+        .problem-statement {
+            font-size: 1.25rem; /* text-xl */
+            font-weight: 600;
+            color: #0f172a; /* slate-900 */
+            margin-bottom: 1rem;
+        }
+        .question-text, .equations-display {
+            font-size: 1.1rem; /* Equivalent to text-lg approx */
+            color: #334155; /* slate-700 */
+            margin-bottom: 0.75rem;
+        }
+        .equations-display p { margin-bottom: 0.25rem; }
+        label.option-label {
+            display: block;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            background-color: #fff;
+            border: 1px solid #cbd5e1; /* slate-300 */
+            border-radius: 0.375rem; /* rounded-md */
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        label.option-label:hover {
+            background-color: #f1f5f9; /* slate-100 */
+            border-color: #94a3b8; /* slate-400 */
+        }
+        input[type="radio"] {
+            margin-left: 0.5rem; /* For RTL */
+            accent-color: #2563eb; /* blue-600 */
+        }
+        button.submit-button {
+            padding: 0.75rem 1.5rem;
+            background-color: #2563eb; /* blue-600 */
+            color: white;
+            border: none;
+            border-radius: 0.375rem; /* rounded-md */
+            font-weight: 500; /* medium */
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 1rem;
+        }
+        button.submit-button:hover {
+            background-color: #1d4ed8; /* blue-700 */
+        }
+        button.action-button {
+            padding: 0.5rem 1rem;
+            background-color: #475569; /* slate-600 */
+            color: white;
+            border: none;
+            border-radius: 0.375rem; /* rounded-md */
+            font-weight: 500; /* medium */
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-right: 0.5rem; /* Space between buttons for RTL */
+        }
+        button.action-button:hover {
+            background-color: #334155; /* slate-700 */
+        }
+        .feedback-section {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            background-color: #eff6ff; /* blue-50 */
+            color: #1e40af; /* blue-800 */
+            border: 1px solid #bfdbfe; /* blue-200 */
+        }
+        .hidden {
+            display: none;
+        }
+        
+        #printableReport {
+            display: none; 
+            padding: 20px;
+            font-family: 'Assistant', sans-serif;
+            color: #000; 
+            direction: rtl; 
+        }
+        #printableReport h2, #printableReport h3 {
+            font-weight: 600; margin-bottom: 1rem; border-bottom: 1px solid #ccc; padding-bottom: 0.5rem;
+        }
+        #printableReport h2 { font-size: 1.5rem; }
+        #printableReport h3 { font-size: 1.3rem; margin-top: 1.5rem;}
+        #printableReport .mistake-item { margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px dotted #eee; }
+        #printableReport .mistake-item:last-child { border-bottom: none; }
+        #printableReport p { margin-bottom: 0.25rem; }
+        #printableReport strong { font-weight: 600; }
+        @media print {
+            body * { visibility: hidden; }
+            #printableReport, #printableReport * { visibility: visible; }
+            #printableReport { position: absolute; left: 0; top: 0; width: 100%; display: block !important; font-size: 12pt; }
+            .container-quiz > h1, .container-quiz > div:first-of-type, .question-section, .feedback-section { display: none !important; visibility: hidden !important; }
+        }
+    </style>
+    <script>
+        window.MathJax = {
+          tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']]
+          },
+          svg: {
+            fontCache: 'global'
+          }
+        };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
+</head>
+<body class="bg-slate-100 text-slate-800">
+
+    <div class="container-quiz">
+        <h1 class="text-2xl font-bold text-center text-slate-700 mb-6">מבחן אבחון: מערכת משוואות עם שני נעלמים</h1>
+
+        <div class="mb-6 text-center">
+            <button class="action-button" onclick="startOver()">התחל מחדש</button>
+            <button class="action-button" onclick="shareReport()">שתף דוח</button>
+        </div>
+
+        <div id="mainProblemSystemSection" class="question-section">
+            <p class="problem-statement">בעיה ראשית:</p>
+            <p class="question-text">פתור את מערכת המשוואות הבאה עבור $x$ ו-$y$:</p>
+            <div class="equations-display">
+                <p>1) $2x + y = 5$</p>
+                <p>2) $x - y = 1$</p>
+            </div>
+            <p class="text-sm text-slate-500 mb-3">אנא פתור זאת במחברתך תחילה, ולאחר מכן בחר את תשובתך הסופית למטה.</p>
+            
+            <div id="mainProblemSystemOptions">
+                <label class="option-label"><input type="radio" name="mainSystemAnswer" value="x=2,y=1"> א) $x=2, y=1$</label>
+                <label class="option-label"><input type="radio" name="mainSystemAnswer" value="x=1,y=2"> ב) $x=1, y=2$</label>
+                <label class="option-label"><input type="radio" name="mainSystemAnswer" value="x=3,y=-1"> ג) $x=3, y=-1$</label>
+                <label class="option-label"><input type="radio" name="mainSystemAnswer" value="x=1,y=0"> ד) $x=1, y=0$</label>
+            </div>
+            <button class="submit-button" onclick="checkMainSystemAnswer()">הגש תשובה</button>
+        </div>
+
+        <div id="diagnosticSysQ1_isolateVarSection" class="question-section hidden">
+            <p class="problem-statement">שלב 1: בידוד משתנה (שיטת ההצבה)</p>
+            <p class="question-text">נתחיל מבידוד אחד המשתנים באחת המשוואות. <br>מהמשוואה השנייה, $x - y = 1$, למה שווה $x$ אם נבודד אותו?</p>
+            <div id="diagnosticSysQ1_isolateVarOptions">
+                <label class="option-label"><input type="radio" name="diagSysQ1_isolateAnswer" value="x=y+1"> א) $x = y + 1$</label>
+                <label class="option-label"><input type="radio" name="diagSysQ1_isolateAnswer" value="x=1-y"> ב) $x = 1 - y$</label>
+                <label class="option-label"><input type="radio" name="diagSysQ1_isolateAnswer" value="x=y-1"> ג) $x = y - 1$</label>
+                <label class="option-label"><input type="radio" name="diagSysQ1_isolateAnswer" value="y=x-1"> ד) $y = x - 1$ (בודדת את $y$ במקום את $x$)</label>
+            </div>
+            <button class="submit-button" onclick="checkDiagnosticSysQ1_isolateVar()">הגש תשובה לשלב 1</button>
+        </div>
+        
+        <div id="diagnosticSysQ1_sub_isolateHow" class="question-section hidden">
+            <p class="problem-statement">פירוק נוסף לשלב 1: איך לבודד את $x$?</p>
+            <p class="question-text">במשוואה $x - y = 1$, כדי לבודד את $x$, איזו פעולה יש לבצע על הביטוי $-y$?</p>
+            <div id="diagnosticSysQ1_sub_isolateHowOptions">
+                <label class="option-label"><input type="radio" name="diagSysQ1_sub_ih_Answer" value="add_y"> א) להוסיף $y$ לשני אגפי המשוואה.</label>
+                <label class="option-label"><input type="radio" name="diagSysQ1_sub_ih_Answer" value="subtract_y"> ב) לחסר $y$ משני אגפי המשוואה.</label>
+                <label class="option-label"><input type="radio" name="diagSysQ1_sub_ih_Answer" value="add_1"> ג) להוסיף $1$ לשני אגפי המשוואה.</label>
+            </div>
+            <button class="submit-button" onclick="checkDiagnosticSysQ1_sub_isolateHow()">הגש תשובה</button>
+        </div>
+
+        <div id="diagnosticSysQ2_substituteSection" class="question-section hidden">
+            <p class="problem-statement">שלב 2: הצבה</p>
+            <p class="question-text">אם בודדנו נכון וקיבלנו $x = y+1$, כעת נציב ביטוי זה עבור $x$ במשוואה *הראשונה*: $2x + y = 5$.<br>איך תיראה המשוואה הראשונה לאחר ההצבה?</p>
+            <div id="diagnosticSysQ2_substituteOptions">
+                <label class="option-label"><input type="radio" name="diagSysQ2_substituteAnswer" value="2(y+1)+y=5"> א) $2(y+1) + y = 5$</label>
+                <label class="option-label"><input type="radio" name="diagSysQ2_substituteAnswer" value="2y+1+y=5"> ב) $2y+1 + y = 5$ (שכחת את חוק הפילוג עבור הקבוע)</label>
+                <label class="option-label"><input type="radio" name="diagSysQ2_substituteAnswer" value="y+1+y=5"> ג) $(y+1) + y = 5$ (שכחת להכפיל ב-2 את הביטוי שהוצב)</label>
+                <label class="option-label"><input type="radio" name="diagSysQ2_substituteAnswer" value="2x+(x-1)=5"> ד) $2x + (x-1) = 5$ (הצבת ביטוי עבור $y$ במקום $x$, או ביטוי שגוי)</label>
+            </div>
+            <button class="submit-button" onclick="checkDiagnosticSysQ2_substitute()">הגש תשובה לשלב 2</button>
+        </div>
+
+        <div id="diagnosticSysQ2_sub_distribute" class="question-section hidden">
+            <p class="problem-statement">פירוק נוסף לשלב 2: חוק הפילוג</p>
+            <p class="question-text">כאשר מציבים $x=y+1$ בביטוי $2x$, מקבלים $2(y+1)$.<br>למה שווה $2(y+1)$ לאחר שימוש בחוק הפילוג?</p>
+            <div id="diagnosticSysQ2_sub_distributeOptions">
+                <label class="option-label"><input type="radio" name="diagSysQ2_sub_dist_Answer" value="2y+2"> א) $2y+2$</label>
+                <label class="option-label"><input type="radio" name="diagSysQ2_sub_dist_Answer" value="2y+1"> ב) $2y+1$</label>
+                <label class="option-label"><input type="radio" name="diagSysQ2_sub_dist_Answer" value="y+2"> ג) $y+2$</label>
+            </div>
+            <button class="submit-button" onclick="checkDiagnosticSysQ2_sub_distribute()">הגש תשובה</button>
+        </div>
+        
+        <div id="diagnosticSysQ3_solveSingleVarSection" class="question-section hidden">
+            <p class="problem-statement">שלב 3: פתרון משוואה עם נעלם אחד</p>
+            <p class="question-text">בהנחה שהגענו למשוואה $2(y+1)+y=5$. ראשית, נפשט את אגף שמאל. <br>למה שווה $2(y+1)+y$ לאחר פתיחת סוגריים וכינוס איברים?</p>
+            <div id="diagnosticSysQ3_solveSingleVarOptions_simplify">
+                <label class="option-label"><input type="radio" name="diagSysQ3_simplifyAnswer" value="3y+2"> א) $3y+2$</label>
+                <label class="option-label"><input type="radio" name="diagSysQ3_simplifyAnswer" value="2y+3"> ב) $2y+3$</label>
+                <label class="option-label"><input type="radio" name="diagSysQ3_simplifyAnswer" value="3y+1"> ג) $3y+1$</label>
+            </div>
+            <button class="submit-button" onclick="checkDiagnosticSysQ3_simplify()">הגש תשובה (פישוט)</button>
+        </div>
+
+        <div id="diagnosticSysQ3_solveTheEquationSection" class="question-section hidden">
+             <p class="problem-statement">שלב 3 (המשך): פתרון המשוואה</p>
+            <p class="question-text">כעת, פתור את המשוואה $3y+2=5$ עבור $y$.</p>
+            <div id="diagnosticSysQ3_solveTheEquationOptions">
+                <label class="option-label"><input type="radio" name="diagSysQ3_solveEqAnswer" value="y=1"> א) $y=1$</label>
+                <label class="option-label"><input type="radio" name="diagSysQ3_solveEqAnswer" value="y=7/3"> ב) $y=7/3$</label>
+                <label class="option-label"><input type="radio" name="diagSysQ3_solveEqAnswer" value="y=3"> ג) $y=3$ (שכחת לחלק במקדם)</label>
+            </div>
+            <button class="submit-button" onclick="checkDiagnosticSysQ3_solveTheEquation()">הגש תשובה (פתרון $y$)</button>
+        </div>
+
+        <div id="diagnosticSysQ4_solveSecondVarSection" class="question-section hidden">
+            <p class="problem-statement">שלב 4: מציאת המשתנה השני</p>
+            <p class="question-text">אם מצאנו ש-$y=1$, והשתמשנו בקשר $x = y+1$ (או קשר נכון אחר שבודדת), מהו ערכו של $x$?</p>
+            <div id="diagnosticSysQ4_solveSecondVarOptions">
+                <label class="option-label"><input type="radio" name="diagSysQ4_solveXAnswer" value="x=2"> א) $x=2$</label>
+                <label class="option-label"><input type="radio" name="diagSysQ4_solveXAnswer" value="x=0"> ב) $x=0$</label>
+                <label class="option-label"><input type="radio" name="diagSysQ4_solveXAnswer" value="x=1"> ג) $x=1$</label>
+            </div>
+            <button class="submit-button" onclick="checkDiagnosticSysQ4_solveSecondVar()">הגש תשובה לשלב 4</button>
+        </div>
+
+        <div id="feedbackSection" class="feedback-section hidden">
+            <p id="feedbackText" class="text-lg"></p>
+            <p id="remediationLink" class="mt-2 font-semibold"></p>
+        </div>
+
+        <div id="printableReport">
+        </div>
+    </div>
+
+    <script>
+        let studentPath = []; 
+        const mainProblemSystemCorrectAnswer = "x=2,y=1"; 
+
+        function queueMathJaxTypeset(element) {
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                window.MathJax.typesetPromise(element ? [element] : undefined).catch((err) => console.error('MathJax typesetting error:', err));
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            queueMathJaxTypeset(document.getElementById('mainProblemSystemSection'));
+        });
+
+        function showSection(sectionId) {
+            const allSectionIds = [
+                'mainProblemSystemSection', 
+                'diagnosticSysQ1_isolateVarSection', 'diagnosticSysQ1_sub_isolateHow',
+                'diagnosticSysQ2_substituteSection', 'diagnosticSysQ2_sub_distribute',
+                'diagnosticSysQ3_solveSingleVarSection', 'diagnosticSysQ3_solveTheEquationSection',
+                'diagnosticSysQ4_solveSecondVarSection'
+            ];
+
+            allSectionIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+            
+            if (sectionId) {
+                const el = document.getElementById(sectionId);
+                if (el) {
+                    el.classList.remove('hidden');
+                    queueMathJaxTypeset(el);
+                } else {
+                    console.error("Attempted to show non-existent section:", sectionId);
+                }
+            }
+        }
+
+        function displayFeedback(message, remediation) {
+            const feedbackTextEl = document.getElementById('feedbackText');
+            const remediationLinkEl = document.getElementById('remediationLink');
+            
+            feedbackTextEl.innerHTML = message; 
+            remediationLinkEl.innerHTML = remediation ? `<strong>מוקד מומלץ לחיזוק:</strong> ${remediation}` : '';
+            
+            const feedbackSectionEl = document.getElementById('feedbackSection');
+            feedbackSectionEl.classList.remove('hidden');
+            queueMathJaxTypeset(feedbackSectionEl); 
+        }
+        
+        function startOver() { // Renamed from startOverSystem
+            studentPath = []; 
+            const radioGroups = [
+                'mainSystemAnswer', 
+                'diagSysQ1_isolateAnswer', 'diagSysQ1_sub_ih_Answer',
+                'diagSysQ2_substituteAnswer', 'diagSysQ2_sub_dist_Answer',
+                'diagSysQ3_simplifyAnswer', 'diagSysQ3_solveEqAnswer',
+                'diagSysQ4_solveXAnswer'
+            ];
+            radioGroups.forEach(groupName => {
+                const radios = document.getElementsByName(groupName);
+                radios.forEach(radio => radio.checked = false);
+            });
+            
+            document.getElementById('feedbackSection').classList.add('hidden');
+            showSection('mainProblemSystemSection'); 
+        }
+
+        function getSelectedRadioValue(name) { // Renamed from getSelectedRadioValueSystem
+            const radios = document.getElementsByName(name);
+            for (let i = 0; i < radios.length; i++) {
+                if (radios[i].checked) {
+                    // Return an object with value and human-readable text
+                    return { value: radios[i].value, text: radios[i].parentElement.textContent.replace(/^[א-ד]\)\s*/, '').trim() };
+                }
+            }
+            return null;
+        }
+
+        function getQuestionTextForReport(sectionId) { // Renamed from getQuestionTextForReportSystem
+            const section = document.getElementById(sectionId);
+            if (section) {
+                const problemStatementEl = section.querySelector('.problem-statement');
+                const questionTextEl = section.querySelector('.question-text');
+                const equationsEl = section.querySelector('.equations-display');
+                let fullQuestionText = "";
+
+                if (problemStatementEl) {
+                    fullQuestionText += (problemStatementEl.textContent || "").trim();
+                }
+                if (equationsEl) {
+                     fullQuestionText += (fullQuestionText ? "<br>" : "") + (equationsEl.innerHTML || "").replace(/\s\s+/g, ' ').trim();
+                }
+                if (questionTextEl) {
+                    fullQuestionText += (fullQuestionText ? "<br>" : "") + (questionTextEl.innerHTML || "").trim();
+                }
+                return fullQuestionText.replace(/\s\s+/g, ' ').trim() || "טקסט שאלה לא נמצא";
+            }
+            return "טקסט שאלה לא נמצא";
+        }
+        
+        function logAttempt(stepDesc, sectionId, selectedValue, selectedAnswerText, radioGroupName, isCorrect, feedbackMessage = "", remediationTopic = null) {
+            const questionReportText = getQuestionTextForReport(sectionId);
+            studentPath.push({ 
+                type: 'attempt', 
+                stepDescription: stepDesc, 
+                questionText: questionReportText, 
+                selectedAnswer: selectedValue, 
+                selectedAnswerText: selectedAnswerText,
+                isCorrect: isCorrect, 
+                feedbackForAttempt: isCorrect ? null : { message: feedbackMessage, remediationTopic: remediationTopic } 
+            });
+            document.getElementById('feedbackSection').classList.add('hidden');
+        }
+
+        function shareReport() { // Renamed from shareReportSystem
+            const reportContainer = document.getElementById('printableReport');
+            if (!reportContainer) { return; }
+
+            let reportHTML = '<h2>דוח אבחון: מערכת משוואות עם שני נעלמים</h2>';
+            const mistakesAndLearnings = [];
+
+            studentPath.forEach((item) => {
+                if (item.type === 'attempt' && !item.isCorrect && item.feedbackForAttempt) {
+                    mistakesAndLearnings.push({
+                        question: item.questionText,
+                        userAnswer: item.selectedAnswerText || item.selectedAnswer,
+                        feedback: item.feedbackForAttempt.message,
+                        remediation: item.feedbackForAttempt.remediationTopic,
+                        step: item.stepDescription
+                    });
+                }
+            });
+            
+            if (mistakesAndLearnings.length > 0) {
+                reportHTML += '<h3>ניתוח טעויות ונקודות לשיפור:</h3>';
+                mistakesAndLearnings.forEach(mistake => {
+                    reportHTML += `<div class="mistake-item">`;
+                    reportHTML += `<p><strong>בשלב:</strong> ${mistake.step}</p>`;
+                    reportHTML += `<p><strong>השאלה:</strong> ${mistake.question}</p>`;
+                    reportHTML += `<p><strong>התשובה שלך:</strong> ${mistake.userAnswer}</p>`;
+                    reportHTML += `<p><strong>המשוב שניתן:</strong> ${mistake.feedback}</p>`;
+                    if (mistake.remediation) {
+                        reportHTML += `<p><strong>מוקד לשיפור:</strong> ${mistake.remediation}</p>`;
+                    }
+                    reportHTML += `</div>`;
+                });
+            } else if (studentPath.length > 0) {
+                 const lastAttempt = studentPath.filter(item => item.type === 'attempt').pop();
+                 let mainProblemSolvedCorrectly = false;
+                 if (lastAttempt && lastAttempt.stepDescription === "בעיה ראשית" && lastAttempt.selectedAnswer === mainProblemSystemCorrectAnswer && lastAttempt.isCorrect) {
+                    mainProblemSolvedCorrectly = true;
+                 } else {
+                    // Check if the final diagnostic step that leads to the correct answer was successful
+                    const finalDiagnosticStep = studentPath.find(item => item.stepDescription === "שלב 4: מציאת המשתנה השני" && item.isCorrect);
+                    if(finalDiagnosticStep) mainProblemSolvedCorrectly = true;
+                 }
+
+                if (mainProblemSolvedCorrectly) {
+                     reportHTML += '<p><strong>כל הכבוד! נראה שהבנת את כל השלבים ולא זוהו טעויות הדורשות התייחסות מיוחדת.</strong></p>';
+                } else {
+                     reportHTML += '<p>לא זוהו טעויות ספציפיות הדורשות התייחסות מיוחדת, אך ייתכן שלא כל חלקי השאלה הושלמו בהצלחה.</p>';
+                }
+            } else {
+                 reportHTML += '<p>לא נרשמה התקדמות עדיין.</p>';
+            }
+
+            const currentFileName = "system_equations_diagnostic.html"; 
+            if (mistakesAndLearnings.length > 0) {
+                localStorage.setItem(`diagnosticReportData_${currentFileName}`, JSON.stringify(mistakesAndLearnings));
+            } else {
+                localStorage.removeItem(`diagnosticReportData_${currentFileName}`); 
+            }
+
+            reportContainer.innerHTML = reportHTML;
+            window.print(); 
+        }
+
+        // --- Check Answer Functions ---
+
+        function checkMainSystemAnswer() {
+            const selection = getSelectedRadioValue('mainSystemAnswer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            
+            const isCorrect = selection.value === mainProblemSystemCorrectAnswer;
+            const feedbackMsg = isCorrect ? "מעולה! הפתרון $x=2, y=1$ נכון." : "התשובה אינה מדויקת. בוא נפרק את השלבים.";
+            const remediation = isCorrect ? null : "פתרון מערכת משוואות לינאריות";
+            logAttempt("בעיה ראשית", 'mainProblemSystemSection', selection.value, selection.text, 'mainSystemAnswer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            if (isCorrect) {
+                showSection(null); 
+            } else {
+                setTimeout(() => {
+                    document.getElementById('feedbackSection').classList.add('hidden');
+                    showSection('diagnosticSysQ1_isolateVarSection');
+                }, 3000);
+            }
+        }
+
+        function checkDiagnosticSysQ1_isolateVar() {
+            const selection = getSelectedRadioValue('diagSysQ1_isolateAnswer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+
+            const isCorrect = selection.value === "x=y+1";
+            let feedbackMsg = "";
+            let remediation = null;
+            let nextSection = null;
+
+            if (isCorrect) {
+                feedbackMsg = "נכון מאוד! בודדת את $x$ נכון מהמשוואה השנייה. ממשיכים לשלב ההצבה.";
+                nextSection = 'diagnosticSysQ2_substituteSection';
+            } else if (selection.value === "y=x-1") {
+                 feedbackMsg = "בודדת את $y$ נכון, וזה גם אפשרי. אם נמשיך עם $y=x-1$ ונציב במשוואה הראשונה $2x+y=5$, נקבל $2x + (x-1) = 5$. <br>לשם המשך התרגיל המודרך, נחזור לבודד את $x$ כפי שנשאל.";
+                 remediation = "בידוד משתנה";
+                 nextSection = 'diagnosticSysQ1_isolateVarSection'; // Retry current step
+            } else { 
+                feedbackMsg = "הבידוד אינו נכון. בוא נבדוק איך לבודד את $x$.";
+                remediation = "העברת אגפים לבידוד משתנה";
+                nextSection = 'diagnosticSysQ1_sub_isolateHow';
+            }
+            logAttempt("שלב 1: בידוד משתנה", 'diagnosticSysQ1_isolateVarSection', selection.value, selection.text, 'diagSysQ1_isolateAnswer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+            
+            if (nextSection && nextSection !== 'diagnosticSysQ1_isolateVarSection' && nextSection !== 'diagnosticSysQ1_sub_isolateHow') {
+                 setTimeout(() => { 
+                    document.getElementById('feedbackSection').classList.add('hidden');
+                    showSection(nextSection);
+                }, 2500);
+            } else if (nextSection) { // Retry or go to sub-diagnostic
+                 setTimeout(() => { 
+                    document.getElementById('feedbackSection').classList.add('hidden');
+                    showSection(nextSection);
+                }, 3500);
+            }
+        }
+        
+        function checkDiagnosticSysQ1_sub_isolateHow() {
+            const selection = getSelectedRadioValue('diagSysQ1_sub_ih_Answer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = selection.value === "add_y";
+            const feedbackMsg = isCorrect ? "נכון! כדי לבודד את $x$ במשוואה $x - y = 1$, מוסיפים $y$ לשני האגפים ומקבלים $x = y+1$. בוא נחזור לשאלה הקודמת ונבחר את הבידוד הנכון." : "לא בדיוק. כדי לבטל את $-y$ מאגף שמאל, יש לבצע את הפעולה ההפוכה לחיסור $y$, שהיא הוספת $y$. נסה שוב.";
+            const remediation = isCorrect ? null : "העברת אגפים (פעולה הפוכה)";
+            logAttempt("שלב 1.1: איך לבודד", 'diagnosticSysQ1_sub_isolateHow', selection.value, selection.text, 'diagSysQ1_sub_ih_Answer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            setTimeout(() => {
+                document.getElementById('feedbackSection').classList.add('hidden');
+                showSection(isCorrect ? 'diagnosticSysQ1_isolateVarSection' : 'diagnosticSysQ1_sub_isolateHow');
+            }, 3500);
+        }
+
+        function checkDiagnosticSysQ2_substitute() {
+            const selection = getSelectedRadioValue('diagSysQ2_substituteAnswer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = selection.value === "2(y+1)+y=5";
+            let feedbackMsg = "";
+            let remediation = null;
+            let nextSection = null;
+
+            if (isCorrect) {
+                feedbackMsg = "הצבה מצוינת! ממשיכים לפישוט ופתרון.";
+                nextSection = 'diagnosticSysQ3_solveSingleVarSection';
+            } else if (selection.value === "2y+1+y=5") {
+                feedbackMsg = "כמעט! שכחת להשתמש בחוק הפילוג במלואו עבור $2(y+1)$. בוא נבדוק את זה.";
+                remediation = "חוק הפילוג";
+                nextSection = 'diagnosticSysQ2_sub_distribute';
+            } else if (selection.value === "y+1+y=5") {
+                 feedbackMsg = "שים לב, הביטוי עבור $x$ הוא $y+1$. במשוואה $2x+y=5$, יש להכפיל את *כל* הביטוי $(y+1)$ ב-2. נסה שוב.";
+                 remediation = "הצבת ביטוי שלם וכפל במקדם";
+                 nextSection = 'diagnosticSysQ2_substituteSection';
+            } else { 
+                 feedbackMsg = "נראה שיש בלבול בהצבה. הצבנו את $x=y+1$ במשוואה $2x+y=5$. החלף את $x$ בביטוי $(y+1)$ וזכור לכפול ב-2. נסה שוב.";
+                 remediation = "הבנת תהליך ההצבה";
+                 nextSection = 'diagnosticSysQ2_substituteSection';
+            }
+            logAttempt("שלב 2: הצבה", 'diagnosticSysQ2_substituteSection', selection.value, selection.text, 'diagSysQ2_substituteAnswer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            if (nextSection && nextSection !== 'diagnosticSysQ2_substituteSection' && nextSection !== 'diagnosticSysQ2_sub_distribute') {
+                setTimeout(() => {
+                    document.getElementById('feedbackSection').classList.add('hidden');
+                    showSection(nextSection);
+                }, 2000);
+            } else if (nextSection) {
+                 setTimeout(() => {
+                    document.getElementById('feedbackSection').classList.add('hidden');
+                    showSection(nextSection);
+                }, 3500);
+            }
+        }
+        
+        function checkDiagnosticSysQ2_sub_distribute() {
+            const selection = getSelectedRadioValue('diagSysQ2_sub_dist_Answer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = selection.value === "2y+2";
+            const feedbackMsg = isCorrect ? "נכון! $2(y+1) = 2y+2$. לכן המשוואה לאחר הצבה היא $2y+2+y=5$. ממשיכים לשלב הפישוט." : "לא מדויק. בחוק הפילוג, $a(b+c) = ab+ac$. לכן $2(y+1) = (2 \\times y) + (2 \\times 1) = 2y+2$. נסה שוב.";
+            const remediation = isCorrect ? null : "חוק הפילוג";
+            logAttempt("שלב 2.1: חוק הפילוג", 'diagnosticSysQ2_sub_distribute', selection.value, selection.text, 'diagSysQ2_sub_dist_Answer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            setTimeout(() => {
+                document.getElementById('feedbackSection').classList.add('hidden');
+                showSection(isCorrect ? 'diagnosticSysQ3_solveSingleVarSection' : 'diagnosticSysQ2_sub_distribute');
+            }, isCorrect ? 3000 : 3500);
+        }
+
+        function checkDiagnosticSysQ3_simplify() {
+            const selection = getSelectedRadioValue('diagSysQ3_simplifyAnswer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = selection.value === "3y+2";
+            const feedbackMsg = isCorrect ? "פישוט נכון! $2(y+1)+y = 2y+2+y = 3y+2$. כעת נפתור את המשוואה $3y+2=5$." : "טעות בפישוט. זכור: $2(y+1)+y = 2y+2+y$. כנס איברים דומים: $2y+y=3y$, והקבוע הוא $2$. לכן התוצאה היא $3y+2$. נסה שוב.";
+            const remediation = isCorrect ? null : "כינוס איברים דומים";
+            logAttempt("שלב 3א: פישוט $2(y+1)+y$", 'diagnosticSysQ3_solveSingleVarSection', selection.value, selection.text, 'diagSysQ3_simplifyAnswer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            setTimeout(() => {
+                document.getElementById('feedbackSection').classList.add('hidden');
+                showSection(isCorrect ? 'diagnosticSysQ3_solveTheEquationSection' : 'diagnosticSysQ3_solveSingleVarSection');
+            }, isCorrect ? 3000 : 3500);
+        }
+        
+        function checkDiagnosticSysQ3_solveTheEquation() {
+            const selection = getSelectedRadioValue('diagSysQ3_solveEqAnswer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = selection.value === "y=1";
+            let feedbackMsg = "";
+            let remediation = null;
+            let nextSection = null;
+
+            if (isCorrect) {
+                feedbackMsg = "נכון מאוד, $y=1$. כעת נשתמש בערך זה למצוא את $x$.";
+                nextSection = 'diagnosticSysQ4_solveSecondVarSection';
+            } else if (selection.value === "y=7/3") {
+                 feedbackMsg = "טעות בהעברת אגפים. מ-$3y+2=5$, מחסרים 2 משני האגפים: $3y = 5-2$, כלומר $3y=3$. נסה שוב.";
+                 remediation = "העברת אגפים (קבועים)";
+                 nextSection = 'diagnosticSysQ3_solveTheEquationSection';
+            } else if (selection.value === "y=3") {
+                 feedbackMsg = "כמעט שם! אם $3y=3$, יש לחלק את שני האגפים ב-3 כדי למצוא את $y$. $y = 3/3 = 1$. נסה שוב.";
+                 remediation = "בידוד משתנה (חילוק במקדם)";
+                 nextSection = 'diagnosticSysQ3_solveTheEquationSection';
+            }
+            logAttempt("שלב 3ב: פתרון $3y+2=5$", 'diagnosticSysQ3_solveTheEquationSection', selection.value, selection.text, 'diagSysQ3_solveEqAnswer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            if (nextSection && nextSection !== 'diagnosticSysQ3_solveTheEquationSection') {
+                setTimeout(() => {
+                    document.getElementById('feedbackSection').classList.add('hidden');
+                    showSection(nextSection);
+                }, 2000);
+            } else if (nextSection) {
+                 setTimeout(() => {
+                    document.getElementById('feedbackSection').classList.add('hidden');
+                    showSection(nextSection);
+                }, 3500);
+            }
+        }
+
+        function checkDiagnosticSysQ4_solveSecondVar() {
+            const selection = getSelectedRadioValue('diagSysQ4_solveXAnswer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = selection.value === "x=2";
+            const feedbackMsg = isCorrect ? "כל הכבוד! הפתרון $x=2, y=1$ נכון. אם זו לא הייתה תשובתך לבעיה הראשית, בדוק היכן התרחשה הטעות בחישובים שלך." : "טעות בחישוב $x$. אם $y=1$ ו-$x=y+1$, אז $x = 1+1 = 2$. נסה שוב.";
+            const remediation = isCorrect ? null : "הצבה לחישוב משתנה שני";
+            logAttempt("שלב 4: מציאת $x$", 'diagnosticSysQ4_solveSecondVarSection', selection.value, selection.text, 'diagSysQ4_solveXAnswer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            if (isCorrect) {
+                 setTimeout(() => { // Give time to read feedback before going back to main
+                    document.getElementById('feedbackSection').classList.add('hidden');
+                    showSection('mainProblemSystemSection'); 
+                }, 3500);
+            } else {
+                setTimeout(() => {
+                    document.getElementById('feedbackSection').classList.add('hidden');
+                    showSection('diagnosticSysQ4_solveSecondVarSection');
+                }, 3500);
+            }
+        }
+
+    </script>
+</body>
+</html>

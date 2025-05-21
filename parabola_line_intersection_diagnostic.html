@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מבחן אבחון: חיתוך פרבולה וישר</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Assistant', sans-serif;
+            background-color: #f1f5f9; 
+            color: #1e293b; 
+        }
+        .container-quiz {
+            max-width: 700px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: #ffffff;
+            border-radius: 0.75rem; 
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .question-section {
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            border: 1px solid #e2e8f0; 
+            border-radius: 0.5rem;
+            background-color: #f8fafc; 
+        }
+        .problem-statement {
+            font-size: 1.25rem; 
+            font-weight: 600;
+            color: #0f172a; 
+            margin-bottom: 1rem;
+        }
+        .question-text, .equations-display {
+            font-size: 1.1rem; 
+            color: #334155; 
+            margin-bottom: 0.75rem;
+        }
+        .equations-display p { margin-bottom: 0.25rem; text-align: center; font-weight: 500;}
+        label.option-label {
+            display: block;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            background-color: #fff;
+            border: 1px solid #cbd5e1; 
+            border-radius: 0.375rem; 
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        label.option-label:hover {
+            background-color: #f1f5f9; 
+            border-color: #94a3b8; 
+        }
+        input[type="radio"] {
+            margin-left: 0.5rem; 
+            accent-color: #2563eb; 
+        }
+        button.submit-button {
+            padding: 0.75rem 1.5rem;
+            background-color: #2563eb; 
+            color: white;
+            border: none;
+            border-radius: 0.375rem; 
+            font-weight: 500; 
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 1rem;
+        }
+        button.submit-button:hover {
+            background-color: #1d4ed8; 
+        }
+        button.action-button {
+            padding: 0.5rem 1rem;
+            background-color: #475569; 
+            color: white;
+            border: none;
+            border-radius: 0.375rem; 
+            font-weight: 500; 
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-right: 0.5rem; 
+        }
+        button.action-button:hover {
+            background-color: #334155; 
+        }
+        .feedback-section {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            background-color: #eff6ff; 
+            color: #1e40af; 
+            border: 1px solid #bfdbfe; 
+        }
+        .hidden {
+            display: none;
+        }
+        
+        #printableReport {
+            display: none; 
+            padding: 20px;
+            font-family: 'Assistant', sans-serif;
+            color: #000; 
+            direction: rtl; 
+        }
+        #printableReport h2, #printableReport h3 {
+            font-weight: 600; margin-bottom: 1rem; border-bottom: 1px solid #ccc; padding-bottom: 0.5rem;
+        }
+        #printableReport h2 { font-size: 1.5rem; }
+        #printableReport h3 { font-size: 1.3rem; margin-top: 1.5rem;}
+        #printableReport .mistake-item { margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px dotted #eee; }
+        #printableReport .mistake-item:last-child { border-bottom: none; }
+        #printableReport p { margin-bottom: 0.25rem; }
+        #printableReport strong { font-weight: 600; }
+        @media print {
+            body * { visibility: hidden; }
+            #printableReport, #printableReport * { visibility: visible; }
+            #printableReport { position: absolute; left: 0; top: 0; width: 100%; display: block !important; font-size: 12pt; }
+            .container-quiz > h1, .container-quiz > div:first-of-type, .question-section, .feedback-section { display: none !important; visibility: hidden !important; }
+        }
+    </style>
+    <script>
+        window.MathJax = {
+          tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']]
+          },
+          svg: {
+            fontCache: 'global'
+          }
+        };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
+</head>
+<body class="bg-slate-100 text-slate-800">
+
+    <div class="container-quiz">
+        <h1 class="text-2xl font-bold text-center text-slate-700 mb-6">מבחן אבחון: חיתוך פרבולה וישר</h1>
+
+        <div class="mb-6 text-center">
+            <button class="action-button" onclick="startOver()">התחל מחדש</button>
+            <button class="action-button" onclick="shareReport()">שתף דוח</button>
+        </div>
+
+        <div id="mainIntersectionProblemSection" class="question-section">
+            <p class="problem-statement">בעיה ראשית:</p>
+            <p class="question-text">מצא את נקודות החיתוך (אם קיימות) בין הפרבולה והישר הבאים:</p>
+            <div class="equations-display">
+                <p>פרבולה: $y = x^2 - 4x + 5$</p>
+                <p>ישר: $y = x + 1$</p>
+            </div>
+            <p class="text-sm text-slate-500 mb-3">אנא פתור זאת במחברתך תחילה, ולאחר מכן בחר את תשובתך הסופית למטה.</p>
+            
+            <div id="mainIntersectionProblemOptions">
+                <label class="option-label"><input type="radio" name="mainIntersectionAnswer" value="1,2_4,5"> א) $(1,2)$ ו- $(4,5)$</label>
+                <label class="option-label"><input type="radio" name="mainIntersectionAnswer" value="2,1_5,4"> ב) $(2,1)$ ו- $(5,4)$</label>
+                <label class="option-label"><input type="radio" name="mainIntersectionAnswer" value="1,2_only"> ג) $(1,2)$ (נקודה אחת בלבד)</label>
+                <label class="option-label"><input type="radio" name="mainIntersectionAnswer" value="no_intersection"> ד) אין נקודות חיתוך</label>
+            </div>
+            <button class="submit-button" onclick="checkMainIntersectionAnswer()">הגש תשובה</button>
+        </div>
+
+        <div id="diagnosticIntQ1_equateSection" class="question-section hidden">
+            <p class="problem-statement">שלב 1: השוואת משוואות וסידור</p>
+            <p class="question-text">כדי למצוא נקודות חיתוך, משווים את הביטויים של $y$ משתי המשוואות:<br>$x^2 - 4x + 5 = x + 1$.<br>לאחר העברת כל האיברים לאגף אחד וכינוס איברים, איזו משוואה ריבועית מתקבלת?</p>
+            <div id="diagnosticIntQ1_equateOptions">
+                <label class="option-label"><input type="radio" name="diagIntQ1_equateAnswer" value="x^2-5x+4=0"> א) $x^2 - 5x + 4 = 0$</label>
+                <label class="option-label"><input type="radio" name="diagIntQ1_equateAnswer" value="x^2-3x+6=0"> ב) $x^2 - 3x + 6 = 0$ (טעות בכינוס $x$ או קבועים)</label>
+                <label class="option-label"><input type="radio" name="diagIntQ1_equateAnswer" value="x^2-4x+5-x-1=0"> ג) $x^2 - 4x + 5 - x - 1 = 0$ (העברת אגפים נכונה, אך לא כונסו איברים)</label>
+                <label class="option-label"><input type="radio" name="diagIntQ1_equateAnswer" value="x^2-5x+6=0"> ד) $x^2 - 5x + 6 = 0$ (טעות בכינוס הקבועים)</label>
+            </div>
+            <button class="submit-button" onclick="checkDiagnosticIntQ1_equate()">הגש תשובה לשלב 1</button>
+        </div>
+        
+        <div id="diagnosticIntQ1_sub_combineX" class="question-section hidden">
+            <p class="problem-statement">פירוק שלב 1: כינוס איברי $x$</p>
+            <p class="question-text">במשוואה $x^2 - 4x + 5 = x + 1$, אם נעביר את $x$ מאגף ימין לאגף שמאל, נקבל $-x$.<br>למה שווה הביטוי $-4x - x$?</p>
+            <div id="diagnosticIntQ1_sub_combineXOptions">
+                <label class="option-label"><input type="radio" name="diagIntQ1_sub_cxAnswer" value="-5x"> א) $-5x$</label>
+                <label class="option-label"><input type="radio" name="diagIntQ1_sub_cxAnswer" value="-3x"> ב) $-3x$</label>
+                <label class="option-label"><input type="radio" name="diagIntQ1_sub_cxAnswer" value="-4x^2"> ג) $-4x^2$</label>
+            </div>
+            <button class="submit-button" onclick="checkDiagnosticIntQ1_sub_combineX()">הגש תשובה</button>
+        </div>
+
+        <div id="diagnosticIntQ1_sub_combineConstants" class="question-section hidden">
+            <p class="problem-statement">פירוק שלב 1: כינוס איברים קבועים</p>
+            <p class="question-text">במשוואה $x^2 - 4x + 5 = x + 1$, אם נעביר את $1$ מאגף ימין לאגף שמאל, נקבל $-1$.<br>למה שווה הביטוי $+5 - 1$?</p>
+            <div id="diagnosticIntQ1_sub_combineConstantsOptions">
+                <label class="option-label"><input type="radio" name="diagIntQ1_sub_ccAnswer" value="4"> א) $4$</label>
+                <label class="option-label"><input type="radio" name="diagIntQ1_sub_ccAnswer" value="6"> ב) $6$</label>
+                <label class="option-label"><input type="radio" name="diagIntQ1_sub_ccAnswer" value="-4"> ג) $-4$</label>
+            </div>
+            <button class="submit-button" onclick="checkDiagnosticIntQ1_sub_combineConstants()">הגש תשובה</button>
+        </div>
+
+        <div id="diagnosticIntQ2_coeffsSection" class="question-section hidden">
+            <p class="problem-statement">שלב 2: זיהוי מקדמים של המשוואה הריבועית</p>
+            <p class="question-text">בהנחה שהגענו למשוואה $x^2 - 5x + 4 = 0$, מהם ערכי המקדמים $A, B, C$ של משוואה זו?</p>
+            <div id="diagnosticIntQ2_coeffsOptions">
+                <label class="option-label"><input type="radio" name="diagIntQ2_coeffsAnswer" value="A=1,B=-5,C=4"> א) $A=1, B=-5, C=4$</label>
+                <label class="option-label"><input type="radio" name="diagIntQ2_coeffsAnswer" value="A=1,B=5,C=4"> ב) $A=1, B=5, C=4$ (טעות בסימן של $B$)</label>
+                <label class="option-label"><input type="radio" name="diagIntQ2_coeffsAnswer" value="A=1,B=-5,C=-4"> ג) $A=1, B=-5, C=-4$ (טעות בסימן של $C$)</label>
+            </div>
+            <button class="submit-button" onclick="checkDiagnosticIntQ2_coeffs()">הגש תשובה לשלב 2</button>
+        </div>
+
+        <div id="diagnosticIntQ3_discriminantSection" class="question-section hidden">
+            <p class="problem-statement">שלב 3: חישוב הדיסקרימיננטה</p>
+            <p class="question-text">עבור המשוואה $x^2 - 5x + 4 = 0$, חשב את הדיסקרימיננטה $\Delta = B^2 - 4AC$.</p>
+            <div id="diagnosticIntQ3_discriminantOptions">
+                <label class="option-label"><input type="radio" name="diagIntQ3_discAnswer" value="9"> א) $\Delta = 9$</label>
+                <label class="option-label"><input type="radio" name="diagIntQ3_discAnswer" value="41"> ב) $\Delta = 41$ (אולי טעות בחישוב $B^2$ או $4AC$)</label>
+                <label class="option-label"><input type="radio" name="diagIntQ3_discAnswer" value="1"> ג) $\Delta = 1$ (אולי טעות בחישוב $B^2$ או $4AC$)</label>
+            </div>
+            <button class="submit-button" onclick="checkDiagnosticIntQ3_discriminant()">הגש תשובה לשלב 3</button>
+        </div>
+        
+        <div id="diagnosticIntQ4_interpretDiscSection" class="question-section hidden">
+            <p class="problem-statement">שלב 4: פירוש הדיסקרימיננטה</p>
+            <p class="question-text">מצאנו שהדיסקרימיננטה $\Delta = 9$. מה זה אומר לגבי מספר הפתרונות למשוואה הריבועית (כלומר, מספר ערכי ה-$x$ האפשריים לנקודות החיתוך)?</p>
+            <div id="diagnosticIntQ4_interpretDiscOptions">
+                <label class="option-label"><input type="radio" name="diagIntQ4_interpretAnswer" value="two_solutions"> א) שני פתרונות שונים (שתי נקודות חיתוך)</label>
+                <label class="option-label"><input type="radio" name="diagIntQ4_interpretAnswer" value="one_solution"> ב) פתרון אחד (נקודת השקה אחת)</label>
+                <label class="option-label"><input type="radio" name="diagIntQ4_interpretAnswer" value="no_solutions"> ג) אין פתרונות ממשיים (אין נקודות חיתוך)</label>
+            </div>
+            <button class="submit-button" onclick="checkDiagnosticIntQ4_interpretDisc()">הגש תשובה לשלב 4</button>
+        </div>
+
+        <div id="diagnosticIntQ5_calculateXSection" class="question-section hidden">
+            <p class="problem-statement">שלב 5: חישוב ערכי $x$</p>
+            <p class="question-text">בהינתן $A=1, B=-5, C=4$ ו-$\Delta=9$, השתמש בנוסחת השורשים $x = \frac{-B \pm \sqrt{\Delta}}{2A}$ כדי למצוא את ערכי ה-$x$.</p>
+            <div id="diagnosticIntQ5_calculateXOptions">
+                <label class="option-label"><input type="radio" name="diagIntQ5_calcXAnswer" value="x1=4,x2=1"> א) $x_1=4, x_2=1$ (או להיפך)</label>
+                <label class="option-label"><input type="radio" name="diagIntQ5_calcXAnswer" value="x1=1,x2=-4"> ב) $x_1=1, x_2=-4$ (טעות בסימן או בחישוב)</label>
+                <label class="option-label"><input type="radio" name="diagIntQ5_calcXAnswer" value="x1=5,x2=3"> ג) $x_1=5, x_2=3$ (טעות בחישוב עם $\sqrt{\Delta}$ או במכנה)</label>
+            </div>
+            <button class="submit-button" onclick="checkDiagnosticIntQ5_calculateX()">הגש תשובה לשלב 5</button>
+        </div>
+
+        <div id="diagnosticIntQ6_calculateYSection" class="question-section hidden">
+            <p class="problem-statement">שלב 6: חישוב ערכי $y$</p>
+            <p class="question-text">מצאנו שערכי ה-$x$ של נקודות החיתוך הם $x=4$ ו-$x=1$.<br>הצב ערכים אלו במשוואת הישר $y = x + 1$ (או במשוואת הפרבולה) כדי למצוא את ערכי ה-$y$ המתאימים.</p>
+            <div id="diagnosticIntQ6_calculateYOptions">
+                <label class="option-label"><input type="radio" name="diagIntQ6_calcYAnswer" value="y1=5,y2=2"> א) עבור $x=4, y=5$; עבור $x=1, y=2$</label>
+                <label class="option-label"><input type="radio" name="diagIntQ6_calcYAnswer" value="y1=4,y2=1"> ב) עבור $x=4, y=4$; עבור $x=1, y=1$ (שכחת להוסיף 1)</label>
+                <label class="option-label"><input type="radio" name="diagIntQ6_calcYAnswer" value="y1=3,y2=0"> ג) עבור $x=4, y=3$; עבור $x=1, y=0$ (חיסרת 1 במקום להוסיף)</label>
+            </div>
+            <button class="submit-button" onclick="checkDiagnosticIntQ6_calculateY()">הגש תשובה לשלב 6</button>
+        </div>
+
+        <div id="feedbackSection" class="feedback-section hidden">
+            <p id="feedbackText" class="text-lg"></p>
+            <p id="remediationLink" class="mt-2 font-semibold"></p>
+        </div>
+
+        <div id="printableReport">
+        </div>
+    </div>
+
+    <script>
+        let studentPath = []; // Renamed from studentIntersectionPath
+        const mainProblemCorrectAnswer = "1,2_4,5"; // Renamed from mainIntersectionCorrectAnswer
+        const correctQuadraticEq = { A: 1, B: -5, C: 4 };
+        const correctDiscriminantInt = 9;
+        const correctXValues = { x1: 4, x2: 1 }; 
+
+        function queueMathJaxTypeset(element) {
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                window.MathJax.typesetPromise(element ? [element] : undefined).catch((err) => console.error('MathJax typesetting error:', err));
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            queueMathJaxTypeset(document.getElementById('mainIntersectionProblemSection'));
+        });
+
+        function showSection(sectionId) { // Renamed from showIntersectionSection
+            const allSectionIds = [
+                'mainIntersectionProblemSection', 
+                'diagnosticIntQ1_equateSection', 'diagnosticIntQ1_sub_combineX', 'diagnosticIntQ1_sub_combineConstants',
+                'diagnosticIntQ2_coeffsSection',
+                'diagnosticIntQ3_discriminantSection',
+                'diagnosticIntQ4_interpretDiscSection',
+                'diagnosticIntQ5_calculateXSection',
+                'diagnosticIntQ6_calculateYSection'
+            ];
+
+            allSectionIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+            
+            if (sectionId) {
+                const el = document.getElementById(sectionId);
+                if (el) {
+                    el.classList.remove('hidden');
+                    queueMathJaxTypeset(el);
+                } else {
+                    console.error("Attempted to show non-existent section:", sectionId);
+                }
+            }
+        }
+
+        function displayFeedback(message, remediation) { // Renamed from displayIntersectionFeedback
+            const feedbackTextEl = document.getElementById('feedbackText');
+            const remediationLinkEl = document.getElementById('remediationLink');
+            
+            feedbackTextEl.innerHTML = message; 
+            remediationLinkEl.innerHTML = remediation ? `<strong>מוקד מומלץ לחיזוק:</strong> ${remediation}` : '';
+            
+            const feedbackSectionEl = document.getElementById('feedbackSection');
+            feedbackSectionEl.classList.remove('hidden');
+            queueMathJaxTypeset(feedbackSectionEl); 
+        }
+        
+        function startOver() { // Renamed from startOverIntersection
+            studentPath = []; 
+            const radioGroups = [
+                'mainIntersectionAnswer', 
+                'diagIntQ1_equateAnswer', 'diagIntQ1_sub_cxAnswer', 'diagIntQ1_sub_ccAnswer',
+                'diagIntQ2_coeffsAnswer',
+                'diagIntQ3_discAnswer',
+                'diagIntQ4_interpretAnswer',
+                'diagIntQ5_calcXAnswer',
+                'diagIntQ6_calcYAnswer'
+            ];
+            radioGroups.forEach(groupName => {
+                const radios = document.getElementsByName(groupName);
+                radios.forEach(radio => radio.checked = false);
+            });
+            
+            document.getElementById('feedbackSection').classList.add('hidden');
+            showSection('mainIntersectionProblemSection'); 
+        }
+
+        function getSelectedRadioValue(name) { // Renamed from getSelectedRadioValueIntersection
+            const radios = document.getElementsByName(name);
+            for (let i = 0; i < radios.length; i++) {
+                if (radios[i].checked) {
+                    return { value: radios[i].value, text: radios[i].parentElement.textContent.replace(/^[א-ד]\)\s*/, '').trim() };
+                }
+            }
+            return null;
+        }
+
+        function getQuestionTextForReport(sectionId) { // Renamed from getQuestionTextForReportIntersection
+            const section = document.getElementById(sectionId);
+            if (section) {
+                const problemStatementEl = section.querySelector('.problem-statement');
+                const questionTextEl = section.querySelector('.question-text');
+                const equationsEl = section.querySelector('.equations-display');
+                let fullQuestionText = "";
+
+                if (problemStatementEl) {
+                    fullQuestionText += (problemStatementEl.textContent || "").trim();
+                }
+                if (equationsEl) {
+                     fullQuestionText += (fullQuestionText ? "<br>" : "") + (equationsEl.innerHTML || "").replace(/\s\s+/g, ' ').trim();
+                }
+                if (questionTextEl) {
+                    fullQuestionText += (fullQuestionText ? "<br>" : "") + (questionTextEl.innerHTML || "").trim();
+                }
+                return fullQuestionText.replace(/\s\s+/g, ' ').trim() || "טקסט שאלה לא נמצא";
+            }
+            return "טקסט שאלה לא נמצא";
+        }
+        
+        function logAttempt(stepDesc, sectionId, selectedValue, selectedAnswerText, radioGroupName, isCorrect, feedbackMessage = "", remediationTopic = null) {
+            const questionReportText = getQuestionTextForReport(sectionId);
+            studentPath.push({ 
+                type: 'attempt', 
+                stepDescription: stepDesc, 
+                questionText: questionReportText, 
+                selectedAnswer: selectedValue, 
+                selectedAnswerText: selectedAnswerText,
+                isCorrect: isCorrect, 
+                feedbackForAttempt: isCorrect ? null : { message: feedbackMessage, remediationTopic: remediationTopic } 
+            });
+            document.getElementById('feedbackSection').classList.add('hidden');
+        }
+
+        function shareReport() { // Renamed from shareReportIntersection
+            const reportContainer = document.getElementById('printableReport');
+            if (!reportContainer) { return; }
+
+            let reportHTML = '<h2>דוח אבחון: חיתוך פרבולה וישר</h2>';
+            const mistakesAndLearnings = [];
+
+            studentPath.forEach((item) => {
+                if (item.type === 'attempt' && !item.isCorrect && item.feedbackForAttempt) {
+                    mistakesAndLearnings.push({
+                        question: item.questionText,
+                        userAnswer: item.selectedAnswerText || item.selectedAnswer,
+                        feedback: item.feedbackForAttempt.message,
+                        remediation: item.feedbackForAttempt.remediationTopic,
+                        step: item.stepDescription
+                    });
+                }
+            });
+            
+            if (mistakesAndLearnings.length > 0) {
+                reportHTML += '<h3>ניתוח טעויות ונקודות לשיפור:</h3>';
+                mistakesAndLearnings.forEach(mistake => {
+                    reportHTML += `<div class="mistake-item">`;
+                    reportHTML += `<p><strong>בשלב:</strong> ${mistake.step}</p>`;
+                    reportHTML += `<p><strong>השאלה:</strong> ${mistake.question}</p>`;
+                    reportHTML += `<p><strong>התשובה שלך:</strong> ${mistake.userAnswer}</p>`;
+                    reportHTML += `<p><strong>המשוב שניתן:</strong> ${mistake.feedback}</p>`;
+                    if (mistake.remediation) {
+                        reportHTML += `<p><strong>מוקד לשיפור:</strong> ${mistake.remediation}</p>`;
+                    }
+                    reportHTML += `</div>`;
+                });
+            } else if (studentPath.length > 0) {
+                 const lastAttempt = studentPath.filter(item => item.type === 'attempt').pop();
+                 let mainProblemSolvedCorrectly = false;
+                 if (lastAttempt && lastAttempt.stepDescription === "בעיה ראשית" && lastAttempt.selectedAnswer === mainProblemCorrectAnswer && lastAttempt.isCorrect) {
+                    mainProblemSolvedCorrectly = true;
+                 } else {
+                    const finalDiagnosticStep = studentPath.find(item => item.stepDescription === "שלב 6: חישוב ערכי y" && item.isCorrect);
+                    if(finalDiagnosticStep) mainProblemSolvedCorrectly = true;
+                 }
+
+                if (mainProblemSolvedCorrectly) {
+                     reportHTML += '<p><strong>כל הכבוד! נראה שהבנת את כל השלבים ולא זוהו טעויות הדורשות התייחסות מיוחדת.</strong></p>';
+                } else {
+                     reportHTML += '<p>לא זוהו טעויות ספציפיות הדורשות התייחסות מיוחדת, אך ייתכן שלא כל חלקי השאלה הושלמו בהצלחה.</p>';
+                }
+            } else {
+                 reportHTML += '<p>לא נרשמה התקדמות עדיין.</p>';
+            }
+
+            const currentFileName = "parabola_line_intersection_diagnostic.html"; 
+            if (mistakesAndLearnings.length > 0) {
+                localStorage.setItem(`diagnosticReportData_${currentFileName}`, JSON.stringify(mistakesAndLearnings));
+            } else {
+                localStorage.removeItem(`diagnosticReportData_${currentFileName}`); 
+            }
+
+            reportContainer.innerHTML = reportHTML;
+            window.print(); 
+        }
+
+        // --- Check Answer Functions ---
+
+        function checkMainIntersectionAnswer() {
+            const selection = getSelectedRadioValue('mainIntersectionAnswer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            
+            const isCorrect = selection.value === mainProblemCorrectAnswer;
+            const feedbackMsg = isCorrect ? "מעולה! שתי נקודות החיתוך הן $(1,2)$ ו-$(4,5)$." : "התשובה אינה מדויקת. בוא נפרק את השלבים.";
+            const remediation = isCorrect ? null : "מציאת נקודות חיתוך בין פרבולה לישר";
+            logAttempt("בעיה ראשית", 'mainIntersectionProblemSection', selection.value, selection.text, 'mainIntersectionAnswer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            if (isCorrect) {
+                showSection(null); 
+            } else {
+                setTimeout(() => {
+                    document.getElementById('feedbackSection').classList.add('hidden');
+                    showSection('diagnosticIntQ1_equateSection');
+                }, 3000);
+            }
+        }
+
+        function checkDiagnosticIntQ1_equate() {
+            const selection = getSelectedRadioValue('diagIntQ1_equateAnswer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            
+            const isCorrect = selection.value === "x^2-5x+4=0";
+            let feedbackMsg = "";
+            let remediation = null;
+            let nextSection = null;
+
+            if (isCorrect) {
+                feedbackMsg = "נכון מאוד! לאחר השוואה וסידור, המשוואה הריבועית היא $x^2 - 5x + 4 = 0$.";
+                nextSection = 'diagnosticIntQ2_coeffsSection';
+            } else if (selection.value === "x^2-4x+5-x-1=0") {
+                 feedbackMsg = "העברת האגפים נכונה, אך עדיין צריך לכנס איברים דומים. מהו $-4x-x$? ומהו $+5-1$? נסה שוב את שלב הסידור.";
+                 remediation = "כינוס איברים דומים";
+                 nextSection = 'diagnosticIntQ1_equateSection'; 
+            } else if (selection.value === "x^2-3x+6=0") { 
+                feedbackMsg = "יש טעות בכינוס האיברים. נבדוק את כינוס איברי ה-$x$.";
+                remediation = "כינוס איברי $x$";
+                nextSection = 'diagnosticIntQ1_sub_combineX';
+            } else { // x^2-5x+6=0 (error in constants)
+                feedbackMsg = "כינוס איברי ה-$x$ נראה נכון ($-4x-x = -5x$). אך יש טעות בכינוס הקבועים. נבדוק זאת.";
+                remediation = "כינוס איברים קבועים";
+                nextSection = 'diagnosticIntQ1_sub_combineConstants';
+            }
+            logAttempt("שלב 1: השוואה וסידור", 'diagnosticIntQ1_equateSection', selection.value, selection.text, 'diagIntQ1_equateAnswer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+            
+            if (nextSection && nextSection !== 'diagnosticIntQ1_equateSection' && !nextSection.includes('_sub_')) {
+                setTimeout(() => { 
+                    document.getElementById('feedbackSection').classList.add('hidden');
+                    showSection(nextSection);
+                }, 3000);
+            } else if (nextSection) {
+                 setTimeout(() => { 
+                    document.getElementById('feedbackSection').classList.add('hidden');
+                    showSection(nextSection);
+                }, 3500);
+            }
+        }
+        
+        function checkDiagnosticIntQ1_sub_combineX() {
+            const selection = getSelectedRadioValue('diagIntQ1_sub_cxAnswer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = selection.value === "-5x";
+            const feedbackMsg = isCorrect ? "נכון, $-4x - x = -5x$. כעת, נבדוק את כינוס האיברים הקבועים." : "לא מדויק. $-4x - x$ זה כמו $-4x - 1x$. התוצאה היא $-5x$. נסה שוב.";
+            const remediation = isCorrect ? null : "חיבור/חיסור מקדמים של $x$";
+            logAttempt("שלב 1.1: כינוס איברי X", 'diagnosticIntQ1_sub_combineX', selection.value, selection.text, 'diagIntQ1_sub_cxAnswer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            setTimeout(() => {
+                document.getElementById('feedbackSection').classList.add('hidden');
+                showSection(isCorrect ? 'diagnosticIntQ1_sub_combineConstants' : 'diagnosticIntQ1_sub_combineX');
+            }, isCorrect ? 2500 : 3500);
+        }
+
+        function checkDiagnosticIntQ1_sub_combineConstants() {
+            const selection = getSelectedRadioValue('diagIntQ1_sub_ccAnswer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = selection.value === "4";
+            let feedbackMsg = "";
+            let remediation = null;
+            let nextSection = null;
+            
+            const lastXAttempt = studentPath.slice().reverse().find(item => item.stepDescription === "שלב 1.1: כינוס איברי X");
+            const xTermCorrect = lastXAttempt ? lastXAttempt.isCorrect : true; 
+
+            if (isCorrect) {
+                 if(xTermCorrect){
+                    feedbackMsg = "נכון, $+5 - 1 = 4$. כעת, לאחר שכינסנו נכון את כל האיברים, המשוואה היא $x^2 - 5x + 4 = 0$. נחזור לשלב הסידור הראשי.";
+                    nextSection = 'diagnosticIntQ1_equateSection';
+                 } else {
+                     feedbackMsg = "נכון, $+5 - 1 = 4$. אך נראה שהייתה טעות קודמת בכינוס איברי ה-$x$. נחזור לשאלה הראשונה של סידור המשוואה כדי לנסות שוב את כל השלב.";
+                     nextSection = 'diagnosticIntQ1_equateSection';
+                 }
+            } else {
+                feedbackMsg = "לא מדויק. $+5 - 1 = 4$. נסה שוב.";
+                remediation = "חיבור/חיסור מספרים פשוט";
+                nextSection = 'diagnosticIntQ1_sub_combineConstants';
+            }
+            logAttempt("שלב 1.2: כינוס קבועים", 'diagnosticIntQ1_sub_combineConstants', selection.value, selection.text, 'diagIntQ1_sub_ccAnswer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+            
+            setTimeout(() => {
+                document.getElementById('feedbackSection').classList.add('hidden');
+                showSection(nextSection);
+            }, 3000);
+        }
+
+        function checkDiagnosticIntQ2_coeffs() {
+            const selection = getSelectedRadioValue('diagIntQ2_coeffsAnswer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = selection.value === `A=${correctQuadraticEq.A},B=${correctQuadraticEq.B},C=${correctQuadraticEq.C}`;
+            const feedbackMsg = isCorrect ? "מקדמים זוהו נכון! $A=1, B=-5, C=4$. ממשיכים לדיסקרימיננטה." : "טעות בזיהוי המקדמים. עבור $x^2 - 5x + 4 = 0$: $A$ (מקדם $x^2$) הוא $1$, $B$ (מקדם $x$) הוא $-5$, ו-$C$ (איבר חופשי) הוא $4$. נסה שוב.";
+            const remediation = isCorrect ? null : "זיהוי מקדמי משוואה ריבועית";
+            logAttempt("שלב 2: זיהוי מקדמים", 'diagnosticIntQ2_coeffsSection', selection.value, selection.text, 'diagIntQ2_coeffsAnswer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            setTimeout(() => {
+                document.getElementById('feedbackSection').classList.add('hidden');
+                showSection(isCorrect ? 'diagnosticIntQ3_discriminantSection' : 'diagnosticIntQ2_coeffsSection');
+            }, isCorrect ? 2500 : 3500);
+        }
+
+        function checkDiagnosticIntQ3_discriminant() {
+            const selection = getSelectedRadioValue('diagIntQ3_discAnswer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = parseInt(selection.value) === correctDiscriminantInt;
+            const feedbackMsg = isCorrect ? `חישוב מדויק! $\Delta = (-5)^2 - 4(1)(4) = 25 - 16 = 9$.` : "טעות בחישוב הדיסקרימיננטה. זכור: $\Delta = B^2 - 4AC$. <br>עם $A=1, B=-5, C=4$: $\Delta = (-5)^2 - 4(1)(4) = 25 - 16 = 9$. נסה שוב.";
+            const remediation = isCorrect ? null : "חישוב דיסקרימיננטה";
+            logAttempt("שלב 3: חישוב דיסקרימיננטה", 'diagnosticIntQ3_discriminantSection', selection.value, selection.text, 'diagIntQ3_discAnswer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+            
+            setTimeout(() => {
+                document.getElementById('feedbackSection').classList.add('hidden');
+                showSection(isCorrect ? 'diagnosticIntQ4_interpretDiscSection' : 'diagnosticIntQ3_discriminantSection');
+            }, isCorrect ? 3000 : 4000);
+        }
+        
+        function checkDiagnosticIntQ4_interpretDisc() {
+            const selection = getSelectedRadioValue('diagIntQ4_interpretAnswer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = selection.value === "two_solutions";
+            let feedbackMsg = "";
+            let remediation = null;
+            let nextSection = null;
+
+            if (isCorrect) {
+                 feedbackMsg = "נכון! דיסקרימיננטה חיובית ($\Delta=9 > 0$) מצביעה על שני פתרונות שונים ל-$x$, ולכן שתי נקודות חיתוך.";
+                 nextSection = 'diagnosticIntQ5_calculateXSection';
+            } else if (selection.value === "one_solution") {
+                feedbackMsg = "לא מדויק. פתרון יחיד (נקודת השקה) מתקבל כאשר $\Delta = 0$. במקרה שלנו $\Delta = 9$. נסה שוב.";
+                remediation = "משמעות הדיסקרימיננטה";
+                nextSection = 'diagnosticIntQ4_interpretDiscSection';
+            } else { // no_solutions
+                feedbackMsg = "לא מדויק. אין פתרונות ממשיים (אין נקודות חיתוך) כאשר $\Delta < 0$. במקרה שלנו $\Delta = 9$. נסה שוב.";
+                remediation = "משמעות הדיסקרימיננטה";
+                nextSection = 'diagnosticIntQ4_interpretDiscSection';
+            }
+            logAttempt("שלב 4: פירוש דיסקרימיננטה", 'diagnosticIntQ4_interpretDiscSection', selection.value, selection.text, 'diagIntQ4_interpretAnswer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            if (nextSection && nextSection !== 'diagnosticIntQ4_interpretDiscSection') {
+                 setTimeout(() => {
+                    document.getElementById('feedbackSection').classList.add('hidden');
+                    showSection(nextSection);
+                }, 3000);
+            } else if (nextSection) {
+                 setTimeout(() => {
+                    document.getElementById('feedbackSection').classList.add('hidden');
+                    showSection(nextSection);
+                }, 3500);
+            }
+        }
+
+        function checkDiagnosticIntQ5_calculateX() {
+            const selection = getSelectedRadioValue('diagIntQ5_calcXAnswer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            
+            const parts = selection.value.split(',').map(s => parseFloat(s.split('=')[1].trim()));
+            const xVal1 = parts[0];
+            const xVal2 = parts[1];
+            const isCorrect = ( (xVal1 === correctXValues.x1 && xVal2 === correctXValues.x2) || 
+                                (xVal1 === correctXValues.x2 && xVal2 === correctXValues.x1) );
+
+            const feedbackMsg = isCorrect ? "ערכי $x$ חושבו נכון: $x=4, x=1$. כעת נמצא את ערכי ה-$y$." : "טעות בחישוב ערכי $x$. עם $A=1, B=-5, \Delta=9$:<br>$x = \frac{-(-5) \pm \sqrt{9}}{2(1)} = \frac{5 \pm 3}{2}$.<br>$x_1 = \frac{5+3}{2} = 4$.<br>$x_2 = \frac{5-3}{2} = 1$. נסה שוב.";
+            const remediation = isCorrect ? null : "שימוש בנוסחת השורשים";
+            logAttempt("שלב 5: חישוב ערכי X", 'diagnosticIntQ5_calculateXSection', selection.value, selection.text, 'diagIntQ5_calcXAnswer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            setTimeout(() => {
+                document.getElementById('feedbackSection').classList.add('hidden');
+                showSection(isCorrect ? 'diagnosticIntQ6_calculateYSection' : 'diagnosticIntQ5_calculateXSection');
+            }, isCorrect ? 2500 : 4000);
+        }
+
+        function checkDiagnosticIntQ6_calculateY() {
+            const selection = getSelectedRadioValue('diagIntQ6_calcYAnswer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = selection.value === "y1=5,y2=2";
+            const feedbackMsg = isCorrect ? "מעולה! שתי נקודות החיתוך הן $(1,2)$ ו-$(4,5)$. אם זו לא הייתה תשובתך לבעיה הראשית, בדוק היכן התרחשה הטעות בחישובים שלך." : "טעות בחישוב ערכי $y$.<br>עבור $x=4: y = 4+1 = 5$. נקודה: $(4,5)$.<br>עבור $x=1: y = 1+1 = 2$. נקודה: $(1,2)$. נסה שוב.";
+            const remediation = isCorrect ? null : "הצבה למציאת $y$";
+            logAttempt("שלב 6: חישוב ערכי Y", 'diagnosticIntQ6_calculateYSection', selection.value, selection.text, 'diagIntQ6_calcYAnswer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            if (isCorrect) {
+                setTimeout(() => {
+                    document.getElementById('feedbackSection').classList.add('hidden');
+                    showSection('mainIntersectionProblemSection'); // Go back to main question
+                }, 3500);
+            } else {
+                setTimeout(() => {
+                    document.getElementById('feedbackSection').classList.add('hidden');
+                    showSection('diagnosticIntQ6_calculateYSection');
+                }, 3500);
+            }
+        }
+
+    </script>
+</body>
+</html>

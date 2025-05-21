@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>אבחון: שאלה 6 - סטטיסטיקה והסתברות</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Assistant', sans-serif; background-color: #f1f5f9; color: #1e293b; }
+        .container-quiz { max-width: 800px; margin: 2rem auto; padding: 2rem; background-color: #ffffff; border-radius: 0.75rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .question-section { margin-bottom: 1.5rem; padding: 1.5rem; border: 1px solid #e2e8f0; border-radius: 0.5rem; background-color: #f8fafc; }
+        .problem-statement { font-size: 1.25rem; font-weight: 600; color: #0f172a; margin-bottom: 1rem; }
+        .question-text, .problem-context { font-size: 1.1rem; color: #334155; margin-bottom: 0.75rem; line-height: 1.6; }
+        .problem-context p { margin-bottom: 0.25rem; text-align: right; font-weight: 500; }
+        #statsQ6ChartContainer { width: 100%; max-width: 550px; height: auto; margin: 1rem auto; border: 1px solid #d1d5db; border-radius: 0.5rem; padding: 1rem; background-color: #fff; }
+        label.option-label { display: block; padding: 0.75rem 1rem; margin-bottom: 0.5rem; background-color: #fff; border: 1px solid #cbd5e1; border-radius: 0.375rem; cursor: pointer; transition: background-color 0.2s, border-color 0.2s; }
+        label.option-label:hover { background-color: #f1f5f9; border-color: #94a3b8; }
+        input[type="radio"] { margin-left: 0.5rem; accent-color: #2563eb; }
+        button.submit-button { padding: 0.75rem 1.5rem; background-color: #2563eb; color: white; border: none; border-radius: 0.375rem; font-weight: 500; cursor: pointer; transition: background-color 0.2s; margin-top: 1rem; }
+        button.submit-button:hover { background-color: #1d4ed8; }
+        button.action-button { padding: 0.5rem 1rem; background-color: #475569; color: white; border: none; border-radius: 0.375rem; font-weight: 500; cursor: pointer; transition: background-color 0.2s; margin-right: 0.5rem; }
+        button.action-button:hover { background-color: #334155; }
+        .feedback-section { margin-top: 1.5rem; padding: 1.5rem; border-radius: 0.5rem; background-color: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+        .hidden { display: none; }
+        #printableReport { display: none; padding: 20px; font-family: 'Assistant', sans-serif; color: #000; direction: rtl; }
+        #printableReport h2, #printableReport h3 { font-weight: 600; margin-bottom: 1rem; border-bottom: 1px solid #ccc; padding-bottom: 0.5rem; }
+        #printableReport h2 { font-size: 1.5rem; }
+        #printableReport h3 { font-size: 1.3rem; margin-top: 1.5rem;}
+        #printableReport .mistake-item { margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px dotted #eee; }
+        #printableReport .mistake-item:last-child { border-bottom: none; }
+        #printableReport p { margin-bottom: 0.25rem; }
+        #printableReport strong { font-weight: 600; }
+        @media print {
+            body * { visibility: hidden; }
+            #printableReport, #printableReport * { visibility: visible; }
+            #statsQ6ChartContainer { display: none !important; } 
+            #printableReport { position: absolute; left: 0; top: 0; width: 100%; display: block !important; font-size: 12pt; }
+            .container-quiz > h1, .container-quiz > div:first-of-type, .question-section, .feedback-section { display: none !important; visibility: hidden !important; }
+        }
+    </style>
+    <script>
+        window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div class="container-quiz">
+        <h1 class="text-2xl font-bold text-center text-slate-700 mb-6">אבחון: שאלה 6 - סטטיסטיקה והסתברות</h1>
+        <div class="mb-6 text-center">
+            <button class="action-button" onclick="startOver()">התחל מחדש</button>
+            <button class="action-button" onclick="shareReport()">שתף דוח</button>
+        </div>
+
+        <div id="q6ProblemContext" class="problem-context question-section bg-blue-50 border-blue-200">
+            <p class="problem-statement text-blue-700">נתוני השאלה:</p>
+            <p>לפניכם דיאגרמת מקלות המתארת את התפלגות הציונים במבחן בהיסטוריה של כל התלמידים בכיתה מסוימת.</p>
+            <div id="statsQ6ChartContainer">
+                <canvas id="statsQ6Chart"></canvas>
+            </div>
+        </div>
+
+        <div id="mainQ6PartASection" class="question-section">
+            <p class="problem-statement">בעיה ראשית - סעיף א':</p>
+            <p class="question-text">כמה תלמידים יש בכיתה?</p>
+            <div id="mainQ6PartAOptions">
+                <label class="option-label"><input type="radio" name="mainQ6A_Answer" value="25"> א) 25</label>
+                <label class="option-label"><input type="radio" name="mainQ6A_Answer" value="6"> ב) 6 (מספר הקבוצות של ציונים)</label>
+                <label class="option-label"><input type="radio" name="mainQ6A_Answer" value="7"> ג) 7 (השכיחות הגבוהה ביותר)</label>
+            </div>
+            <button class="submit-button" onclick="checkMainQ6PartAAnswer()">הגש תשובה לסעיף א'</button>
+        </div>
+
+        <div id="q6_a1_sumFrequenciesSection" class="question-section hidden">
+            <p class="problem-statement">סעיף א' - שלב 1: חישוב סך התלמידים</p>
+            <p class="question-text">כדי למצוא את מספר התלמידים הכולל, יש לסכום את מספר התלמידים שקיבלו כל ציון (כלומר, לסכום את גובה כל המקלות בדיאגרמה).<br>הציונים ומספר התלמידים: 50 (1), 60 (4), 70 (6), 80 (3), 90 (7), 100 (4).<br>מהו סכום התלמידים?</p>
+            <div id="q6_a1_sumFrequenciesOptions">
+                <label class="option-label"><input type="radio" name="q6_a1_sumFreqAns" value="25"> א) 25</label>
+                <label class="option-label"><input type="radio" name="q6_a1_sumFreqAns" value="24"> ב) 24</label>
+                <label class="option-label"><input type="radio" name="q6_a1_sumFreqAns" value="1+4+6+3+7"> ג) 1+4+6+3+7 (שכחת את ה-4 האחרון)</label>
+            </div>
+            <button class="submit-button" onclick="checkQ6_a1_sumFrequencies()">הגש תשובה</button>
+        </div>
+        
+        <div id="mainQ6PartBSection" class="question-section hidden">
+            <p class="problem-statement">בעיה ראשית - סעיף ב':</p>
+            <p class="question-text">מהו ממוצע הציונים במבחן בהיסטוריה בכיתה?</p>
+            <div id="mainQ6PartBOptions">
+                <label class="option-label"><input type="radio" name="mainQ6B_Answer" value="79.2"> א) 79.2</label>
+                <label class="option-label"><input type="radio" name="mainQ6B_Answer" value="75"> ב) 75 (ממוצע הציונים עצמם, ללא התחשבות בשכיחות)</label>
+                <label class="option-label"><input type="radio" name="mainQ6B_Answer" value="80"> ג) 80</label>
+            </div>
+            <button class="submit-button" onclick="checkMainQ6PartBAnswer()">הגש תשובה לסעיף ב'</button>
+        </div>
+
+        <div id="q6_b1_sumScoreFreqSection" class="question-section hidden">
+            <p class="problem-statement">סעיף ב' - שלב 1: חישוב סכום (ציון × מספר תלמידים)</p>
+            <p class="question-text">כדי לחשב ממוצע, ראשית נחשב את סכום כל הציונים של כל התלמידים. עושים זאת על ידי הכפלת כל ציון במספר התלמידים שקיבלו אותו, וסיכום התוצאות.<br>$(50 \times 1) + (60 \times 4) + (70 \times 6) + (80 \times 3) + (90 \times 7) + (100 \times 4)$<br>מהו הסכום הכולל?</p>
+            <div id="q6_b1_sumScoreFreqOptions">
+                <label class="option-label"><input type="radio" name="q6_b1_sumSFAns" value="1980"> א) 1980</label>
+                <label class="option-label"><input type="radio" name="q6_b1_sumSFAns" value="450"> ב) 450 (סכום הציונים 50+60+...+100)</label>
+                <label class="option-label"><input type="radio" name="q6_b1_sumSFAns" value="1580"> ג) 1580 (טעות חישוב)</label>
+            </div>
+            <button class="submit-button" onclick="checkQ6_b1_sumScoreFreq()">הגש תשובה</button>
+        </div>
+
+        <div id="q6_b2_calcAverageSection" class="question-section hidden">
+            <p class="problem-statement">סעיף ב' - שלב 2: חישוב הממוצע</p>
+            <p class="question-text">סכום כל הציונים הוא 1980. מספר התלמידים הכולל הוא 25 (מסעיף א').<br>הממוצע הוא סכום הציונים חלקי מספר התלמידים. מהו הממוצע?</p>
+            <div id="q6_b2_calcAverageOptions">
+                <label class="option-label"><input type="radio" name="q6_b2_avgAns" value="79.2"> א) 79.2</label>
+                <label class="option-label"><input type="radio" name="q6_b2_avgAns" value="0.0126"> ב) 0.0126 (חילקת הפוך)</label>
+                <label class="option-label"><input type="radio" name="q6_b2_avgAns" value="49500"> ג) 49500 (הכפלת במקום לחלק)</label>
+            </div>
+            <button class="submit-button" onclick="checkQ6_b2_calcAverage()">הגש תשובה</button>
+        </div>
+
+        <div id="mainQ6PartCSection" class="question-section hidden">
+            <p class="problem-statement">בעיה ראשית - סעיף ג':</p>
+            <p class="question-text">מהו הציון השכיח?</p>
+            <div id="mainQ6PartCOptions">
+                <label class="option-label"><input type="radio" name="mainQ6C_Answer" value="90"> א) 90</label>
+                <label class="option-label"><input type="radio" name="mainQ6C_Answer" value="7"> ב) 7 (זו השכיחות, לא הציון)</label>
+                <label class="option-label"><input type="radio" name="mainQ6C_Answer" value="79.2"> ג) 79.2 (זה הממוצע)</label>
+            </div>
+            <button class="submit-button" onclick="checkMainQ6PartCAnswer()">הגש תשובה לסעיף ג'</button>
+        </div>
+
+        <div id="q6_c1_defineModeSection" class="question-section hidden">
+            <p class="problem-statement">סעיף ג' - שלב 1: הגדרת הציון השכיח</p>
+            <p class="question-text">הציון השכיח הוא הציון שהופיע הכי הרבה פעמים (כלומר, הציון שקיבלו הכי הרבה תלמידים).<br>התבונן בדיאגרמת המקלות. איזה ציון מתאים למקל הגבוה ביותר?</p>
+            <div id="q6_c1_defineModeOptions">
+                <label class="option-label"><input type="radio" name="q6_c1_modeAns" value="90"> א) 90</label>
+                <label class="option-label"><input type="radio" name="q6_c1_modeAns" value="7"> ב) 7</label>
+                <label class="option-label"><input type="radio" name="q6_c1_modeAns" value="100"> ג) 100</label>
+            </div>
+            <button class="submit-button" onclick="checkQ6_c1_defineMode()">הגש תשובה</button>
+        </div>
+
+        <div id="mainQ6PartD1Section" class="question-section hidden">
+            <p class="problem-statement">בעיה ראשית - סעיף ד' (1):</p>
+            <p class="question-text">בחרו באקראי תלמיד מן הכיתה. מהי ההסתברות שהציון שלו 70?</p>
+            <div id="mainQ6PartD1Options">
+                <label class="option-label"><input type="radio" name="mainQ6D1_Answer" value="6/25"> א) 6/25 (או 0.24)</label>
+                <label class="option-label"><input type="radio" name="mainQ6D1_Answer" value="70/100"> ב) 70/100</label>
+                <label class="option-label"><input type="radio" name="mainQ6D1_Answer" value="6/100"> ג) 6/100</label>
+            </div>
+            <button class="submit-button" onclick="checkMainQ6PartD1Answer()">הגש תשובה לסעיף ד(1)</button>
+        </div>
+
+        <div id="q6_d1_1_probFormulaSection" class="question-section hidden">
+            <p class="problem-statement">סעיף ד(1) - שלב 1: נוסחת הסתברות</p>
+            <p class="question-text">הסתברות למאורע היא: $\frac{\text{מספר התוצאות הרצויות}}{\text{מספר כל התוצאות האפשריות}}$.<br>במקרה זה, "תוצאה רצויה" היא בחירת תלמיד שקיבל 70. "כל התוצאות האפשריות" הוא סך כל התלמידים בכיתה.<br>כמה תלמידים קיבלו את הציון 70?</p>
+            <div id="q6_d1_1_probFormulaOptions">
+                <label class="option-label"><input type="radio" name="q6_d1_1_num70Ans" value="6"> א) 6 תלמידים</label>
+                <label class="option-label"><input type="radio" name="q6_d1_1_num70Ans" value="70"> ב) 70 תלמידים</label>
+            </div>
+            <button class="submit-button" onclick="checkQ6_d1_1_probFormula()">הגש תשובה</button>
+        </div>
+
+        <div id="mainQ6PartD2Section" class="question-section hidden">
+            <p class="problem-statement">בעיה ראשית - סעיף ד' (2):</p>
+            <p class="question-text">מהי ההסתברות שהציון של תלמיד שנבחר באקראי גבוה מממוצע הציונים בכיתה?</p>
+            <p class="problem-context">ידוע: ממוצע הציונים $\approx 79.2$. סך התלמידים: 25.</p>
+            <div id="mainQ6PartD2Options">
+                <label class="option-label"><input type="radio" name="mainQ6D2_Answer" value="14/25"> א) 14/25 (או 0.56)</label>
+                <label class="option-label"><input type="radio" name="mainQ6D2_Answer" value="3/25"> ב) 3/25 (רק ציון 80)</label>
+                <label class="option-label"><input type="radio" name="mainQ6D2_Answer" value="11/25"> ג) 11/25 (ציונים 90 ו-100 בלבד)</label>
+            </div>
+            <button class="submit-button" onclick="checkMainQ6PartD2Answer()">הגש תשובה לסעיף ד(2)</button>
+        </div>
+        
+        <div id="q6_d2_1_countAboveAvgSection" class="question-section hidden">
+            <p class="problem-statement">סעיף ד(2) - שלב 1: ספירת תלמידים מעל הממוצע</p>
+            <p class="question-text">הממוצע הוא 79.2. הציונים הגבוהים מהממוצע הם 80, 90, ו-100.<br>כמה תלמידים קיבלו כל אחד מהציונים האלה? (80: 3, 90: 7, 100: 4)<br>כמה תלמידים בסך הכל קיבלו ציון גבוה מ-79.2?</p>
+            <div id="q6_d2_1_countAboveAvgOptions">
+                <label class="option-label"><input type="radio" name="q6_d2_1_countAns" value="14"> א) 14 תלמידים</label>
+                <label class="option-label"><input type="radio" name="q6_d2_1_countAns" value="3"> ב) 3 תלמידים</label>
+                <label class="option-label"><input type="radio" name="q6_d2_1_countAns" value="7"> ג) 7 תלמידים</label>
+            </div>
+            <button class="submit-button" onclick="checkQ6_d2_1_countAboveAvg()">הגש תשובה</button>
+        </div>
+
+
+        <div id="feedbackQ6Section" class="feedback-section hidden">
+            <p id="feedbackQ6Text" class="text-lg"></p>
+            <p id="remediationQ6Link" class="mt-2 font-semibold"></p>
+        </div>
+        <div id="printableReport"></div>
+    </div>
+
+    <script>
+        let studentPath = []; // Renamed from studentQ6Path
+        // Correct answers
+        const q6_total_students = 25;
+        const q6_sum_of_all_scores = 1980;
+        const q6_average_score = 79.2;
+        const q6_mode_score = 90;
+        const q6_students_score_70 = 6;
+        const q6_prob_score_70_numerator = 6;
+        const q6_prob_score_70_denominator = 25;
+        const q6_students_above_avg = 14; 
+        const q6_prob_above_avg_numerator = 14;
+        const q6_prob_above_avg_denominator = 25;
+
+        const scoresData = {
+            labels: ['50', '60', '70', '80', '90', '100'],
+            datasets: [{
+                label: 'מספר תלמידים',
+                data: [1, 4, 6, 3, 7, 4],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.7)',
+                    'rgba(54, 162, 235, 0.7)',
+                    'rgba(255, 206, 86, 0.7)',
+                    'rgba(75, 192, 192, 0.7)',
+                    'rgba(153, 102, 255, 0.7)',
+                    'rgba(255, 159, 64, 0.7)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 1
+            }]
+        };
+        let statsQ6ChartInstance = null;
+
+        function renderStatsQ6Chart() {
+            const ctx = document.getElementById('statsQ6Chart').getContext('2d');
+            if (statsQ6ChartInstance) {
+                statsQ6ChartInstance.destroy();
+            }
+            statsQ6ChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: scoresData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'מספר תלמידים', font: { family: "'Assistant', sans-serif", weight: '600', size: 14 }, color: '#374151' },
+                            ticks: { stepSize: 1, font: { family: "'Assistant', sans-serif", size: 12 }, color: '#4b5563' },
+                            grid: { borderColor: '#374151', color: 'rgba(209, 213, 219, 0.5)', lineWidth: 1.5 }
+                        },
+                        x: {
+                            title: { display: true, text: 'ציון', font: { family: "'Assistant', sans-serif", weight: '600', size: 14 }, color: '#374151' },
+                            ticks: { font: { family: "'Assistant', sans-serif", size: 12 }, color: '#4b5563' },
+                             grid: { display: false } // Hide vertical grid lines for cleaner bar chart
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                             titleFont: { family: "'Assistant', sans-serif" },
+                             bodyFont: { family: "'Assistant', sans-serif" },
+                             callbacks: {
+                                label: function(context) {
+                                    return `מספר תלמידים: ${context.parsed.y}`;
+                                }
+                             }
+                        }
+                    }
+                }
+            });
+        }
+
+        // --- Utility Functions ---
+        function queueMathJaxTypeset(element) {
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                window.MathJax.typesetPromise(element ? [element] : undefined).catch((err) => console.error('MathJax typesetting error:', err));
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            renderStatsQ6Chart();
+            queueMathJaxTypeset(document.getElementById('mainQ6PartASection'));
+            queueMathJaxTypeset(document.getElementById('q6ProblemContext'));
+        });
+
+        function showSection(sectionId) { // Renamed from showQ6Section
+            const allSectionIds = [
+                'mainQ6PartASection', 'q6_a1_sumFrequenciesSection',
+                'mainQ6PartBSection', 'q6_b1_sumScoreFreqSection', 'q6_b2_calcAverageSection',
+                'mainQ6PartCSection', 'q6_c1_defineModeSection',
+                'mainQ6PartD1Section', 'q6_d1_1_probFormulaSection',
+                'mainQ6PartD2Section', 'q6_d2_1_countAboveAvgSection'
+            ];
+            allSectionIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+            if (sectionId) {
+                const el = document.getElementById(sectionId);
+                if (el) {
+                    el.classList.remove('hidden');
+                    queueMathJaxTypeset(el);
+                }
+            }
+        }
+
+        function displayFeedback(message, remediation) { // Renamed from displayQ6Feedback
+            const feedbackTextEl = document.getElementById('feedbackQ6Text'); 
+            const remediationLinkEl = document.getElementById('remediationQ6Link'); 
+            feedbackTextEl.innerHTML = message; 
+            remediationLinkEl.innerHTML = remediation ? `<strong>מוקד מומלץ לחיזוק:</strong> ${remediation}` : '';
+            document.getElementById('feedbackQ6Section').classList.remove('hidden'); 
+            queueMathJaxTypeset(document.getElementById('feedbackQ6Section')); 
+        }
+        
+        function startOver() { // Renamed from startOverQ6
+            studentPath = []; 
+            const radioGroups = [
+                'mainQ6A_Answer', 'q6_a1_sumFreqAns',
+                'mainQ6B_Answer', 'q6_b1_sumSFAns', 'q6_b2_avgAns',
+                'mainQ6C_Answer', 'q6_c1_modeAns',
+                'mainQ6D1_Answer', 'q6_d1_1_num70Ans',
+                'mainQ6D2_Answer', 'q6_d2_1_countAns'
+            ];
+            radioGroups.forEach(groupName => {
+                const radios = document.getElementsByName(groupName);
+                if (radios) radios.forEach(radio => radio.checked = false);
+            });
+            sessionStorage.removeItem('q6_total_students');
+            sessionStorage.removeItem('q6_average_score');
+            document.getElementById('feedbackQ6Section').classList.add('hidden'); 
+            showSection('mainQ6PartASection'); 
+        }
+
+        function getSelectedRadioValue(name) { // Renamed from getSelectedRadioValueQ6
+            const radios = document.getElementsByName(name);
+            for (let i = 0; i < radios.length; i++) { 
+                if (radios[i].checked) {
+                     return { value: radios[i].value, text: radios[i].parentElement.textContent.replace(/^[א-ד]\)\s*/, '').trim() };
+                }
+            }
+            return null;
+        }
+
+        function logAttempt(stepDesc, sectionId, selectedValue, selectedAnswerText, radioGroupName, isCorrect, feedbackMessage = "", remediationTopic = null) { // Renamed from logQ6Attempt
+            let questionReportText = document.getElementById(sectionId)?.querySelector('.question-text')?.textContent.trim() || "טקסט שאלה לא זמין";
+            const pContext = document.getElementById(sectionId)?.querySelector('.problem-context p'); 
+            if(pContext && !sectionId.startsWith('mainQ6')) { 
+                 questionReportText = (document.getElementById(sectionId)?.querySelector('.problem-statement')?.textContent.trim() || "") + " " + questionReportText;
+            } else if (pContext && sectionId.startsWith('mainQ6')) { 
+                 questionReportText = (document.getElementById(sectionId)?.querySelector('.problem-context')?.innerHTML || "").trim() + "<br>" + questionReportText;
+            }
+            
+            studentPath.push({ 
+                type: 'attempt', 
+                stepDescription: stepDesc, 
+                questionText: questionReportText, 
+                selectedAnswer: selectedValue, 
+                selectedAnswerText: selectedAnswerText,
+                isCorrect: isCorrect, 
+                feedbackForAttempt: isCorrect ? null : { message: feedbackMessage, remediationTopic: remediationTopic } 
+            });
+            document.getElementById('feedbackQ6Section').classList.add('hidden'); 
+        }
+        
+        function shareReport() { // Renamed from shareReportQ6
+            const reportContainer = document.getElementById('printableReport');
+            if (!reportContainer) { return; }
+            let reportHTML = '<h2>אבחון: שאלה 6 - סטטיסטיקה והסתברות</h2>';
+            
+            const mistakesAndLearnings = [];
+
+            studentPath.forEach((item) => {
+                if (item.type === 'attempt' && !item.isCorrect && item.feedbackForAttempt) {
+                    mistakesAndLearnings.push({
+                        question: item.questionText,
+                        userAnswer: item.selectedAnswerText || item.selectedAnswer,
+                        feedback: item.feedbackForAttempt.message,
+                        remediation: item.feedbackForAttempt.remediationTopic,
+                        step: item.stepDescription
+                    });
+                }
+            });
+            
+            if (mistakesAndLearnings.length > 0) {
+                reportHTML += '<h3>ניתוח טעויות ונקודות לשיפור:</h3>';
+                mistakesAndLearnings.forEach(mistake => {
+                    reportHTML += `<div class="mistake-item">`;
+                    reportHTML += `<p><strong>בשלב:</strong> ${mistake.step}</p>`;
+                    reportHTML += `<p><strong>השאלה:</strong> ${mistake.question}</p>`;
+                    reportHTML += `<p><strong>התשובה שלך:</strong> ${mistake.userAnswer}</p>`;
+                    reportHTML += `<p><strong>המשוב שניתן:</strong> ${mistake.feedback}</p>`;
+                    if (mistake.remediation) {
+                        reportHTML += `<p><strong>מוקד לשיפור:</strong> ${mistake.remediation}</p>`;
+                    }
+                    reportHTML += `</div>`;
+                });
+            } else if (studentPath.length > 0) {
+                 const mainD2Correct = studentPath.some(item => item.stepDescription === "סעיף ד(2): הסתברות לציון גבוה מהממוצע" && item.isCorrect);
+                 if (mainD2Correct) { 
+                     reportHTML += '<p><strong>כל הכבוד! נראה שהבנת את כל השלבים ולא זוהו טעויות הדורשות התייחסות מיוחדת.</strong></p>';
+                 } else {
+                     reportHTML += '<p><strong>לא זוהו טעויות ספציפיות הדורשות התייחסות מיוחדת במהלך סשן זה, אך ייתכן שלא כל חלקי השאלה הושלמו בהצלחה.</strong></p>';
+                 }
+            } else { 
+                 reportHTML += '<p>לא נרשמה התקדמות עדיין.</p>';
+            }
+
+            const currentFileName = "bagrut_35182_q6_diagnostic.html"; 
+            if (mistakesAndLearnings.length > 0) {
+                localStorage.setItem(`diagnosticReportData_${currentFileName}`, JSON.stringify(mistakesAndLearnings));
+            } else {
+                localStorage.removeItem(`diagnosticReportData_${currentFileName}`); 
+            }
+
+            reportContainer.innerHTML = reportHTML;
+            window.print(); 
+        }
+        
+        function approxEqual(val1, val2, tolerance = 0.001) { 
+            return Math.abs(val1 - val2) < tolerance;
+        }
+
+        // --- Check Answer Functions ---
+        // Part A
+        function checkMainQ6PartAAnswer() {
+            const selection = getSelectedRadioValue('mainQ6A_Answer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = parseInt(selection.value) === q6_total_students;
+            const feedbackMsg = isCorrect ? `נכון! יש ${q6_total_students} תלמידים בכיתה.` : "התשובה אינה נכונה. בוא נבדוק איך מחשבים.";
+            const remediation = isCorrect ? null : "קריאת דיאגרמת מקלות וסכימת שכיחויות";
+            logAttempt("סעיף א': מספר תלמידים", 'mainQ6PartASection', selection.value, selection.text, 'mainQ6A_Answer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            if (isCorrect) {
+                sessionStorage.setItem('q6_total_students', q6_total_students);
+                setTimeout(() => showSection('mainQ6PartBSection'), 2500);
+            } else {
+                setTimeout(() => {
+                    document.getElementById('feedbackQ6Section').classList.add('hidden');
+                    showSection('q6_a1_sumFrequenciesSection');
+                }, 3000);
+            }
+        }
+        function checkQ6_a1_sumFrequencies() {
+            const selection = getSelectedRadioValue('q6_a1_sumFreqAns');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = parseInt(selection.value) === q6_total_students;
+            const feedbackMsg = isCorrect ? `נכון! $1+4+6+3+7+4 = ${q6_total_students}$. נחזור לשאלה הראשית של סעיף א'.` : "הסכום אינו נכון. חבר את כל מספרי התלמידים. נסה שוב.";
+            const remediation = isCorrect ? null : "פעולת חיבור";
+            logAttempt("סעיף א' שלב 1: סכימת שכיחויות", 'q6_a1_sumFrequenciesSection', selection.value, selection.text, 'q6_a1_sumFreqAns', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+             if (isCorrect) sessionStorage.setItem('q6_total_students', q6_total_students);
+            setTimeout(() => {
+                document.getElementById('feedbackQ6Section').classList.add('hidden');
+                showSection(isCorrect ? 'mainQ6PartASection' : 'q6_a1_sumFrequenciesSection');
+            }, isCorrect ? 2000 : 3500);
+        }
+
+        // Part B
+        function checkMainQ6PartBAnswer() {
+            const selection = getSelectedRadioValue('mainQ6B_Answer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = approxEqual(parseFloat(selection.value), q6_average_score);
+            const feedbackMsg = isCorrect ? `נכון! ממוצע הציונים הוא ${q6_average_score}.` : "התשובה אינה נכונה. בוא נפרק את שלבי חישוב הממוצע.";
+            const remediation = isCorrect ? null : "חישוב ממוצע משוקלל";
+            logAttempt("סעיף ב': ממוצע ציונים", 'mainQ6PartBSection', selection.value, selection.text, 'mainQ6B_Answer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            if (isCorrect) {
+                sessionStorage.setItem('q6_average_score', q6_average_score);
+                setTimeout(() => showSection('mainQ6PartCSection'), 2500);
+            } else {
+                setTimeout(() => {
+                    document.getElementById('feedbackQ6Section').classList.add('hidden');
+                    showSection('q6_b1_sumScoreFreqSection');
+                }, 3000);
+            }
+        }
+        function checkQ6_b1_sumScoreFreq() {
+            const selection = getSelectedRadioValue('q6_b1_sumSFAns');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = parseInt(selection.value) === q6_sum_of_all_scores;
+            const feedbackMsg = isCorrect ? `נכון! סכום (ציון × שכיחות) הוא ${q6_sum_of_all_scores}. כעת נחשב את הממוצע.` : "הסכום אינו נכון. חשב שוב: $(50 \cdot 1) + (60 \cdot 4) + \dots$. נסה שוב.";
+            const remediation = isCorrect ? null : "כפל וחיבור";
+            logAttempt("סעיף ב' שלב 1: סכום (ציון X שכיחות)", 'q6_b1_sumScoreFreqSection', selection.value, selection.text, 'q6_b1_sumSFAns', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+            setTimeout(() => {
+                document.getElementById('feedbackQ6Section').classList.add('hidden');
+                showSection(isCorrect ? 'q6_b2_calcAverageSection' : 'q6_b1_sumScoreFreqSection');
+            }, isCorrect ? 2000 : 3500);
+        }
+        function checkQ6_b2_calcAverage() {
+            const selection = getSelectedRadioValue('q6_b2_avgAns');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = approxEqual(parseFloat(selection.value), q6_average_score);
+            const feedbackMsg = isCorrect ? `נכון! הממוצע הוא ${q6_average_score}. נחזור לשאלה הראשית של סעיף ב'.` : `לא נכון. ממוצע = ${q6_sum_of_all_scores} / ${q6_total_students}. נסה שוב.`;
+            const remediation = isCorrect ? null : "פעולת חילוק";
+            logAttempt("סעיף ב' שלב 2: חישוב ממוצע", 'q6_b2_calcAverageSection', selection.value, selection.text, 'q6_b2_avgAns', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+            if(isCorrect) sessionStorage.setItem('q6_average_score', q6_average_score);
+            setTimeout(() => {
+                document.getElementById('feedbackQ6Section').classList.add('hidden');
+                showSection(isCorrect ? 'mainQ6PartBSection' : 'q6_b2_calcAverageSection');
+            }, isCorrect ? 2000 : 3500);
+        }
+
+        // Part C
+        function checkMainQ6PartCAnswer() {
+            const selection = getSelectedRadioValue('mainQ6C_Answer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = parseInt(selection.value) === q6_mode_score;
+            const feedbackMsg = isCorrect ? `נכון! הציון השכיח הוא ${q6_mode_score}.` : "התשובה אינה נכונה. מהו ציון שכיח?";
+            const remediation = isCorrect ? null : "הגדרת השכיח";
+            logAttempt("סעיף ג': ציון שכיח", 'mainQ6PartCSection', selection.value, selection.text, 'mainQ6C_Answer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            if (isCorrect) {
+                const avgScore = parseFloat(sessionStorage.getItem('q6_average_score') || q6_average_score).toFixed(1);
+                const totalStudents = sessionStorage.getItem('q6_total_students') || q6_total_students;
+                document.querySelector('#mainQ6PartD2Section .problem-context').innerHTML = `<p>ידוע: ממוצע הציונים $\approx ${avgScore}$. סך התלמידים: ${totalStudents}.</p>`;
+                queueMathJaxTypeset(document.querySelector('#mainQ6PartD2Section .problem-context'));
+                setTimeout(() => showSection('mainQ6PartD1Section'), 2500);
+            } else {
+                setTimeout(() => {
+                    document.getElementById('feedbackQ6Section').classList.add('hidden');
+                    showSection('q6_c1_defineModeSection');
+                }, 3000);
+            }
+        }
+        function checkQ6_c1_defineMode() {
+            const selection = getSelectedRadioValue('q6_c1_modeAns');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = parseInt(selection.value) === q6_mode_score;
+            const feedbackMsg = isCorrect ? `נכון! הציון ${q6_mode_score} הוא השכיח כי לו יש את מספר התלמידים הגבוה ביותר (7). נחזור לשאלה הראשית.` : "השכיח הוא הערך (ציון) שהופיע הכי הרבה פעמים. נסה שוב.";
+            const remediation = isCorrect ? null : "הגדרת השכיח";
+            logAttempt("סעיף ג' שלב 1: הגדרת השכיח", 'q6_c1_defineModeSection', selection.value, selection.text, 'q6_c1_modeAns', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+            setTimeout(() => {
+                document.getElementById('feedbackQ6Section').classList.add('hidden');
+                showSection(isCorrect ? 'mainQ6PartCSection' : 'q6_c1_defineModeSection');
+            }, isCorrect ? 2000 : 3500);
+        }
+        
+        // Part D1
+        function checkMainQ6PartD1Answer() {
+            const selection = getSelectedRadioValue('mainQ6D1_Answer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = selection.value === `${q6_prob_score_70_numerator}/${q6_prob_score_70_denominator}`;
+            const feedbackMsg = isCorrect ? `נכון! ההסתברות היא ${q6_prob_score_70_numerator}/${q6_prob_score_70_denominator}.` : "התשובה אינה נכונה. בוא נבדוק את חישוב ההסתברות.";
+            const remediation = isCorrect ? null : "חישוב הסתברות פשוטה";
+            logAttempt("סעיף ד(1): הסתברות לציון 70", 'mainQ6PartD1Section', selection.value, selection.text, 'mainQ6D1_Answer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            if (isCorrect) {
+                const avgScore = parseFloat(sessionStorage.getItem('q6_average_score') || q6_average_score).toFixed(1);
+                const totalStudents = sessionStorage.getItem('q6_total_students') || q6_total_students;
+                document.querySelector('#mainQ6PartD2Section .problem-context').innerHTML = `<p>ידוע: ממוצע הציונים $\approx ${avgScore}$. סך התלמידים: ${totalStudents}.</p>`;
+                queueMathJaxTypeset(document.querySelector('#mainQ6PartD2Section .problem-context'));
+                setTimeout(() => showSection('mainQ6PartD2Section'), 2500);
+            } else {
+                setTimeout(() => {
+                    document.getElementById('feedbackQ6Section').classList.add('hidden');
+                    showSection('q6_d1_1_probFormulaSection');
+                }, 3000);
+            }
+        }
+        function checkQ6_d1_1_probFormula() {
+            const selection = getSelectedRadioValue('q6_d1_1_num70Ans');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; } // Changed from displayQ5Feedback
+            const isCorrect = parseInt(selection.value) === q6_students_score_70;
+            const totalStudents = sessionStorage.getItem('q6_total_students') || q6_total_students;
+            const feedbackMsg = isCorrect ? `נכון, ${q6_students_score_70} תלמידים קיבלו 70. סך התלמידים הוא ${totalStudents}. לכן ההסתברות היא ${q6_students_score_70}/${totalStudents}. נחזור לשאלה.` : "התבונן בדיאגרמה, כמה תלמידים קיבלו את הציון 70? נסה שוב.";
+            const remediation = isCorrect ? null : "קריאת נתונים מדיאגרמת מקלות";
+            logAttempt("סעיף ד(1) שלב 1: מספר תלמידים עם 70", 'q6_d1_1_probFormulaSection', selection.value, selection.text, 'q6_d1_1_num70Ans', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+            setTimeout(() => {
+                document.getElementById('feedbackQ6Section').classList.add('hidden');
+                showSection(isCorrect ? 'mainQ6PartD1Section' : 'q6_d1_1_probFormulaSection');
+            }, isCorrect ? 2000 : 3500);
+        }
+
+        // Part D2
+        function checkMainQ6PartD2Answer() {
+            const selection = getSelectedRadioValue('mainQ6D2_Answer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = selection.value === `${q6_prob_above_avg_numerator}/${q6_prob_above_avg_denominator}`;
+            const feedbackMsg = isCorrect ? `נכון! ההסתברות היא ${q6_prob_above_avg_numerator}/${q6_prob_above_avg_denominator}.` : "התשובה אינה נכונה. בוא נבדוק את השלבים.";
+            const remediation = isCorrect ? null : "חישוב הסתברות (גדול מ-X)";
+            logAttempt("סעיף ד(2): הסתברות לציון גבוה מהממוצע", 'mainQ6PartD2Section', selection.value, selection.text, 'mainQ6D2_Answer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            if (isCorrect) {
+                showSection(null);
+            } else {
+                setTimeout(() => {
+                    document.getElementById('feedbackQ6Section').classList.add('hidden');
+                    showSection('q6_d2_1_countAboveAvgSection');
+                }, 3000);
+            }
+        }
+        function checkQ6_d2_1_countAboveAvg() {
+            const selection = getSelectedRadioValue('q6_d2_1_countAns');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; } // Changed from displayQ5Feedback
+            const isCorrect = parseInt(selection.value) === q6_students_above_avg;
+            const totalStudents = sessionStorage.getItem('q6_total_students') || q6_total_students;
+            const feedbackMsg = isCorrect ? `נכון, ${q6_students_above_avg} תלמידים קיבלו ציון גבוה מהממוצע. סך התלמידים הוא ${totalStudents}. לכן ההסתברות היא ${q6_students_above_avg}/${totalStudents}. נחזור לשאלה.` : `לא נכון. סכום התלמידים שקיבלו 80, 90, או 100 הוא $3+7+4 = ${q6_students_above_avg}$. נסה שוב.`;
+            const remediation = isCorrect ? null : "סכימת שכיחויות רלוונטיות";
+            logAttempt("סעיף ד(2) שלב 1: ספירת תלמידים מעל הממוצע", 'q6_d2_1_countAboveAvgSection', selection.value, selection.text, 'q6_d2_1_countAns', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+            setTimeout(() => {
+                document.getElementById('feedbackQ6Section').classList.add('hidden');
+                showSection(isCorrect ? 'mainQ6PartD2Section' : 'q6_d2_1_countAboveAvgSection');
+            }, isCorrect ? 2000 : 3500);
+        }
+
+    </script>
+</body>
+</html>

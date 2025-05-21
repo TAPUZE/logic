@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>אבחון: שאלה 2 - תוכנית אימונים</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Assistant', sans-serif; background-color: #f1f5f9; color: #1e293b; }
+        .container-quiz { max-width: 750px; margin: 2rem auto; padding: 2rem; background-color: #ffffff; border-radius: 0.75rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .question-section { margin-bottom: 1.5rem; padding: 1.5rem; border: 1px solid #e2e8f0; border-radius: 0.5rem; background-color: #f8fafc; }
+        .problem-statement { font-size: 1.25rem; font-weight: 600; color: #0f172a; margin-bottom: 1rem; }
+        .question-text, .problem-context { font-size: 1.1rem; color: #334155; margin-bottom: 0.75rem; line-height: 1.6; }
+        .problem-context p { margin-bottom: 0.25rem; text-align: right; font-weight: 500; }
+        label.option-label { display: block; padding: 0.75rem 1rem; margin-bottom: 0.5rem; background-color: #fff; border: 1px solid #cbd5e1; border-radius: 0.375rem; cursor: pointer; transition: background-color 0.2s, border-color 0.2s; }
+        label.option-label:hover { background-color: #f1f5f9; border-color: #94a3b8; }
+        input[type="radio"] { margin-left: 0.5rem; accent-color: #2563eb; }
+        button.submit-button { padding: 0.75rem 1.5rem; background-color: #2563eb; color: white; border: none; border-radius: 0.375rem; font-weight: 500; cursor: pointer; transition: background-color 0.2s; margin-top: 1rem; }
+        button.submit-button:hover { background-color: #1d4ed8; }
+        button.action-button { padding: 0.5rem 1rem; background-color: #475569; color: white; border: none; border-radius: 0.375rem; font-weight: 500; cursor: pointer; transition: background-color 0.2s; margin-right: 0.5rem; }
+        button.action-button:hover { background-color: #334155; }
+        .feedback-section { margin-top: 1.5rem; padding: 1.5rem; border-radius: 0.5rem; background-color: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+        .hidden { display: none; }
+        #printableReport { display: none; padding: 20px; font-family: 'Assistant', sans-serif; color: #000; direction: rtl; }
+        #printableReport h2, #printableReport h3 { font-weight: 600; margin-bottom: 1rem; border-bottom: 1px solid #ccc; padding-bottom: 0.5rem; }
+        #printableReport h2 { font-size: 1.5rem; }
+        #printableReport h3 { font-size: 1.3rem; margin-top: 1.5rem;}
+        #printableReport .mistake-item { margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px dotted #eee; }
+        #printableReport .mistake-item:last-child { border-bottom: none; }
+        #printableReport p { margin-bottom: 0.25rem; }
+        #printableReport strong { font-weight: 600; }
+        @media print {
+            body * { visibility: hidden; }
+            #printableReport, #printableReport * { visibility: visible; }
+            #printableReport { position: absolute; left: 0; top: 0; width: 100%; display: block !important; font-size: 12pt; }
+            .container-quiz > h1, .container-quiz > div:first-of-type, .question-section, .feedback-section { display: none !important; visibility: hidden !important; }
+        }
+    </style>
+    <script>
+        window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div class="container-quiz">
+        <h1 class="text-2xl font-bold text-center text-slate-700 mb-6">אבחון: שאלה 2 - תוכנית אימונים</h1>
+        <div class="mb-6 text-center">
+            <button class="action-button" onclick="startOver()">התחל מחדש</button>
+            <button class="action-button" onclick="shareReport()">שתף דוח</button>
+        </div>
+
+        <div id="q2ProblemContext" class="problem-context question-section bg-blue-50 border-blue-200">
+            <p class="problem-statement text-blue-700">נתוני השאלה:</p>
+            <p>רועי התאמן בריצה על פי תוכנית אימונים.</p>
+            <p>בשבוע הראשון של תוכנית האימונים רץ רועי 4 ק"מ.</p>
+            <p>בכל שבוע שלאחר מכן רץ רועי 1.5 ק"מ יותר ממספר הקילומטרים שהוא רץ בשבוע שלפניו.</p>
+        </div>
+
+        <div id="mainQ2PartASection" class="question-section">
+            <p class="problem-statement">בעיה ראשית - סעיף א':</p>
+            <p class="question-text">כמה קילומטרים רץ רועי בשבוע השלישי של תוכנית האימונים?</p>
+            <div id="mainQ2PartAOptions">
+                <label class="option-label"><input type="radio" name="mainQ2A_Answer" value="7"> א) 7 ק"מ</label>
+                <label class="option-label"><input type="radio" name="mainQ2A_Answer" value="5.5"> ב) 5.5 ק"מ</label>
+                <label class="option-label"><input type="radio" name="mainQ2A_Answer" value="8.5"> ג) 8.5 ק"מ</label>
+                <label class="option-label"><input type="radio" name="mainQ2A_Answer" value="6"> ד) 6 ק"מ</label>
+            </div>
+            <button class="submit-button" onclick="checkMainQ2PartAAnswer()">הגש תשובה לסעיף א'</button>
+        </div>
+
+        <div id="q2_a1_identifyA1Section" class="question-section hidden">
+            <p class="problem-statement">סעיף א' - שלב 1: זיהוי האיבר הראשון ($a_1$)</p>
+            <p class="question-text">המרחק שרועי רץ בשבוע הראשון הוא האיבר הראשון בסדרה החשבונית, המסומן כ-$a_1$.<br>על פי נתוני השאלה, מהו הערך של $a_1$?</p>
+            <div id="q2_a1_identifyA1Options">
+                <label class="option-label"><input type="radio" name="q2_a1_a1Ans" value="4"> א) 4 ק"מ</label>
+                <label class="option-label"><input type="radio" name="q2_a1_a1Ans" value="1.5"> ב) 1.5 ק"מ</label>
+                <label class="option-label"><input type="radio" name="q2_a1_a1Ans" value="3"> ג) 3 ק"מ</label>
+            </div>
+            <button class="submit-button" onclick="checkQ2_a1_identifyA1()">הגש תשובה</button>
+        </div>
+
+        <div id="q2_a2_identifyDSection" class="question-section hidden">
+            <p class="problem-statement">סעיף א' - שלב 2: זיהוי הפרש הסדרה ($d$)</p>
+            <p class="question-text">בכל שבוע רץ רועי 1.5 ק"מ יותר מהשבוע הקודם. תוספת קבועה זו היא הפרש הסדרה, המסומן כ-$d$.<br>מהו הערך של $d$?</p>
+            <div id="q2_a2_identifyDOptions">
+                <label class="option-label"><input type="radio" name="q2_a2_dAns" value="1.5"> א) 1.5 ק"מ</label>
+                <label class="option-label"><input type="radio" name="q2_a2_dAns" value="4"> ב) 4 ק"מ</label>
+                <label class="option-label"><input type="radio" name="q2_a2_dAns" value="2.5"> ג) 2.5 ק"מ</label>
+            </div>
+            <button class="submit-button" onclick="checkQ2_a2_identifyD()">הגש תשובה</button>
+        </div>
+
+        <div id="q2_a3_identifyNSection" class="question-section hidden">
+            <p class="problem-statement">סעיף א' - שלב 3: זיהוי מיקום האיבר ($n$)</p>
+            <p class="question-text">אנו רוצים למצוא כמה קילומטרים רץ רועי בשבוע השלישי.<br>מהו הערך של $n$ (מיקום האיבר בסדרה) עבור השבוע השלישי?</p>
+            <div id="q2_a3_identifyNOptions">
+                <label class="option-label"><input type="radio" name="q2_a3_nAns" value="3"> א) $n=3$</label>
+                <label class="option-label"><input type="radio" name="q2_a3_nAns" value="1"> ב) $n=1$</label>
+                <label class="option-label"><input type="radio" name="q2_a3_nAns" value="2"> ג) $n=2$</label>
+            </div>
+            <button class="submit-button" onclick="checkQ2_a3_identifyN()">הגש תשובה</button>
+        </div>
+
+        <div id="q2_a4_applyAnFormulaSection" class="question-section hidden">
+            <p class="problem-statement">סעיף א' - שלב 4: חישוב $a_3$</p>
+            <p class="question-text">נוסחת האיבר הכללי בסדרה חשבונית היא $a_n = a_1 + (n-1)d$.<br>מצאנו: $a_1=4$, $d=1.5$, ו-$n=3$.<br>הצב את הערכים בנוסחה וחשב את $a_3$.</p>
+            <div id="q2_a4_applyAnFormulaOptions">
+                <label class="option-label"><input type="radio" name="q2_a4_anAns" value="7"> א) $a_3 = 7$ ק"מ</label>
+                <label class="option-label"><input type="radio" name="q2_a4_anAns" value="5.5"> ב) $a_3 = 5.5$ ק"מ (אולי חישבת $a_1 + d$)</label>
+                <label class="option-label"><input type="radio" name="q2_a4_anAns" value="6"> ג) $a_3 = 6$ ק"מ (אולי חישבת $a_1 + (n)d$ או טעות אחרת)</label>
+            </div>
+            <button class="submit-button" onclick="checkQ2_a4_applyAnFormula()">הגש תשובה</button>
+        </div>
+        
+        <div id="q2_a4_sub_n_minus_1_d_Section" class="question-section hidden">
+            <p class="problem-statement">פירוק שלב 4: חישוב $(n-1)d$</p>
+            <p class="question-text">עם $n=3$ ו-$d=1.5$, למה שווה $(n-1)d$?</p>
+            <div id="q2_a4_sub_n_minus_1_d_Options">
+                <label class="option-label"><input type="radio" name="q2_a4_sub_n1dAns" value="3"> א) $3$ (כלומר, $(3-1) \times 1.5 = 2 \times 1.5 = 3$)</label>
+                <label class="option-label"><input type="radio" name="q2_a4_sub_n1dAns" value="4.5"> ב) $4.5$ (אולי חישבת $n \times d$)</label>
+                <label class="option-label"><input type="radio" name="q2_a4_sub_n1dAns" value="1.5"> ג) $1.5$ (אולי חישבת $(n-2)d$)</label>
+            </div>
+            <button class="submit-button" onclick="checkQ2_a4_sub_n_minus_1_d()">הגש תשובה</button>
+        </div>
+
+
+        <div id="mainQ2PartBSection" class="question-section hidden">
+            <p class="problem-statement">בעיה ראשית - סעיף ב':</p>
+            <p class="question-text">באיזה שבוע של תוכנית האימונים רץ רועי 28 ק"מ?</p>
+            <div id="mainQ2PartBOptions">
+                <label class="option-label"><input type="radio" name="mainQ2B_Answer" value="17"> א) שבוע 17</label>
+                <label class="option-label"><input type="radio" name="mainQ2B_Answer" value="16"> ב) שבוע 16</label>
+                <label class="option-label"><input type="radio" name="mainQ2B_Answer" value="18"> ג) שבוע 18</label>
+                <label class="option-label"><input type="radio" name="mainQ2B_Answer" value="19"> ד) שבוע 19</label>
+            </div>
+            <button class="submit-button" onclick="checkMainQ2PartBAnswer()">הגש תשובה לסעיף ב'</button>
+        </div>
+        
+        <div id="q2_b1_setupAnEqSection" class="question-section hidden">
+            <p class="problem-statement">סעיף ב' - שלב 1: הצבת נתונים בנוסחת $a_n$</p>
+            <p class="question-text">אנו מחפשים את מספר השבוע ($n$) שבו רועי רץ 28 ק"מ ($a_n=28$).<br>ידוע $a_1=4$ ו-$d=1.5$.<br>הצב נתונים אלו בנוסחה $a_n = a_1 + (n-1)d$. איזו משוואה מתקבלת?</p>
+            <div id="q2_b1_setupAnEqOptions">
+                <label class="option-label"><input type="radio" name="q2_b1_setupEqAns" value="28=4+(n-1)1.5"> א) $28 = 4 + (n-1)1.5$</label>
+                <label class="option-label"><input type="radio" name="q2_b1_setupEqAns" value="28=1.5+(n-1)4"> ב) $28 = 1.5 + (n-1)4$</label>
+                <label class="option-label"><input type="radio" name="q2_b1_setupEqAns" value="n=4+(28-1)1.5"> ג) $n = 4 + (28-1)1.5$</label>
+            </div>
+            <button class="submit-button" onclick="checkQ2_b1_setupAnEq()">הגש תשובה</button>
+        </div>
+
+        <div id="q2_b2_solveForNMinus1Section" class="question-section hidden">
+            <p class="problem-statement">סעיף ב' - שלב 2: פתרון עבור $(n-1)$</p>
+            <p class="question-text">נתונה המשוואה: $28 = 4 + (n-1)1.5$.<br>מהו הערך של הביטוי $(n-1)$?</p>
+            <div id="q2_b2_solveForNMinus1Options">
+                <label class="option-label"><input type="radio" name="q2_b2_nMinus1Ans" value="16"> א) $16$</label>
+                <label class="option-label"><input type="radio" name="q2_b2_nMinus1Ans" value="24"> ב) $24$ (זהו $28-4$)</label>
+                <label class="option-label"><input type="radio" name="q2_b2_nMinus1Ans" value="18.67"> ג) $18.67$ (אולי $28/1.5$)</label>
+            </div>
+            <button class="submit-button" onclick="checkQ2_b2_solveForNMinus1()">הגש תשובה</button>
+        </div>
+
+        <div id="q2_b2_sub_isolateProductSection" class="question-section hidden">
+            <p class="problem-statement">פירוק שלב 2: בידוד $(n-1)1.5$</p>
+            <p class="question-text">במשוואה $28 = 4 + (n-1)1.5$, מה הפעולה הראשונה שנבצע כדי לבודד את הביטוי $(n-1)1.5$?</p>
+            <div id="q2_b2_sub_isolateProductOptions">
+                <label class="option-label"><input type="radio" name="q2_b2_sub_isoProdAns" value="subtract_4"> א) נחסר 4 משני האגפים.</label>
+                <label class="option-label"><input type="radio" name="q2_b2_sub_isoProdAns" value="divide_1.5"> ב) נחלק ב-1.5 את שני האגפים.</label>
+                <label class="option-label"><input type="radio" name="q2_b2_sub_isoProdAns" value="add_1"> ג) נוסיף 1 לשני האגפים.</label>
+            </div>
+            <button class="submit-button" onclick="checkQ2_b2_sub_isolateProduct()">הגש תשובה</button>
+        </div>
+        
+        <div id="q2_b2_sub_divideByDSection" class="question-section hidden">
+            <p class="problem-statement">פירוק שלב 2: חילוק ב-$d$</p>
+            <p class="question-text">אם הגענו ל $24 = (n-1)1.5$, מה הפעולה הבאה כדי לבודד את $(n-1)$?</p>
+            <div id="q2_b2_sub_divideByDOptions">
+                <label class="option-label"><input type="radio" name="q2_b2_sub_divDAns" value="divide_1.5"> א) נחלק את שני האגפים ב-1.5.</label>
+                <label class="option-label"><input type="radio" name="q2_b2_sub_divDAns" value="multiply_1.5"> ב) נכפול את שני האגפים ב-1.5.</label>
+                <label class="option-label"><input type="radio" name="q2_b2_sub_divDAns" value="subtract_1.5"> ג) נחסר 1.5 משני האגפים.</label>
+            </div>
+            <button class="submit-button" onclick="checkQ2_b2_sub_divideByD()">הגש תשובה</button>
+        </div>
+        
+        <div id="q2_b3_solveForNSection" class="question-section hidden">
+            <p class="problem-statement">סעיף ב' - שלב 3: פתרון עבור $n$</p>
+            <p class="question-text">אם $(n-1) = 16$, מהו ערכו של $n$?</p>
+            <div id="q2_b3_solveForNOptions">
+                <label class="option-label"><input type="radio" name="q2_b3_nAns" value="17"> א) $n=17$</label>
+                <label class="option-label"><input type="radio" name="q2_b3_nAns" value="15"> ב) $n=15$</label>
+                <label class="option-label"><input type="radio" name="q2_b3_nAns" value="16"> ג) $n=16$</label>
+            </div>
+            <button class="submit-button" onclick="checkQ2_b3_solveForN()">הגש תשובה</button>
+        </div>
+
+        <div id="mainQ2PartCSection" class="question-section hidden">
+            <p class="problem-statement">בעיה ראשית - סעיף ג':</p>
+            <p class="question-text">לאחר כמה שבועות מתחילת תוכנית האימונים היה המרחק המצטבר שרועי רץ 169 ק"מ סך הכול?</p>
+            <div id="mainQ2PartCOptions">
+                <label class="option-label"><input type="radio" name="mainQ2C_Answer" value="13"> א) 13 שבועות</label>
+                <label class="option-label"><input type="radio" name="mainQ2C_Answer" value="12"> ב) 12 שבועות</label>
+                <label class="option-label"><input type="radio" name="mainQ2C_Answer" value="14"> ג) 14 שבועות</label>
+                <label class="option-label"><input type="radio" name="mainQ2C_Answer" value="10"> ד) 10 שבועות</label>
+            </div>
+            <button class="submit-button" onclick="checkMainQ2PartCAnswer()">הגש תשובה לסעיף ג'</button>
+        </div>
+
+        <div id="q2_c1_setupSnEqSection" class="question-section hidden">
+            <p class="problem-statement">סעיף ג' - שלב 1: הצבת נתונים בנוסחת $S_n$</p>
+            <p class="question-text">אנו מחפשים את מספר השבועות ($n$) שהמרחק המצטבר ($S_n$) הוא 169 ק"מ.<br>ידוע $a_1=4$ ו-$d=1.5$.<br>הצב נתונים אלו בנוסחה $S_n = \frac{n}{2}[2a_1 + (n-1)d]$. איזו משוואה מתקבלת?</p>
+            <div id="q2_c1_setupSnEqOptions">
+                <label class="option-label"><input type="radio" name="q2_c1_setupSnAns" value="169=n/2(8+(n-1)1.5)"> א) $169 = \frac{n}{2}[2(4) + (n-1)1.5]$</label>
+                <label class="option-label"><input type="radio" name="q2_c1_setupSnAns" value="169=n/2(4+(n-1)1.5)"> ב) $169 = \frac{n}{2}[4 + (n-1)1.5]$</label>
+                <label class="option-label"><input type="radio" name="q2_c1_setupSnAns" value="n=169/2(8+(n-1)1.5)"> ג) $n = \frac{169}{2}[2(4) + (n-1)1.5]$</label>
+            </div>
+            <button class="submit-button" onclick="checkQ2_c1_setupSnEq()">הגש תשובה</button>
+        </div>
+
+        <div id="q2_c2_simplifyToQuadraticSection" class="question-section hidden">
+            <p class="problem-statement">סעיף ג' - שלב 2: פישוט המשוואה למשוואה ריבועית</p>
+            <p class="question-text">נתונה המשוואה: $169 = \frac{n}{2}[8 + (n-1)1.5]$.<br>לאחר פישוט והעברת אגפים, איזו משוואה ריבועית מהצורה $An^2+Bn+C=0$ מתקבלת?</p>
+            <div id="q2_c2_simplifyToQuadraticOptions">
+                <label class="option-label"><input type="radio" name="q2_c2_quadAns" value="1.5n^2+6.5n-338=0"> א) $1.5n^2 + 6.5n - 338 = 0$</label>
+                <label class="option-label"><input type="radio" name="q2_c2_quadAns" value="1.5n^2+8n-169=0"> ב) $1.5n^2 + 8n - 169 = 0$</label>
+                <label class="option-label"><input type="radio" name="q2_c2_quadAns" value="0.75n^2+3.25n-169=0"> ג) $0.75n^2 + 3.25n - 169 = 0$ (לא הכפלת ב-2 נכון)</label>
+            </div>
+            <button class="submit-button" onclick="checkQ2_c2_simplifyToQuadratic()">הגש תשובה</button>
+        </div>
+        
+        <div id="q2_c3_solveQuadraticForNSection" class="question-section hidden">
+            <p class="problem-statement">סעיף ג' - שלב 3: פתרון המשוואה הריבועית</p>
+            <p class="question-text">פתור את המשוואה הריבועית $1.5n^2 + 6.5n - 338 = 0$ (או $3n^2 + 13n - 676 = 0$ אם הכפלת ב-2).<br>מהם הפתרונות האפשריים ל-$n$ (לפני התחשבות בהקשר הבעיה)?</p>
+            <div id="q2_c3_solveQuadraticForNOptions">
+                <label class="option-label"><input type="radio" name="q2_c3_solveQuadAns" value="n=13_n=-52/3"> א) $n=13$ ו-$n = -52/3$ (או $n \approx -17.33$)</label>
+                <label class="option-label"><input type="radio" name="q2_c3_solveQuadAns" value="n=13_only"> ב) $n=13$ (רק הפתרון החיובי)</label>
+                <label class="option-label"><input type="radio" name="q2_c3_solveQuadAns" value="n=12_n=-18"> ג) $n=12$ ו-$n \approx -18.88$ (טעות חישוב)</label>
+            </div>
+            <button class="submit-button" onclick="checkQ2_c3_solveQuadraticForN()">הגש תשובה</button>
+        </div>
+
+        <div id="q2_c4_interpretNWeeksSection" class="question-section hidden">
+            <p class="problem-statement">סעיף ג' - שלב 4: בחירת ערך $n$ מתאים</p>
+            <p class="question-text">מצאנו שני פתרונות אפשריים ל-$n$: $13$ ו-$-\frac{52}{3}$.<br>מכיוון ש-$n$ מייצג מספר שבועות, איזה ערך מתאים בהקשר של הבעיה?</p>
+            <div id="q2_c4_interpretNWeeksOptions">
+                <label class="option-label"><input type="radio" name="q2_c4_interpretNAns" value="13"> א) $n=13$, כי מספר שבועות חייב להיות מספר חיובי ושלם.</label>
+                <label class="option-label"><input type="radio" name="q2_c4_interpretNAns" value="-52/3"> ב) $n = -52/3$, כי זה אחד הפתרונות.</label>
+                <label class="option-label"><input type="radio" name="q2_c4_interpretNAns" value="both"> ג) שני הערכים מתאימים.</label>
+            </div>
+            <button class="submit-button" onclick="checkQ2_c4_interpretNWeeks()">הגש תשובה</button>
+        </div>
+
+
+        <div id="feedbackQ2Section" class="feedback-section hidden">
+            <p id="feedbackQ2Text" class="text-lg"></p>
+            <p id="remediationQ2Link" class="mt-2 font-semibold"></p>
+        </div>
+        <div id="printableReport"></div>
+    </div>
+
+    <script>
+        let studentPath = []; // Renamed from studentQ2Path
+        // Correct answers
+        const q2_a1_val = 4;
+        const q2_d_val = 1.5;
+        const q2_a_correct_a3 = 7;
+        const q2_b_correct_n_for_28km = 17;
+        const q2_c_correct_n_for_169km_sum = 13;
+
+        // --- Utility Functions ---
+        function queueMathJaxTypeset(element) {
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                window.MathJax.typesetPromise(element ? [element] : undefined).catch((err) => console.error('MathJax typesetting error:', err));
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            queueMathJaxTypeset(document.getElementById('mainQ2PartASection'));
+            queueMathJaxTypeset(document.getElementById('q2ProblemContext'));
+        });
+
+        function showSection(sectionId) { // Renamed from showQ2Section
+            const allSectionIds = [
+                'mainQ2PartASection', 'q2_a1_identifyA1Section', 'q2_a2_identifyDSection', 'q2_a3_identifyNSection', 'q2_a4_applyAnFormulaSection', 'q2_a4_sub_n_minus_1_d_Section',
+                'mainQ2PartBSection', 'q2_b1_setupAnEqSection', 'q2_b2_solveForNMinus1Section', 'q2_b2_sub_isolateProductSection', 'q2_b2_sub_divideByDSection', 'q2_b3_solveForNSection',
+                'mainQ2PartCSection', 'q2_c1_setupSnEqSection', 'q2_c2_simplifyToQuadraticSection', 'q2_c3_solveQuadraticForNSection', 'q2_c4_interpretNWeeksSection'
+            ];
+            allSectionIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+            if (sectionId) {
+                const el = document.getElementById(sectionId);
+                if (el) {
+                    el.classList.remove('hidden');
+                    queueMathJaxTypeset(el);
+                }
+            }
+        }
+
+        function displayFeedback(message, remediation) { // Renamed from displayQ2Feedback
+            const feedbackTextEl = document.getElementById('feedbackQ2Text'); // Ensure this ID matches your feedback div
+            const remediationLinkEl = document.getElementById('remediationQ2Link'); // Ensure this ID matches
+            feedbackTextEl.innerHTML = message; 
+            remediationLinkEl.innerHTML = remediation ? `<strong>מוקד מומלץ לחיזוק:</strong> ${remediation}` : '';
+            document.getElementById('feedbackQ2Section').classList.remove('hidden'); // Ensure this ID matches
+            queueMathJaxTypeset(document.getElementById('feedbackQ2Section')); 
+        }
+        
+        function startOver() { // Renamed from startOverQ2
+            studentPath = []; 
+            const radioGroups = [
+                'mainQ2A_Answer', 'q2_a1_a1Ans', 'q2_a2_dAns', 'q2_a3_nAns', 'q2_a4_anAns', 'q2_a4_sub_n1dAns',
+                'mainQ2B_Answer', 'q2_b1_setupEqAns', 'q2_b2_nMinus1Ans', 'q2_b2_sub_isoProdAns', 'q2_b2_sub_divDAns', 'q2_b3_nAns',
+                'mainQ2C_Answer', 'q2_c1_setupSnAns', 'q2_c2_quadAns', 'q2_c3_solveQuadAns', 'q2_c4_interpretNAns'
+            ];
+            radioGroups.forEach(groupName => {
+                const radios = document.getElementsByName(groupName);
+                if (radios) radios.forEach(radio => radio.checked = false);
+            });
+            document.getElementById('feedbackQ2Section').classList.add('hidden'); // Ensure this ID matches
+            showSection('mainQ2PartASection'); 
+        }
+
+        function getSelectedRadioValue(name) { // Renamed from getSelectedRadioValueQ2
+            const radios = document.getElementsByName(name);
+            for (let i = 0; i < radios.length; i++) { 
+                if (radios[i].checked) {
+                     return { value: radios[i].value, text: radios[i].parentElement.textContent.replace(/^[א-ד]\)\s*/, '').trim() };
+                }
+            }
+            return null;
+        }
+
+        function logAttempt(stepDesc, sectionId, selectedValue, selectedAnswerText, radioGroupName, isCorrect, feedbackMessage = "", remediationTopic = null) { // Renamed from logQ2Attempt
+            const questionTextEl = document.getElementById(sectionId)?.querySelector('.question-text');
+            let questionReportText = questionTextEl ? (questionTextEl.innerHTML || questionTextEl.textContent).trim() : "טקסט שאלה לא זמין";
+            
+            // Prepend problem statement for main questions for context in report
+            if (sectionId.startsWith('mainQ2Part')) {
+                const problemStatementEl = document.getElementById(sectionId)?.querySelector('.problem-statement');
+                if (problemStatementEl) {
+                    questionReportText = (problemStatementEl.textContent.trim() || "") + "<br>" + questionReportText;
+                }
+            }
+            
+            studentPath.push({ 
+                type: 'attempt', 
+                stepDescription: stepDesc, 
+                questionText: questionReportText, 
+                selectedAnswer: selectedValue, 
+                selectedAnswerText: selectedAnswerText,
+                isCorrect: isCorrect, 
+                feedbackForAttempt: isCorrect ? null : { message: feedbackMessage, remediationTopic: remediationTopic } 
+            });
+            document.getElementById('feedbackQ2Section').classList.add('hidden'); // Ensure this ID matches
+        }
+        
+        function shareReport() { // Renamed from shareReportQ2
+            const reportContainer = document.getElementById('printableReport');
+            if (!reportContainer) { return; }
+            let reportHTML = '<h2>אבחון: שאלה 2 - תוכנית אימונים</h2>';
+            
+            const mistakesAndLearnings = [];
+
+            studentPath.forEach((item) => {
+                if (item.type === 'attempt' && !item.isCorrect && item.feedbackForAttempt) {
+                    mistakesAndLearnings.push({
+                        question: item.questionText,
+                        userAnswer: item.selectedAnswerText || item.selectedAnswer,
+                        feedback: item.feedbackForAttempt.message,
+                        remediation: item.feedbackForAttempt.remediationTopic,
+                        step: item.stepDescription
+                    });
+                }
+            });
+            
+            if (mistakesAndLearnings.length > 0) {
+                reportHTML += '<h3>ניתוח טעויות ונקודות לשיפור:</h3>';
+                mistakesAndLearnings.forEach(mistake => {
+                    reportHTML += `<div class="mistake-item">`;
+                    reportHTML += `<p><strong>בשלב:</strong> ${mistake.step}</p>`;
+                    reportHTML += `<p><strong>השאלה:</strong> ${mistake.question}</p>`;
+                    reportHTML += `<p><strong>התשובה שלך:</strong> ${mistake.userAnswer}</p>`;
+                    reportHTML += `<p><strong>המשוב שניתן:</strong> ${mistake.feedback}</p>`;
+                    if (mistake.remediation) {
+                        reportHTML += `<p><strong>מוקד לשיפור:</strong> ${mistake.remediation}</p>`;
+                    }
+                    reportHTML += `</div>`;
+                });
+            } else if (studentPath.length > 0) {
+                 const mainCCorrect = studentPath.some(item => item.stepDescription === "סעיף ג': שבועות למרחק מצטבר 169 ק\"מ" && item.isCorrect);
+                 if (mainCCorrect) { 
+                     reportHTML += '<p><strong>כל הכבוד! נראה שהבנת את כל השלבים ולא זוהו טעויות הדורשות התייחסות מיוחדת.</strong></p>';
+                 } else {
+                     reportHTML += '<p><strong>לא זוהו טעויות ספציפיות הדורשות התייחסות מיוחדת במהלך סשן זה, אך ייתכן שלא כל חלקי השאלה הושלמו בהצלחה.</strong></p>';
+                 }
+            } else { 
+                 reportHTML += '<p>לא נרשמה התקדמות עדיין.</p>';
+            }
+
+            const currentFileName = "bagrut_35182_q2_diagnostic.html"; 
+            if (mistakesAndLearnings.length > 0) {
+                localStorage.setItem(`diagnosticReportData_${currentFileName}`, JSON.stringify(mistakesAndLearnings));
+            } else {
+                localStorage.removeItem(`diagnosticReportData_${currentFileName}`); 
+            }
+
+            reportContainer.innerHTML = reportHTML;
+            window.print(); 
+        }
+        
+        function approxEqual(val1, val2, tolerance = 0.001) { // Helper for float comparison
+            return Math.abs(val1 - val2) < tolerance;
+        }
+
+        // --- Check Answer Functions - Part A ---
+        function checkMainQ2PartAAnswer() {
+            const selection = getSelectedRadioValue('mainQ2A_Answer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = parseFloat(selection.value) === q2_a_correct_a3;
+            const feedbackMsg = isCorrect ? "נכון מאוד! בשבוע השלישי רץ רועי 7 ק\"מ." : "התשובה אינה נכונה. בוא נפרק את השלבים לחישוב המרחק בשבוע השלישי.";
+            const remediation = isCorrect ? null : "סדרה חשבונית - איבר כללי";
+            logAttempt("סעיף א': מרחק בשבוע 3", 'mainQ2PartASection', selection.value, selection.text, 'mainQ2A_Answer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            if (isCorrect) {
+                setTimeout(() => showSection('mainQ2PartBSection'), 2500);
+            } else {
+                setTimeout(() => {
+                    document.getElementById('feedbackQ2Section').classList.add('hidden');
+                    showSection('q2_a1_identifyA1Section');
+                }, 3000);
+            }
+        }
+
+        function checkQ2_a1_identifyA1() {
+            const selection = getSelectedRadioValue('q2_a1_a1Ans');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = parseFloat(selection.value) === q2_a1_val;
+            const feedbackMsg = isCorrect ? "נכון! $a_1 = 4$. כעת נזהה את הפרש הסדרה." : "לא נכון. $a_1$ הוא המרחק שרץ בשבוע הראשון. נסה שוב.";
+            const remediation = isCorrect ? null : "הבנת נתוני סדרה חשבונית";
+            logAttempt("סעיף א' שלב 1: זיהוי a1", 'q2_a1_identifyA1Section', selection.value, selection.text, 'q2_a1_a1Ans', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+            setTimeout(() => {
+                document.getElementById('feedbackQ2Section').classList.add('hidden');
+                showSection(isCorrect ? 'q2_a2_identifyDSection' : 'q2_a1_identifyA1Section');
+            }, isCorrect ? 2000 : 3500);
+        }
+
+        function checkQ2_a2_identifyD() {
+            const selection = getSelectedRadioValue('q2_a2_dAns');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = parseFloat(selection.value) === q2_d_val;
+            const feedbackMsg = isCorrect ? "נכון! $d = 1.5$. כעת נזהה את מיקום האיבר." : "לא נכון. $d$ הוא התוספת הקבועה בכל שבוע. נסה שוב.";
+            const remediation = isCorrect ? null : "הבנת נתוני סדרה חשבונית";
+            logAttempt("סעיף א' שלב 2: זיהוי d", 'q2_a2_identifyDSection', selection.value, selection.text, 'q2_a2_dAns', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+            setTimeout(() => {
+                document.getElementById('feedbackQ2Section').classList.add('hidden');
+                showSection(isCorrect ? 'q2_a3_identifyNSection' : 'q2_a2_identifyDSection');
+            }, isCorrect ? 2000 : 3500);
+        }
+
+        function checkQ2_a3_identifyN() {
+            const selection = getSelectedRadioValue('q2_a3_nAns');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = parseInt(selection.value) === 3;
+            const feedbackMsg = isCorrect ? "נכון! $n=3$. כעת נשתמש בנוסחה לחישוב $a_3$." : "לא נכון. אנו מחפשים את המרחק בשבוע השלישי. נסה שוב.";
+            const remediation = isCorrect ? null : "הבנת מיקום איבר בסדרה";
+            logAttempt("סעיף א' שלב 3: זיהוי n", 'q2_a3_identifyNSection', selection.value, selection.text, 'q2_a3_nAns', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+            setTimeout(() => {
+                document.getElementById('feedbackQ2Section').classList.add('hidden');
+                showSection(isCorrect ? 'q2_a4_applyAnFormulaSection' : 'q2_a3_identifyNSection');
+            }, isCorrect ? 2000 : 3500);
+        }
+        
+        function checkQ2_a4_applyAnFormula() {
+            const selection = getSelectedRadioValue('q2_a4_anAns');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = parseFloat(selection.value) === q2_a_correct_a3;
+            const feedbackMsg = isCorrect ? "נכון מאוד! בשבוע השלישי רץ רועי 7 ק\"מ." : "החישוב אינו מדויק. בוא נבדוק את החלק של $(n-1)d$.";
+            const remediation = isCorrect ? null : "נוסחת האיבר הכללי";
+            logAttempt("סעיף א' שלב 4: חישוב a3", 'q2_a4_applyAnFormulaSection', selection.value, selection.text, 'q2_a4_anAns', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            if (isCorrect) {
+                setTimeout(() => showSection('mainQ2PartBSection'), 2500);
+            } else {
+                 setTimeout(() => {
+                    document.getElementById('feedbackQ2Section').classList.add('hidden');
+                    showSection('q2_a4_sub_n_minus_1_d_Section');
+                }, 3000);
+            }
+        }
+
+        function checkQ2_a4_sub_n_minus_1_d() {
+            const selection = getSelectedRadioValue('q2_a4_sub_n1dAns');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = parseFloat(selection.value) === 3; 
+            const feedbackMsg = isCorrect ? "נכון! $(n-1)d = 3$. לכן $a_3 = a_1 + (n-1)d = 4 + 3 = 7$. נחזור לשאלה הקודמת." : "לא מדויק. $(n-1)d = (3-1) \\times 1.5 = 2 \\times 1.5 = 3$. נסה שוב.";
+            const remediation = isCorrect ? null : "סדר פעולות חשבון";
+            logAttempt("סעיף א' שלב 4.1: חישוב (n-1)d", 'q2_a4_sub_n_minus_1_d_Section', selection.value, selection.text, 'q2_a4_sub_n1dAns', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+            setTimeout(() => {
+                document.getElementById('feedbackQ2Section').classList.add('hidden');
+                showSection(isCorrect ? 'q2_a4_applyAnFormulaSection' : 'q2_a4_sub_n_minus_1_d_Section');
+            }, isCorrect ? 3000 : 3500);
+        }
+
+        // --- Check Answer Functions - Part B ---
+        function checkMainQ2PartBAnswer() {
+            const selection = getSelectedRadioValue('mainQ2B_Answer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = parseInt(selection.value) === q2_b_correct_n_for_28km;
+            const feedbackMsg = isCorrect ? "נכון מאוד! בשבוע ה-17 רץ רועי 28 ק\"מ." : "התשובה אינה נכונה. בוא נפרק את השלבים למציאת מספר השבוע.";
+            const remediation = isCorrect ? null : "סדרה חשבונית - מציאת n";
+            logAttempt("סעיף ב': שבוע בו רץ 28 ק\"מ", 'mainQ2PartBSection', selection.value, selection.text, 'mainQ2B_Answer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            if (isCorrect) {
+                setTimeout(() => showSection('mainQ2PartCSection'), 2500);
+            } else {
+                setTimeout(() => {
+                    document.getElementById('feedbackQ2Section').classList.add('hidden');
+                    showSection('q2_b1_setupAnEqSection');
+                }, 3000);
+            }
+        }
+
+        function checkQ2_b1_setupAnEq() {
+            const selection = getSelectedRadioValue('q2_b1_setupEqAns');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = selection.value === "28=4+(n-1)1.5";
+            const feedbackMsg = isCorrect ? "הצבה נכונה! כעת נפתור עבור $(n-1)$." : "יש להציב $a_n=28, a_1=4, d=1.5$ בנוסחה $a_n = a_1 + (n-1)d$. נסה שוב.";
+            const remediation = isCorrect ? null : "הצבה בנוסחה";
+            logAttempt("סעיף ב' שלב 1: הצבת נתונים", 'q2_b1_setupAnEqSection', selection.value, selection.text, 'q2_b1_setupEqAns', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+            setTimeout(() => {
+                document.getElementById('feedbackQ2Section').classList.add('hidden');
+                showSection(isCorrect ? 'q2_b2_solveForNMinus1Section' : 'q2_b1_setupAnEqSection');
+            }, isCorrect ? 2000 : 3500);
+        }
+
+        function checkQ2_b2_solveForNMinus1() {
+            const selection = getSelectedRadioValue('q2_b2_nMinus1Ans');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = parseFloat(selection.value) === 16;
+            const feedbackMsg = isCorrect ? "נכון! $(n-1)=16$. כעת נמצא את $n$." : "החישוב אינו מדויק. בוא נפרק את שלבי הבידוד.";
+            const remediation = isCorrect ? null : "פתרון משוואה לינארית";
+            logAttempt("סעיף ב' שלב 2: פתרון עבור (n-1)", 'q2_b2_solveForNMinus1Section', selection.value, selection.text, 'q2_b2_nMinus1Ans', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+            
+            if (isCorrect) {
+                setTimeout(() => {
+                    document.getElementById('feedbackQ2Section').classList.add('hidden');
+                    showSection('q2_b3_solveForNSection');
+                }, 2000);
+            } else {
+                 setTimeout(() => {
+                    document.getElementById('feedbackQ2Section').classList.add('hidden');
+                    showSection('q2_b2_sub_isolateProductSection');
+                }, 3000);
+            }
+        }
+        
+        function checkQ2_b2_sub_isolateProduct() {
+            const selection = getSelectedRadioValue('q2_b2_sub_isoProdAns');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = selection.value === "subtract_4";
+            const feedbackMsg = isCorrect ? "נכון! $28-4 = 24$, לכן $24 = (n-1)1.5$. כעת, איך נבודד את $(n-1)$?" : "הפעולה הראשונה היא לחסר 4 משני האגפים. נסה שוב.";
+            const remediation = isCorrect ? null : "סדר פעולות בפתרון משוואה";
+            logAttempt("סעיף ב' שלב 2.1: בידוד מכפלה", 'q2_b2_sub_isolateProductSection', selection.value, selection.text, 'q2_b2_sub_isoProdAns', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+            setTimeout(() => {
+                document.getElementById('feedbackQ2Section').classList.add('hidden');
+                showSection(isCorrect ? 'q2_b2_sub_divideByDSection' : 'q2_b2_sub_isolateProductSection');
+            }, isCorrect ? 2500 : 3500);
+        }
+        
+        function checkQ2_b2_sub_divideByD() {
+            const selection = getSelectedRadioValue('q2_b2_sub_divDAns');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = selection.value === "divide_1.5";
+            const feedbackMsg = isCorrect ? "נכון! $24 / 1.5 = 16$. לכן $(n-1)=16$. נחזור לשאלה על ערך $(n-1)$." : "כדי לבודד את $(n-1)$, יש לחלק את שני האגפים ב-1.5. נסה שוב.";
+            const remediation = isCorrect ? null : "סדר פעולות בפתרון משוואה";
+            logAttempt("סעיף ב' שלב 2.2: חילוק ב-d", 'q2_b2_sub_divideByDSection', selection.value, selection.text, 'q2_b2_sub_divDAns', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+            setTimeout(() => {
+                document.getElementById('feedbackQ2Section').classList.add('hidden');
+                showSection(isCorrect ? 'q2_b2_solveForNMinus1Section' : 'q2_b2_sub_divideByDSection');
+            }, isCorrect ? 2500 : 3500);
+        }
+
+        function checkQ2_b3_solveForN() {
+            const selection = getSelectedRadioValue('q2_b3_nAns');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = parseInt(selection.value) === q2_b_correct_n_for_28km;
+            const feedbackMsg = isCorrect ? "נכון מאוד! בשבוע ה-17 רץ רועי 28 ק\"מ." : "אם $(n-1)=16$, אז $n = 16+1 = 17$. נסה שוב.";
+            const remediation = isCorrect ? null : "פתרון משוואה פשוטה";
+            logAttempt("סעיף ב' שלב 3: פתרון עבור n", 'q2_b3_solveForNSection', selection.value, selection.text, 'q2_b3_nAns', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+            
+            if (isCorrect) {
+                setTimeout(() => showSection('mainQ2PartCSection'), 2500);
+            } else {
+                setTimeout(() => {
+                    document.getElementById('feedbackQ2Section').classList.add('hidden');
+                    showSection('q2_b3_solveForNSection');
+                }, 3500);
+            }
+        }
+
+        // --- Check Answer Functions - Part C ---
+        function checkMainQ2PartCAnswer() {
+            const selection = getSelectedRadioValue('mainQ2C_Answer');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = parseInt(selection.value) === q2_c_correct_n_for_169km_sum;
+            const feedbackMsg = isCorrect ? "נכון מאוד! לאחר 13 שבועות המרחק המצטבר היה 169 ק\"מ." : "התשובה אינה נכונה. בוא נפרק את השלבים למציאת מספר השבועות.";
+            const remediation = isCorrect ? null : "סדרה חשבונית - סכום איברים";
+            logAttempt("סעיף ג': שבועות למרחק מצטבר 169 ק\"מ", 'mainQ2PartCSection', selection.value, selection.text, 'mainQ2C_Answer', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+
+            if (isCorrect) {
+                showSection(null); 
+            } else {
+                setTimeout(() => {
+                    document.getElementById('feedbackQ2Section').classList.add('hidden');
+                    showSection('q2_c1_setupSnEqSection');
+                }, 3000);
+            }
+        }
+
+        function checkQ2_c1_setupSnEq() {
+            const selection = getSelectedRadioValue('q2_c1_setupSnAns');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = selection.value === "169=n/2(8+(n-1)1.5)";
+            const feedbackMsg = isCorrect ? "הצבה נכונה! כעת נפשט למשוואה ריבועית." : "יש להציב $S_n=169, a_1=4, d=1.5$ בנוסחה $S_n = \frac{n}{2}[2a_1 + (n-1)d]$. נסה שוב.";
+            const remediation = isCorrect ? null : "הצבה בנוסחת סכום";
+            logAttempt("סעיף ג' שלב 1: הצבה בנוסחת Sn", 'q2_c1_setupSnEqSection', selection.value, selection.text, 'q2_c1_setupSnAns', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+            setTimeout(() => {
+                document.getElementById('feedbackQ2Section').classList.add('hidden');
+                showSection(isCorrect ? 'q2_c2_simplifyToQuadraticSection' : 'q2_c1_setupSnEqSection');
+            }, isCorrect ? 2000 : 3500);
+        }
+
+        function checkQ2_c2_simplifyToQuadratic() {
+            const selection = getSelectedRadioValue('q2_c2_quadAns');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = selection.value === "1.5n^2+6.5n-338=0";
+            const feedbackMsg = isCorrect ? "פישוט נכון! כעת נפתור את המשוואה הריבועית." : "לאחר פישוט $169 = \frac{n}{2}[8 + 1.5n - 1.5] \Rightarrow 169 = \frac{n}{2}[6.5 + 1.5n] \Rightarrow 338 = 6.5n + 1.5n^2$. סידור מחדש נותן $1.5n^2 + 6.5n - 338 = 0$. נסה שוב.";
+            const remediation = isCorrect ? null : "פישוט משוואה עם סכום סדרה";
+            logAttempt("סעיף ג' שלב 2: פישוט למשוואה ריבועית", 'q2_c2_simplifyToQuadraticSection', selection.value, selection.text, 'q2_c2_quadAns', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+            setTimeout(() => {
+                document.getElementById('feedbackQ2Section').classList.add('hidden');
+                showSection(isCorrect ? 'q2_c3_solveQuadraticForNSection' : 'q2_c2_simplifyToQuadraticSection');
+            }, isCorrect ? 2000 : 4000);
+        }
+
+        function checkQ2_c3_solveQuadraticForN() {
+            const selection = getSelectedRadioValue('q2_c3_solveQuadAns');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = selection.value === "n=13_n=-52/3";
+            const feedbackMsg = isCorrect ? "פתרונות נכונים למשוואה הריבועית! כעת נבחר את הפתרון המתאים להקשר הבעיה." : "בפתרון המשוואה $1.5n^2 + 6.5n - 338 = 0$ (או $3n^2 + 13n - 676 = 0$) באמצעות נוסחת השורשים, מקבלים $n=13$ ו-$n = -52/3$. נסה שוב.";
+            const remediation = isCorrect ? null : "פתרון משוואה ריבועית";
+            logAttempt("סעיף ג' שלב 3: פתרון משוואה ריבועית", 'q2_c3_solveQuadraticForNSection', selection.value, selection.text, 'q2_c3_solveQuadAns', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+            setTimeout(() => {
+                document.getElementById('feedbackQ2Section').classList.add('hidden');
+                showSection(isCorrect ? 'q2_c4_interpretNWeeksSection' : 'q2_c3_solveQuadraticForNSection');
+            }, isCorrect ? 2000 : 4000);
+        }
+
+        function checkQ2_c4_interpretNWeeks() {
+            const selection = getSelectedRadioValue('q2_c4_interpretNAns');
+            if (!selection) { displayFeedback("אנא בחר תשובה.", null); return; }
+            const isCorrect = parseInt(selection.value) === q2_c_correct_n_for_169km_sum;
+            const feedbackMsg = isCorrect ? "נכון מאוד! מספר השבועות חייב להיות חיובי, לכן $n=13$." : "מספר שבועות אינו יכול להיות שלילי או שבר (בהקשר זה). נסה שוב.";
+            const remediation = isCorrect ? null : "הבנת ההקשר של בעיה מילולית";
+            logAttempt("סעיף ג' שלב 4: בחירת n מתאים", 'q2_c4_interpretNWeeksSection', selection.value, selection.text, 'q2_c4_interpretNAns', isCorrect, feedbackMsg, remediation);
+            displayFeedback(feedbackMsg, remediation);
+            
+            if (isCorrect) {
+                 setTimeout(() => {
+                    document.getElementById('feedbackQ2Section').classList.add('hidden');
+                    showSection('mainQ2PartCSection');
+                }, 2000);
+            } else {
+                 setTimeout(() => {
+                    document.getElementById('feedbackQ2Section').classList.add('hidden');
+                    showSection('q2_c4_interpretNWeeksSection');
+                }, 3500);
+            }
+        }
+
+    </script>
+</body>
+</html>
